@@ -2,21 +2,21 @@
 
 :root {
   --primary-color: #ff2a2a;
-  --secondary-color: #1a1a1a;
-  --bg-color: #0d0d0d;
-  --card-bg: #1f1f1f;
-  --text-primary: #ffffff;
-  --text-secondary: #a3a3a3;
-  --border-color: #333333;
+  --secondary-color: #f3f4f6;
+  --bg-color: #f9fafb;
+  --card-bg: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border-color: #e5e7eb;
   
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   
-  --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-glow: 0 0 20px rgba(255, 42, 42, 0.4);
 }
 
@@ -35,7 +35,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-input, button, textarea {
+input, button, textarea, select {
   font-family: inherit;
 }
 
@@ -55,7 +55,7 @@ button {
 
 .navbar {
   padding: 1rem 2rem;
-  background-color: rgba(26, 26, 26, 0.8);
+  background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -72,7 +72,7 @@ button {
   gap: 1rem;
   font-size: 1.25rem;
   font-weight: 700;
-  color: white;
+  color: var(--text-primary);
 }
 
 .navbar-logo {
@@ -104,7 +104,7 @@ button {
   border-radius: var(--radius-lg);
   padding: 1.5rem;
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -126,22 +126,22 @@ button {
 
 .form-label {
   font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
-.form-input, .form-textarea {
+.form-input, .form-textarea, .form-select {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  color: white;
+  color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.2s;
 }
 
-.form-input:focus, .form-textarea:focus {
+.form-input:focus, .form-textarea:focus, .form-select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 2px rgba(255, 42, 42, 0.2);
@@ -156,7 +156,8 @@ button {
   position: relative;
   width: 100%;
   height: 120px;
-  border: 2px dashed var(--border-color);
+  background-color: #f3f4f6;
+  border: 2px dashed #d1d5db;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
@@ -234,7 +235,9 @@ button {
 
 .preview-container-wrapper {
   width: 100%;
-  background-color: var(--card-bg);
+  background-color: #f3f4f6;
+  background-image: radial-gradient(#d1d5db 1px, transparent 1px);
+  background-size: 20px 20px;
   padding: 2rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
@@ -251,19 +254,18 @@ button {
   align-items: flex-start;
 }
 
-/* Postcard Design (The actual exported component) */
+/* Postcard Design Base */
 .postcard {
   width: 800px;
   height: 800px;
-  /* background is dynamic */
   position: relative;
   overflow: hidden;
   font-family: 'Hind Siliguri', sans-serif;
-  color: white;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   transform-origin: top center;
+  background-color: #ffffff;
 }
 
 @container (max-width: 850px) { .postcard { transform: scale(0.9); margin-bottom: -80px; } }
@@ -273,31 +275,44 @@ button {
 @container (max-width: 450px) { .postcard { transform: scale(0.5); margin-bottom: -400px; } }
 @container (max-width: 350px) { .postcard { transform: scale(0.4); margin-bottom: -480px; } }
 
-.postcard-brand-bar {
+/* -----------------------------
+   Template: Modern Dark
+----------------------------- */
+.template-modern {
+  color: white;
+}
+.template-modern .glow-effect {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  filter: blur(150px);
+  opacity: 0.2;
+  border-radius: 50%;
+  bottom: -100px;
+  left: -100px;
+  pointer-events: none;
+}
+.template-modern .postcard-brand-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
   z-index: 10;
 }
-
-.postcard-logo-container {
+.template-modern .postcard-logo-container {
   background: white;
   padding: 0.5rem 1rem;
   border-radius: 4px;
 }
-
-.postcard-logo {
+.template-modern .postcard-logo {
   height: 30px;
   object-fit: contain;
 }
-
-.postcard-date {
+.template-modern .postcard-date {
   font-size: 1.25rem;
   font-weight: 600;
 }
-
-.postcard-image-container {
+.template-modern .postcard-image-container {
   width: calc(100% - 4rem);
   margin: 0 auto;
   flex: 1;
@@ -311,14 +326,12 @@ button {
   align-items: center;
   justify-content: center;
 }
-
-.postcard-image {
+.template-modern .postcard-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-
-.postcard-content {
+.template-modern .postcard-content {
   padding: 2rem;
   text-align: center;
   display: flex;
@@ -327,15 +340,13 @@ button {
   gap: 1.5rem;
   z-index: 10;
 }
-
-.postcard-headline {
+.template-modern .postcard-headline {
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.3;
   text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
 }
-
-.postcard-button-fake {
+.template-modern .postcard-button-fake {
   background-color: transparent;
   border: 2px solid white;
   border-radius: 50px;
@@ -345,41 +356,23 @@ button {
   display: inline-block;
   margin-top: 0.5rem;
 }
-
-.postcard-footer {
+.template-modern .postcard-footer {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
   padding-bottom: 2rem;
 }
-
-.postcard-footer-icon {
+.template-modern .postcard-footer-icon {
   width: 24px;
   height: 24px;
 }
-
-.postcard-footer-text {
+.template-modern .postcard-footer-text {
   font-size: 1.25rem;
   font-weight: 700;
   letter-spacing: 1px;
 }
-
-/* Floating Elements for Premium look */
-.glow-effect {
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: var(--primary-color);
-  filter: blur(150px);
-  opacity: 0.2;
-  border-radius: 50%;
-  bottom: -100px;
-  left: -100px;
-  pointer-events: none;
-}
-
-.metrics-bar {
+.template-modern .metrics-bar {
   position: absolute;
   bottom: 20px;
   left: 20px;
@@ -391,11 +384,211 @@ button {
   border-radius: 50px;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-.metric-item {
+.template-modern .metric-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+/* -----------------------------
+   Template: News Red
+----------------------------- */
+.template-news-red {
+  background-color: #f2f2f2;
+  color: #1a1a1a;
+  border-top: 24px solid var(--primary-color);
+  border-bottom: 24px solid var(--primary-color);
+}
+.template-news-red .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+}
+.template-news-red .category {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.template-news-red .date {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #333;
+}
+.template-news-red .image-wrapper {
+  margin: 0 2rem;
+  border-radius: 20px;
+  border: 6px solid var(--primary-color);
+  height: 380px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ccc;
+}
+.template-news-red .image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.template-news-red .headline {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 800;
+  padding: 1.5rem 2rem 0 2rem;
+  line-height: 1.3;
+}
+.template-news-red .button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.template-news-red .btn-fake {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 2rem;
+  border-radius: 50px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.template-news-red .footer-bar {
+  margin-top: auto;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px dashed #ccc;
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+.template-news-red .footer-url {
+  font-size: 1.25rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #444;
+}
+.template-news-red .footer-logo {
+  height: 40px;
+  object-fit: contain;
+}
+
+/* -----------------------------
+   Template: Quote Card
+----------------------------- */
+.template-quote {
+  background-color: #000;
+  color: white;
+}
+.template-quote .quote-content {
+  padding: 3rem;
+  text-align: center;
+  z-index: 2;
+  position: relative;
+}
+.template-quote .quote-text {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 2rem;
+  color: #fff;
+}
+.template-quote .quote-author {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #aaa;
+}
+.template-quote .image-wrapper {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content: center;
+  z-index: 1;
+}
+.template-quote .image-wrapper img {
+  height: 100%;
+  object-fit: contain;
+}
+.template-quote .logo-badge {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  width: 100px;
+  height: 100px;
+  background: white;
+  border-radius: 50%;
+  padding: 1rem;
+  z-index: 3;
+}
+.template-quote .logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* -----------------------------
+   Template: Minimal Light
+----------------------------- */
+.template-minimal {
+  background-color: #ffffff;
+  color: #111;
+  border: 1px solid #eaeaea;
+}
+.template-minimal .image-header {
+  width: 100%;
+  height: 400px;
+  background-color: #f9f9f9;
+}
+.template-minimal .image-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.template-minimal .content {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.template-minimal .category-date {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  font-size: 1.25rem;
+}
+.template-minimal .headline {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 2rem;
+}
+.template-minimal .footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-top: 1px solid #eaeaea;
+  padding-top: 1.5rem;
+}
+.template-minimal .footer img {
+  height: 30px;
+}
+.template-minimal .footer span {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #666;
 }
