@@ -240,21 +240,38 @@ button {
   border: 1px solid var(--border-color);
   display: flex;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.preview-scale-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 /* Postcard Design (The actual exported component) */
 .postcard {
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle at top right, #3a0000, #0a0a0a);
+  /* background is dynamic */
   position: relative;
   overflow: hidden;
   font-family: 'Hind Siliguri', sans-serif;
   color: white;
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  transform-origin: top center;
 }
+
+@container (max-width: 850px) { .postcard { transform: scale(0.9); margin-bottom: -80px; } }
+@container (max-width: 750px) { .postcard { transform: scale(0.8); margin-bottom: -160px; } }
+@container (max-width: 650px) { .postcard { transform: scale(0.7); margin-bottom: -240px; } }
+@container (max-width: 550px) { .postcard { transform: scale(0.6); margin-bottom: -320px; } }
+@container (max-width: 450px) { .postcard { transform: scale(0.5); margin-bottom: -400px; } }
+@container (max-width: 350px) { .postcard { transform: scale(0.4); margin-bottom: -480px; } }
 
 .postcard-brand-bar {
   display: flex;

@@ -10,6 +10,7 @@ function App() {
   const [comments, setComments] = useState('1.2k');
   const [shares, setShares] = useState('500');
   const [footerText, setFooterText] = useState('SKY NEWS.COM');
+  const [bgColor, setBgColor] = useState('#3a0000');
   
   const postcardRef = useRef<HTMLDivElement>(null);
 
@@ -26,7 +27,18 @@ function App() {
     if (!postcardRef.current) return;
     
     try {
-      const dataUrl = await toPng(postcardRef.current, { cacheBust: true, quality: 1, pixelRatio: 2 });
+      const dataUrl = await toPng(postcardRef.current, { 
+        cacheBust: true, 
+        quality: 1, 
+        pixelRatio: 2,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: '800px',
+          height: '800px',
+          margin: '0'
+        }
+      });
       const link = document.createElement('a');
       link.download = 'postcard.png';
       link.href = dataUrl;
@@ -121,6 +133,17 @@ function App() {
           </div>
 
           <div className="form-group">
+            <label className="form-label">Background Color</label>
+            <input 
+              type="color" 
+              className="form-input" 
+              value={bgColor} 
+              onChange={e => setBgColor(e.target.value)}
+              style={{ height: '50px', padding: '0.25rem', cursor: 'pointer' }}
+            />
+          </div>
+
+          <div className="form-group">
             <label className="form-label">Footer Brand Text</label>
             <input 
               type="text" 
@@ -134,9 +157,14 @@ function App() {
         {/* Preview Panel */}
         <section className="preview-area">
           <div className="preview-container-wrapper">
-            {/* The Postcard Component */}
-            <div className="postcard" ref={postcardRef}>
-              <div className="glow-effect"></div>
+            <div className="preview-scale-wrapper">
+              {/* The Postcard Component */}
+              <div 
+                className="postcard" 
+                ref={postcardRef}
+                style={{ background: `radial-gradient(circle at top right, ${bgColor}, #0a0a0a)` }}
+              >
+                <div className="glow-effect" style={{ background: bgColor }}></div>
               
               <div className="postcard-brand-bar">
                 <div className="postcard-logo-container">
@@ -173,6 +201,7 @@ function App() {
                 <div className="metric-item">
                   <Share2 size={18} /> {shares}
                 </div>
+              </div>
               </div>
             </div>
           </div>
