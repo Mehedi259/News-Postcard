@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Upload, ThumbsUp, MessageCircle, Share2, Facebook } from 'lucide-react';
+import { Download, Upload, ThumbsUp, MessageCircle, Share2, Globe } from 'lucide-react';
 
 function App() {
   const [headline, setHeadline] = useState('বাড়ি ঘরের পরিবেশ রক্ষার্থে কি কি করা উচিত?');
@@ -159,7 +159,7 @@ function App() {
               </div>
 
               <div className="postcard-footer">
-                <Facebook className="postcard-footer-icon" />
+                <Globe className="postcard-footer-icon" />
                 <span className="postcard-footer-text">{footerText}</span>
               </div>
 
