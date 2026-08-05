@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Upload, ThumbsUp, MessageCircle, Share2, Globe, ChevronDown } from 'lucide-react';
+import { Download, Upload, ThumbsUp, MessageCircle, Share2, Globe, ChevronDown, Quote } from 'lucide-react';
 
-type TemplateType = 'modern' | 'news-red' | 'quote' | 'minimal';
+type TemplateType = 'modern' | 'news-red' | 'quote' | 'elegant' | 'breaking';
 
 function App() {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('news-red');
@@ -81,23 +81,23 @@ function App() {
 
             <div className="postcard-content">
               <h1 className="postcard-headline">{headline}</h1>
-              <div className="postcard-button-fake">বিস্তারিত কমেন্ট</div>
+              <div className="postcard-button-fake" style={{ borderColor: bgColor }}>বিস্তারিত কমেন্ট</div>
             </div>
 
             <div className="postcard-footer">
-              <Globe className="postcard-footer-icon" />
+              <Globe className="postcard-footer-icon" style={{ color: bgColor }} />
               <span className="postcard-footer-text">{footerText}</span>
             </div>
 
             <div className="metrics-bar">
               <div className="metric-item">
-                <ThumbsUp size={18} /> {likes}
+                <ThumbsUp size={18} style={{ color: bgColor }} /> {likes}
               </div>
               <div className="metric-item">
-                <MessageCircle size={18} /> {comments}
+                <MessageCircle size={18} style={{ color: bgColor }} /> {comments}
               </div>
               <div className="metric-item">
-                <Share2 size={18} /> {shares}
+                <Share2 size={18} style={{ color: bgColor }} /> {shares}
               </div>
             </div>
           </div>
@@ -108,35 +108,41 @@ function App() {
           <div 
             className="postcard template-news-red" 
             ref={postcardRef}
-            style={{ borderTopColor: bgColor, borderBottomColor: bgColor }}
+            style={{ 
+              background: `radial-gradient(circle at center, ${bgColor} 0%, #1a1a1a 100%)`
+            }}
           >
-            <div className="top-bar">
-              <div className="category" style={{ backgroundColor: bgColor }}>{category}</div>
-              <div className="date">{date}</div>
-            </div>
-
-            <div className="image-wrapper" style={{ borderColor: bgColor }}>
-              {thumbnail ? (
-                <img src={thumbnail} alt="News" />
-              ) : (
-                <span style={{ fontSize: '1.5rem', color: '#888' }}>Upload Thumbnail</span>
-              )}
-            </div>
-
-            <h1 className="headline">{headline}</h1>
-
-            <div className="button-container">
-              <div className="btn-fake" style={{ backgroundColor: bgColor }}>
-                বিস্তারিত কমেন্টে
-                <ChevronDown size={20} />
+            <div className="inner-card">
+              <div className="top-bar">
+                <div className="category" style={{ backgroundColor: bgColor }}>{category}</div>
+                <div className="date">{date}</div>
               </div>
-            </div>
 
-            <div className="footer-bar">
-              <div className="footer-url">
-                <Globe size={24} /> {footerText}
+              <div className="image-wrapper" style={{ borderColor: bgColor }}>
+                {thumbnail ? (
+                  <img src={thumbnail} alt="News" />
+                ) : (
+                  <span style={{ fontSize: '1.5rem', color: '#888' }}>Upload Thumbnail</span>
+                )}
               </div>
-              <img src="/logo.png" alt="Logo" className="footer-logo" />
+
+              <div className="headline-container">
+                <h1 className="headline">{headline}</h1>
+              </div>
+
+              <div className="button-container">
+                <div className="btn-fake" style={{ backgroundColor: bgColor }}>
+                  বিস্তারিত কমেন্টে
+                  <ChevronDown size={20} />
+                </div>
+              </div>
+
+              <div className="footer-bar">
+                <div className="footer-url">
+                  <Globe size={24} style={{ color: bgColor }} /> {footerText}
+                </div>
+                <img src="/logo.png" alt="Logo" className="footer-logo" />
+              </div>
             </div>
           </div>
         );
@@ -148,15 +154,18 @@ function App() {
             ref={postcardRef}
           >
             <div className="quote-content">
+              <Quote className="quote-icon" size={64} />
               <h1 className="quote-text">"{headline}"</h1>
-              <div className="quote-author">- {footerText}</div>
+              <div className="quote-author" style={{ '--primary-color': bgColor } as React.CSSProperties}>
+                {footerText}
+              </div>
             </div>
 
             <div className="image-wrapper">
               {thumbnail ? (
                 <img src={thumbnail} alt="Author" />
               ) : (
-                <span style={{ fontSize: '1.5rem', color: '#666', marginTop: '4rem' }}>Upload Author Image</span>
+                <span style={{ fontSize: '1.5rem', color: '#666', marginBottom: '4rem' }}>Upload Author Image</span>
               )}
             </div>
 
@@ -166,10 +175,10 @@ function App() {
           </div>
         );
 
-      case 'minimal':
+      case 'elegant':
         return (
           <div 
-            className="postcard template-minimal" 
+            className="postcard template-elegant" 
             ref={postcardRef}
           >
             <div className="image-header">
@@ -184,15 +193,45 @@ function App() {
             
             <div className="content">
               <div className="category-date">
-                <span>{category}</span>
-                <span style={{ color: '#888' }}>{date}</span>
+                <span className="cat" style={{ color: bgColor }}>{category}</span>
+                <span className="dot"></span>
+                <span className="dat">{date}</span>
               </div>
               
               <h1 className="headline">{headline}</h1>
               
               <div className="footer">
+                <div className="footer-left">
+                  <Globe size={24} style={{ color: bgColor }} />
+                  <span>{footerText}</span>
+                </div>
                 <img src="/logo.png" alt="Logo" />
-                <span>{footerText}</span>
+              </div>
+            </div>
+          </div>
+        );
+        
+      case 'breaking':
+        return (
+          <div 
+            className="postcard template-breaking" 
+            ref={postcardRef}
+          >
+            <div className="image-bg">
+              {thumbnail && <img src={thumbnail} alt="Breaking" />}
+            </div>
+            
+            <div className="breaking-badge-wrapper">
+              <div className="breaking-badge" style={{ backgroundColor: bgColor }}>
+                <span>{category || 'BREAKING NEWS'}</span>
+              </div>
+            </div>
+            
+            <div className="content-area">
+              <h1 className="headline">{headline}</h1>
+              <div className="footer-bar" style={{ borderColor: bgColor }}>
+                <span className="footer-text">{footerText}</span>
+                <img src="/logo.png" alt="Logo" className="footer-logo" />
               </div>
             </div>
           </div>
@@ -228,10 +267,11 @@ function App() {
               value={selectedTemplate}
               onChange={e => setSelectedTemplate(e.target.value as TemplateType)}
             >
-              <option value="news-red">News Red (New!)</option>
+              <option value="news-red">News Red (Sky Style)</option>
               <option value="modern">Modern Dark</option>
+              <option value="elegant">Elegant Light</option>
+              <option value="breaking">Breaking News</option>
               <option value="quote">Quote Card</option>
-              <option value="minimal">Minimal Light</option>
             </select>
           </div>
 
@@ -299,7 +339,7 @@ function App() {
           )}
 
           <div className="form-group">
-            <label className="form-label">Theme / Background Color</label>
+            <label className="form-label">Theme / Accent Color</label>
             <input 
               type="color" 
               className="form-input" 
@@ -310,7 +350,7 @@ function App() {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Footer Brand Text / URL</label>
+            <label className="form-label">Footer Brand Text / URL (or Author Name)</label>
             <input 
               type="text" 
               className="form-input" 
