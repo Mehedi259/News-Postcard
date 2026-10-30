@@ -26,6 +26,12 @@
   padding: 0;
 }
 
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   font-family: 'Hind Siliguri', sans-serif;
   background-color: var(--bg-color);
@@ -51,11 +57,14 @@ button {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  max-width: 100vw;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 .navbar {
-  padding: 1rem 2rem;
-  background-color: rgba(255, 255, 255, 0.9);
+  padding: 0.65rem 1rem;
+  background-color: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
   display: flex;
@@ -64,15 +73,158 @@ button {
   position: sticky;
   top: 0;
   z-index: 50;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  gap: 8px;
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  font-size: 1.25rem;
-  font-weight: 700;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.navbar-brand-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.navbar-title {
+  font-weight: 800;
+  font-size: 1.1rem;
   color: var(--text-primary);
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.navbar-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: none;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .navbar-subtitle {
+    display: inline-block;
+  }
+  .navbar {
+    padding: 0.85rem 1.5rem;
+  }
+  .navbar-title {
+    font-size: 1.2rem;
+  }
+}
+
+.navbar-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.nav-action-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-action-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+}
+
+.btn-secondary.nav-action-btn {
+  background-color: #ffffff;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary.nav-action-btn svg {
+  stroke: #1f2937;
+}
+
+.btn-secondary.nav-action-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.nav-download-btn {
+  background-color: #fe0312 !important;
+  color: #ffffff !important;
+  border: 1px solid #fe0312 !important;
+}
+
+.nav-download-btn svg {
+  stroke: #ffffff !important;
+}
+
+.nav-download-btn:hover {
+  background-color: #d6000e !important;
+  border-color: #d6000e !important;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 520px) {
+  .navbar {
+    padding: 0.5rem 0.75rem;
+    gap: 8px;
+  }
+  .navbar-brand {
+    gap: 6px;
+  }
+  .navbar-title {
+    font-size: 0.95rem;
+  }
+  .navbar-actions {
+    gap: 6px;
+  }
+  .nav-action-btn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 7px;
+  }
+  .nav-action-btn svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+@media (max-width: 380px) {
+  .navbar {
+    padding: 0.45rem 0.5rem;
+  }
+  .navbar-title {
+    font-size: 0.9rem;
+  }
+  .nav-action-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+  .nav-action-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 .navbar-logo {
@@ -82,19 +234,34 @@ button {
 
 .main-content {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2rem;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.75rem;
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.preview-area {
+  order: -1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 1024px) {
   .main-content {
-    grid-template-columns: 400px 1fr;
+    display: grid;
+    grid-template-columns: 420px 1fr;
     align-items: start;
+    padding: 2rem;
+    gap: 2rem;
+  }
+  .preview-area {
+    order: initial;
   }
 }
 
@@ -235,23 +402,112 @@ button {
 
 .preview-container-wrapper {
   width: 100%;
+  max-width: 100%;
   background-color: #f3f4f6;
   background-image: radial-gradient(#d1d5db 1px, transparent 1px);
   background-size: 20px 20px;
-  padding: 2rem;
+  padding: 8px;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  gap: 10px;
   overflow: hidden;
-  container-type: inline-size;
+  box-sizing: border-box;
 }
 
-.preview-scale-wrapper {
-  width: 100%;
+@media (min-width: 768px) {
+  .preview-container-wrapper {
+    padding: 1.5rem;
+  }
+}
+
+.preview-scaler {
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
+  max-width: 100%;
+}
+
+/* Quick Font Size Bar right under the Postcard */
+.postcard-quick-bar {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.quick-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2937;
+  white-space: nowrap;
+}
+
+.quick-bar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 320px;
+  justify-content: flex-end;
+}
+
+.quick-step-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.quick-step-btn:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.quick-slider {
+  flex: 1;
+  accent-color: #fe0312;
+  cursor: pointer;
+  height: 6px;
+  min-width: 60px;
+}
+
+.quick-val-pill {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #dc2626;
+  background-color: #fee2e2;
+  padding: 3px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  border: 1px solid #fca5a5;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 /* Postcard Design Base */
@@ -264,16 +520,8 @@ button {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transform-origin: top center;
   background-color: #ffffff;
 }
-
-@container (max-width: 850px) { .postcard { transform: scale(0.9); margin-bottom: -80px; } }
-@container (max-width: 750px) { .postcard { transform: scale(0.8); margin-bottom: -160px; } }
-@container (max-width: 650px) { .postcard { transform: scale(0.7); margin-bottom: -240px; } }
-@container (max-width: 550px) { .postcard { transform: scale(0.6); margin-bottom: -320px; } }
-@container (max-width: 450px) { .postcard { transform: scale(0.5); margin-bottom: -400px; } }
-@container (max-width: 350px) { .postcard { transform: scale(0.4); margin-bottom: -480px; } }
 
 /* -----------------------------
    Template: Modern Dark
@@ -746,6 +994,108 @@ button {
 }
 
 /* ====================================================
+   TEMPLATE SWITCHER BUTTONS
+==================================================== */
+.template-switcher {
+  display: flex;
+  gap: 6px;
+  background-color: #f3f4f6;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.template-switch-btn {
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.template-switch-btn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.template-switch-btn.active.probash {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
+}
+
+.template-switch-btn.active.nabiganj {
+  background-color: #15803d;
+  color: #ffffff;
+  border-color: #15803d;
+  box-shadow: 0 1px 3px rgba(21, 128, 61, 0.3);
+}
+
+/* ====================================================
+   HELLO PROBASH NEWS - 100% Pixel-Perfect News Postcard
+==================================================== */
+.template-hello-probash {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  user-select: none;
+}
+
+.template-hello-probash .hp-photo-slot {
+  position: absolute;
+  left: 47px;
+  top: 115px;
+  width: 707px;
+  height: 335px;
+  border-radius: 19px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.template-hello-probash .hp-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.1s ease-out;
+}
+
+.template-hello-probash .hp-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f9fafb;
+}
+
+.template-hello-probash .hp-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ====================================================
    HELLO NABIGANJ - 100% Pixel-Perfect News Postcard
 ==================================================== */
 .template-hello-nabiganj {
@@ -772,6 +1122,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
 }
 
 .template-hello-nabiganj .hn-photo {
@@ -788,6 +1139,34 @@ button {
   font-weight: 600;
 }
 
+/* Floating Camera Button on Photo */
+.hn-photo-edit-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background-color: rgba(17, 24, 39, 0.75);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  z-index: 5;
+}
+
+.template-hello-nabiganj .hn-photo-slot:hover .hn-photo-edit-badge {
+  background-color: #e50914;
+  border-color: #ff4d4d;
+  transform: scale(1.04);
+}
+
 /* 2. Master Template Overlay */
 .template-hello-nabiganj .hn-master-overlay {
   position: absolute;
@@ -800,8 +1179,28 @@ button {
   display: block;
 }
 
-/* 3. Dynamic Headline Section */
-.template-hello-nabiganj .hn-headline-area {
+/* 3. In-Place Editable Elements */
+.oncard-editable {
+  outline: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  cursor: text;
+  user-select: text;
+}
+
+.oncard-editable:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  outline: 1.5px dashed rgba(255, 255, 255, 0.45);
+}
+
+.oncard-editable:focus {
+  background-color: rgba(0, 0, 0, 0.35);
+  outline: 2px solid #ffcb05;
+}
+
+/* 4. Dynamic Headline Section */
+.template-hello-nabiganj .hn-headline-area,
+.template-hello-probash .hn-headline-area {
   position: absolute;
   left: 14px;
   right: 14px;
@@ -811,55 +1210,224 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: none;
+  pointer-events: auto;
 }
 
-.template-hello-nabiganj .hn-headline-1 {
+.hn-headline-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.template-hello-nabiganj .hn-headline-1,
+.template-hello-probash .hn-headline-1 {
   font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
   font-weight: 700;
   line-height: 1.25;
   margin: 0 0 6px 0;
-  padding: 0 8px;
+  padding: 2px 10px;
   text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.85);
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
 
-.template-hello-nabiganj .hn-headline-2 {
+.template-hello-nabiganj .hn-headline-2,
+.template-hello-probash .hn-headline-2 {
   font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
   font-weight: 800;
   line-height: 1.15;
   margin: 0;
-  padding: 0;
+  padding: 2px 10px;
   letter-spacing: -0.6px;
   text-shadow: 0 4px 8px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.9);
   white-space: nowrap;
 }
 
-/* 4. Overlays when customized */
-.template-hello-nabiganj .hn-custom-emblem {
+.hn-pencil-hint {
   position: absolute;
-  left: calc(50% - 50px);
-  top: 418px;
-  width: 100px;
-  height: 100px;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.65);
+  color: #ffcb05;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 4px solid #fe0312;
-  background-color: #ffffff;
-  overflow: hidden;
-  z-index: 15;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  pointer-events: none;
 }
 
-.template-hello-nabiganj .hn-custom-emblem img {
-  width: 70%;
-  height: 70%;
-  object-fit: contain;
+.hn-headline-item:hover .hn-pencil-hint {
+  opacity: 1;
 }
 
+/* On-Card Font Size Badge & Popover */
+.hn-size-badge {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 203, 5, 0.5);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+  z-index: 25;
+}
+
+.hn-size-badge:hover {
+  background: #000000;
+  border-color: #ffcb05;
+  color: #ffcb05;
+  transform: scale(1.05);
+}
+
+.hn-size-popup {
+  position: absolute;
+  top: -110px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(17, 24, 39, 0.95);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid #ffcb05;
+  border-radius: 12px;
+  padding: 10px 14px;
+  width: 320px;
+  max-width: 90%;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  z-index: 30;
+  color: #ffffff;
+  animation: fadeInPop 0.2s ease;
+}
+
+@keyframes fadeInPop {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+.hn-size-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.hn-size-popup-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffcb05;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hn-size-popup-close {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #ffffff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.hn-size-popup-close:hover {
+  background: #dc2626;
+}
+
+.hn-size-popup-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hn-size-popup-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hn-popup-step-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.hn-popup-step-btn:hover {
+  background: #ffcb05;
+  color: #000000;
+}
+
+.hn-popup-slider {
+  flex: 1;
+  accent-color: #ffcb05;
+  cursor: pointer;
+}
+
+.hn-popup-badge-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffcb05;
+  background: rgba(255, 203, 5, 0.15);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.hn-size-presets {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.hn-size-preset-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e5e7eb;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.hn-size-preset-btn.active, .hn-size-preset-btn:hover {
+  background: #ffcb05;
+  color: #111827;
+  border-color: #ffcb05;
+  font-weight: 700;
+}
+
+
+/* 5. Date Box */
 .template-hello-nabiganj .hn-date-box {
   position: absolute;
   top: 36px;
@@ -867,14 +1435,14 @@ button {
   height: 36px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-family: 'Noto Serif Bengali', serif;
   font-size: 21px;
   font-weight: 700;
   color: #111111;
   z-index: 20;
   white-space: nowrap;
-  user-select: none;
+  pointer-events: auto;
 }
 
 .template-hello-nabiganj .hn-date-box .hn-calendar-icon {
@@ -882,6 +1450,12 @@ button {
   height: 25px;
   object-fit: contain;
   display: block;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.template-hello-nabiganj .hn-date-box .hn-calendar-icon:hover {
+  transform: scale(1.1);
 }
 
 .template-hello-nabiganj .hn-date-box .hn-date-separator {
@@ -894,82 +1468,194 @@ button {
 .template-hello-nabiganj .hn-date-box .hn-date-text {
   white-space: nowrap;
   line-height: 1;
+  padding: 2px 6px;
 }
 
-.template-hello-nabiganj .hn-custom-cta-pill {
-  position: absolute;
-  bottom: 95px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #ffcb05;
-  color: #000000;
-  font-family: 'Noto Serif Bengali', serif;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 6px 26px;
-  border-radius: 10px;
-  z-index: 15;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-  white-space: nowrap;
+.template-hello-nabiganj .hn-date-box .hn-date-text:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  outline: 1.5px dashed rgba(0, 0, 0, 0.3);
 }
 
-.template-hello-nabiganj .hn-custom-footer-pill {
-  position: absolute;
-  bottom: 38px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #fe0312;
-  color: #ffffff;
-  height: 32px;
-  padding: 0 20px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  z-index: 15;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  white-space: nowrap;
-}
-
-.template-hello-nabiganj .hn-custom-brand-patch {
-  position: absolute;
-  top: 18px;
-  left: 95px;
+.template-hello-nabiganj .hn-date-box .hn-date-text:focus {
   background-color: #ffffff;
-  padding: 0 8px;
-  z-index: 15;
+  outline: 2px solid #fe0312;
 }
 
-
-/* UI Controls and Tabs */
-.editor-tabs {
-  display: flex;
-  background-color: #f3f4f6;
-  border-radius: var(--radius-md);
-  padding: 4px;
-  gap: 4px;
-  margin-bottom: 0.5rem;
-}
-
-.editor-tab-btn {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  border-radius: 6px;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+.hn-date-edit-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #fca5a5;
   transition: all 0.2s ease;
 }
 
-.editor-tab-btn.active {
+.hn-date-edit-btn:hover {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+
+
+/* ====================================================
+   UNIFIED SINGLE-SCREEN EDITOR STYLES (NO TABS!)
+==================================================== */
+.direct-edit-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius-md);
+  color: #92400e;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.editor-section-card {
+  background-color: #fafbfc;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-sublabel {
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #4b5563;
+  display: block;
+}
+
+.photo-action-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-upload-direct {
+  flex: 1;
   background-color: #ffffff;
-  color: var(--text-primary);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1.5px dashed #d1d5db;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  color: #1f2937;
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-upload-direct:hover {
+  border-color: #e50914;
+  color: #e50914;
+  background-color: rgba(229, 9, 20, 0.04);
+}
+
+.photo-mini-thumb {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-color);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.photo-mini-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumb-edit-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.photo-mini-thumb:hover .thumb-edit-overlay {
+  opacity: 1;
+}
+
+.zoom-step-btn {
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.zoom-step-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.zoom-reset-btn {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px solid #fca5a5;
+  transition: all 0.15s;
+}
+
+.zoom-reset-btn:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+.btn-today-text {
+  font-size: 0.775rem;
+  font-weight: 700;
+  color: #e50914;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(229, 9, 20, 0.08);
+  border: 1px solid rgba(229, 9, 20, 0.2);
+  transition: all 0.15s;
+}
+
+.btn-today-text:hover {
+  background-color: #e50914;
+  color: white;
+}
+
+.export-actions-card {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-color);
 }
 
 .control-badge {
@@ -977,8 +1663,8 @@ button {
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  background-color: #fee2e2;
-  color: #b91c1c;
+  background-color: #dcfce7;
+  color: #15803d;
   font-size: 0.75rem;
   font-weight: 700;
   border-radius: 4px;
@@ -1003,26 +1689,6 @@ button {
   width: 100%;
   accent-color: var(--primary-color);
   cursor: pointer;
-}
-
-.color-picker-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #f9fafb;
-  border: 1px solid var(--border-color);
-  padding: 6px 10px;
-  border-radius: var(--radius-md);
-}
-
-.color-input-native {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  background: transparent;
-  padding: 0;
 }
 
 .action-bar-top {

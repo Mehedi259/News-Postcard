@@ -1,40 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import { 
   Download, Upload, Globe, ChevronDown, Quote, 
-  RotateCcw, Copy, Check, Type, 
-  Image as ImageIcon, Palette, Share2, ThumbsUp, MessageCircle
+  Copy, Check, Type, Camera, Pencil, Calendar,
+  ZoomIn, Sparkles,
+  Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
-type TemplateType = 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking';
+type TemplateType = 'hello-probash' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking';
 
-// Exact Nabiganj Ribbon Folded Logo
-const NabiganjLogo = ({ customLogo, size = 44 }: { customLogo?: string | null; size?: number }) => {
+// Brand Logo Component supporting Hello Probash and Hello Nabiganj
+const BrandLogo = ({ selectedTemplate, customLogo, size = 28 }: { selectedTemplate: TemplateType; customLogo?: string | null; size?: number }) => {
   if (customLogo) {
     return <img src={customLogo} alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
   }
-  return <img src="/reference-logo.png" alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
+  if (selectedTemplate === 'hello-probash') {
+    return <img src="/hello-probash-logo.png" alt="Hello Probash Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
+  }
+  return <img src="/reference-logo.png" alt="Hello Nabiganj Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
 };
 
-// Crisp Social Media SVGs
-const FacebookIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-  </svg>
-);
-
-const InstagramIcon = () => (
-  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-  </svg>
-);
-
-const YoutubeIcon = () => (
-  <svg width="16" height="15" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-  </svg>
+const NabiganjLogo = ({ customLogo, size = 28 }: { customLogo?: string | null; size?: number }) => (
+  <BrandLogo selectedTemplate="hello-nabiganj" customLogo={customLogo} size={size} />
 );
 
 function getBengaliToday(): string {
@@ -53,51 +40,94 @@ function getBengaliToday(): string {
 }
 
 export default function App() {
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('hello-nabiganj');
-  const [activeTab, setActiveTab] = useState<'content' | 'photo' | 'brand'>('content');
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateType>('hello-probash');
 
   // Exact reference default values
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
-  const [headline1Color, setHeadline1Color] = useState('#ffffff');
+  const headline1Color = '#ffffff';
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
-  const [headline2Color, setHeadline2Color] = useState('#ffcb05');
+  const headline2Color = '#ffcb05';
   const [headlineFontSize, setHeadlineFontSize] = useState(30);
+  const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState('২৯ অক্টোবর ২০২৬');
-
-  // Brand Header
-  const [brandName1, setBrandName1] = useState('HELLO');
-  const [brandColor1, setBrandColor1] = useState('#e50914');
-  const [brandName2, setBrandName2] = useState('NABIGANJ');
-  const [brandColor2, setBrandColor2] = useState('#008744');
-  const [brandTagline, setBrandTagline] = useState('নবীগঞ্জের কণ্ঠ');
-  const [customLogo, setCustomLogo] = useState<string | null>(null);
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
   const [imageZoom, setImageZoom] = useState(100);
-  const [imageOffsetY, setImageOffsetY] = useState(0);
-  const [imageOffsetX, setImageOffsetX] = useState(0);
 
-  // CTA & Footer
-  const [ctaText, setCtaText] = useState('বিস্তারিত ক্যাপশনে');
-  const [ctaBgColor, setCtaBgColor] = useState('#ffcb05');
-  const [socialHandle, setSocialHandle] = useState('hellonabiganj');
+  // Legacy template constants
+  const category = 'আন্তর্জাতিক';
+  const likes = '12k';
+  const comments = '1.2k';
+  const shares = '500';
+  const ctaText = 'বিস্তারিত কমেন্টে';
 
-  // Colors
-  const [cardBgColor, setCardBgColor] = useState('#013119');
-  const [frameColor, setFrameColor] = useState('#fe0312');
-  const [showWorldMap, setShowWorldMap] = useState(true);
-
-  // Legacy template state
-  const [category, setCategory] = useState('আন্তর্জাতিক');
-  const [likes, setLikes] = useState('12k');
-  const [comments, setComments] = useState('1.2k');
-  const [shares, setShares] = useState('500');
+  // Compatibility defaults for other template modes
+  const frameColor = '#fe0312';
+  const socialHandle = 'hellonabiganj';
+  const customLogo = null;
+  const imageOffsetX = 0;
+  const imageOffsetY = 0;
 
   // UI state
   const [isExporting, setIsExporting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Refs for in-place direct editing and file picker
   const postcardRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const headline1Ref = useRef<HTMLHeadingElement>(null);
+  const headline2Ref = useRef<HTMLHeadingElement>(null);
+  const dateRef = useRef<HTMLSpanElement>(null);
+
+  // Dynamic preview scaling to perfectly fit mobile & desktop without layout overflow
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(0.45);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (previewContainerRef.current) {
+        const containerWidth = previewContainerRef.current.clientWidth;
+        // Leave 16px safe margin inside container
+        const availableWidth = Math.max(260, containerWidth - 20);
+        const scale = Math.min(1, Math.max(0.2, availableWidth / 800));
+        setPreviewScale(scale);
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && previewContainerRef.current) {
+      ro = new ResizeObserver(() => updateScale());
+      ro.observe(previewContainerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateScale);
+      ro?.disconnect();
+    };
+  }, []);
+
+  // Sync ref text with state smoothly without resetting cursor position
+  useEffect(() => {
+    if (headline1Ref.current && document.activeElement !== headline1Ref.current) {
+      headline1Ref.current.innerText = headline1;
+    }
+  }, [headline1]);
+
+  useEffect(() => {
+    if (headline2Ref.current && document.activeElement !== headline2Ref.current) {
+      headline2Ref.current.innerText = headline2;
+    }
+  }, [headline2]);
+
+  useEffect(() => {
+    if (dateRef.current && document.activeElement !== dateRef.current) {
+      dateRef.current.innerText = date;
+    }
+  }, [date]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -111,47 +141,18 @@ export default function App() {
       reader.onload = () => {
         setThumbnail(reader.result as string);
         setImageZoom(100);
-        setImageOffsetY(0);
-        setImageOffsetX(0);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setCustomLogo(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
 
-  const handleResetToReference = () => {
-    setSelectedTemplate('hello-nabiganj');
-    setHeadline1('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
-    setHeadline1Color('#ffffff');
-    setHeadline2('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
-    setHeadline2Color('#ffcb05');
-    setHeadlineFontSize(34);
-    setDate('২৯ অক্টোবর ২০২৬');
-    setBrandName1('HELLO');
-    setBrandColor1('#e50914');
-    setBrandName2('NABIGANJ');
-    setBrandColor2('#008744');
-    setBrandTagline('নবীগঞ্জের কণ্ঠ');
-    setCustomLogo(null);
-    setThumbnail('/reference-person.jpg');
-    setImageZoom(100);
-    setImageOffsetY(0);
-    setImageOffsetX(0);
-    setCtaText('বিস্তারিত ক্যাপশনে');
-    setCtaBgColor('#ffcb05');
-    setSocialHandle('hellonabiganj');
-    setCardBgColor('#013119');
-    setFrameColor('#fe0312');
-    setShowWorldMap(true);
-    showToast('অরিজিনাল রেফারেন্স ডিজাইনে রিসেট করা হয়েছে!');
+  // Exclude edit hints/buttons during image download & clipboard copy
+  const exportFilter = (node: HTMLElement) => {
+    if (node?.classList && node.classList.contains('hide-on-export')) {
+      return false;
+    }
+    return true;
   };
 
   const handleDownload = async (pixelRatio: number = 2) => {
@@ -162,6 +163,7 @@ export default function App() {
         cacheBust: true,
         quality: 1,
         pixelRatio: pixelRatio,
+        filter: exportFilter,
         style: {
           transform: 'none',
           margin: '0',
@@ -170,7 +172,7 @@ export default function App() {
         }
       });
       const link = document.createElement('a');
-      link.download = `postcard-${socialHandle || 'news'}-${Date.now()}.png`;
+      link.download = `postcard-hellonabiganj-${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
       showToast('পোস্টকার্ড ইমেজ সফলভাবে ডাউনলোড হয়েছে!');
@@ -184,10 +186,12 @@ export default function App() {
 
   const handleCopyToClipboard = async () => {
     if (!postcardRef.current) return;
+    setIsExporting(true);
     try {
       const blob = await toBlob(postcardRef.current, {
         cacheBust: true,
         pixelRatio: 2,
+        filter: exportFilter,
         style: {
           transform: 'none',
           margin: '0',
@@ -204,30 +208,201 @@ export default function App() {
     } catch (err) {
       console.error('Failed to copy', err);
       showToast('ক্লিপবোর্ডে কপি করা যায়নি, PNG ডাউনলোড করুন।');
+    } finally {
+      setIsExporting(false);
     }
   };
 
   const renderTemplate = () => {
     switch (selectedTemplate) {
-      case 'hello-nabiganj': {
-        const isCustomCta = ctaText !== 'বিস্তারিত ক্যাপশনে' && ctaText !== '';
-        const isCustomHandle = socialHandle !== 'hellonabiganj';
-        const isCustomBrand = (brandName1 !== 'HELLO' || brandName2 !== 'NABIGANJ' || brandTagline !== 'নবীগঞ্জের কণ্ঠ' || customLogo !== null);
+      case 'hello-probash': {
+        return (
+          <div 
+            className="postcard template-hello-probash" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              className="hp-photo-slot"
+              onClick={() => fileInputRef.current?.click()}
+              title="ছবি পরিবর্তন করতে ক্লিক করুন"
+            >
+              {thumbnail ? (
+                <img 
+                  src={thumbnail} 
+                  alt="News Main" 
+                  className="hp-photo"
+                  style={{
+                    transform: `scale(${imageZoom / 100})`
+                  }}
+                />
+              ) : (
+                <div className="hp-photo-empty">
+                  ছবি আপলোড করুন
+                </div>
+              )}
 
+              {/* Floating Camera Button on Photo (visible in preview, hidden in export) */}
+              <div className="hn-photo-edit-badge hide-on-export">
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/hello-probash-master.png" 
+              className="hp-master-overlay" 
+              alt="Hello Probash News Postcard Frame" 
+            />
+
+            {/* 3. Dynamic Headline Section - In-Place Editable */}
+            <div className="hn-headline-area">
+              {/* On-Card Floating Font Size Control Badge */}
+              <button 
+                type="button" 
+                className="hn-size-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFontSizePopup(prev => !prev);
+                }}
+                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
+              >
+                <Type size={12} color="#ffcb05" />
+                <span>সাইজ {headlineFontSize}px</span>
+              </button>
+
+              {/* In-Place Font Size Popup */}
+              {showFontSizePopup && (
+                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
+                  <div className="hn-size-popup-header">
+                    <span className="hn-size-popup-title">
+                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
+                    </span>
+                    <button 
+                      type="button" 
+                      className="hn-size-popup-close" 
+                      onClick={() => setShowFontSizePopup(false)}
+                      title="বন্ধ করুন"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="hn-size-popup-body">
+                    <div className="hn-size-popup-row">
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
+                        title="সাইজ ২px কমান"
+                      >
+                        -
+                      </button>
+                      <input 
+                        type="range" 
+                        min="20" 
+                        max="44" 
+                        value={headlineFontSize} 
+                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
+                        className="hn-popup-slider" 
+                      />
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
+                        title="সাইজ ২px বাড়ান"
+                      >
+                        +
+                      </button>
+                      <span className="hn-popup-badge-val">{headlineFontSize}px</span>
+                    </div>
+
+                    <div className="hn-size-presets">
+                      {[24, 28, 30, 34, 38].map(sz => (
+                        <button 
+                          key={sz} 
+                          type="button"
+                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
+                          onClick={() => setHeadlineFontSize(sz)}
+                        >
+                          {sz}px
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="hn-headline-item">
+                <h1 
+                  ref={headline1Ref}
+                  className="hn-headline-1 oncard-editable" 
+                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
+                >
+                  {headline1}
+                </h1>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
+              </div>
+
+              <div className="hn-headline-item">
+                <h2 
+                  ref={headline2Ref}
+                  className="hn-headline-2 oncard-editable" 
+                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
+                >
+                  {headline2}
+                </h2>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      case 'hello-nabiganj': {
         return (
           <div 
             className="postcard template-hello-nabiganj" 
             ref={postcardRef}
           >
-            {/* 1. Underlying Photo Container (zoomed/panned by user) */}
-            <div className="hn-photo-slot">
+            {/* 1. Underlying Photo Container */}
+            <div 
+              className="hn-photo-slot"
+              onClick={() => fileInputRef.current?.click()}
+              title="ছবি পরিবর্তন করতে ক্লিক করুন"
+            >
               {thumbnail ? (
                 <img 
                   src={thumbnail} 
                   alt="News Main" 
                   className="hn-photo"
                   style={{
-                    transform: `scale(${imageZoom / 100}) translate(${imageOffsetX}px, ${imageOffsetY}px)`
+                    transform: `scale(${imageZoom / 100})`
                   }}
                 />
               ) : (
@@ -235,73 +410,184 @@ export default function App() {
                   ছবি আপলোড করুন
                 </div>
               )}
+
+              {/* Floating Camera Button on Photo (visible in preview, hidden in export) */}
+              <div className="hn-photo-edit-badge hide-on-export">
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
             </div>
 
-            {/* 2. Master Template Overlay (authentic borders, sides, map, frame, emblem, CTA, footer) */}
+            {/* 2. Master Template Overlay (authentic borders, sides, map, frame, emblem, footer) */}
             <img 
               src="/postcard-master-template.png" 
               className="hn-master-overlay" 
               alt="Hello Nabiganj Postcard Frame" 
             />
 
-            {/* 3. Dynamic Headline Section */}
-            <div className="hn-headline-area">
-              <h1 
-                className="hn-headline-1" 
-                style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
-              >
-                {headline1}
-              </h1>
-              <h2 
-                className="hn-headline-2" 
-                style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
-              >
-                {headline2}
-              </h2>
-            </div>
-
-            {/* 4. Overlays only when user customizes beyond default reference */}
-            {customLogo && (
-              <div className="hn-custom-emblem">
-                <img src={customLogo} alt="Logo" />
-              </div>
-            )}
-
-            {isCustomBrand && !customLogo && (
-              <div className="hn-custom-brand-patch">
-                <div className="hn-brand-info">
-                  <div className="hn-brand-title">
-                    <span style={{ color: brandColor1 }}>{brandName1}</span>
-                    <span style={{ color: brandColor2 }}>{brandName2}</span>
-                  </div>
-                  <div className="hn-brand-tagline">{brandTagline}</div>
-                </div>
-              </div>
-            )}
-
-            {/* Top Date Box - Always rendered dynamically */}
+            {/* 3. Top Date Box - Dynamic + In-Place Editable */}
             <div className="hn-date-box">
-              <img src="/calendar-exact.svg" alt="Calendar" className="hn-calendar-icon" />
+              <img 
+                src="/calendar-exact.svg" 
+                alt="Calendar" 
+                className="hn-calendar-icon" 
+                onClick={() => setDate(getBengaliToday())}
+                title="আজকের তারিখ বসান"
+              />
               <span className="hn-date-separator">|</span>
-              <span className="hn-date-text">{date}</span>
+              <span 
+                ref={dateRef}
+                className="hn-date-text oncard-editable"
+                contentEditable={!isExporting}
+                suppressContentEditableWarning={true}
+                onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.currentTarget.blur();
+                  }
+                }}
+                title="ক্লিক করে তারিখ পরিবর্তন করুন"
+              >
+                {date}
+              </span>
+              <button 
+                type="button" 
+                className="hn-date-edit-btn hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDate(getBengaliToday());
+                }}
+                title="আজকের তারিখ বসান"
+              >
+                আজ
+              </button>
             </div>
 
-            {isCustomCta && (
-              <div className="hn-custom-cta-pill" style={{ backgroundColor: ctaBgColor }}>
-                {ctaText}
-              </div>
-            )}
+            {/* 4. Dynamic Headline Section - In-Place Editable */}
+            <div className="hn-headline-area">
+              {/* On-Card Floating Font Size Control Badge */}
+              <button 
+                type="button" 
+                className="hn-size-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFontSizePopup(prev => !prev);
+                }}
+                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
+              >
+                <Type size={12} color="#ffcb05" />
+                <span>সাইজ {headlineFontSize}px</span>
+              </button>
 
-            {isCustomHandle && (
-              <div className="hn-custom-footer-pill" style={{ backgroundColor: frameColor }}>
-                <div className="hn-footer-icons">
-                  <FacebookIcon />
-                  <InstagramIcon />
-                  <YoutubeIcon />
+              {/* In-Place Font Size Popup */}
+              {showFontSizePopup && (
+                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
+                  <div className="hn-size-popup-header">
+                    <span className="hn-size-popup-title">
+                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
+                    </span>
+                    <button 
+                      type="button" 
+                      className="hn-size-popup-close" 
+                      onClick={() => setShowFontSizePopup(false)}
+                      title="বন্ধ করুন"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="hn-size-popup-body">
+                    <div className="hn-size-popup-row">
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
+                        title="সাইজ ২px কমান"
+                      >
+                        -
+                      </button>
+                      <input 
+                        type="range" 
+                        min="20" 
+                        max="44" 
+                        value={headlineFontSize} 
+                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
+                        className="hn-popup-slider" 
+                      />
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
+                        title="সাইজ ২px বাড়ান"
+                      >
+                        +
+                      </button>
+                      <span className="hn-popup-badge-val">{headlineFontSize}px</span>
+                    </div>
+
+                    <div className="hn-size-presets">
+                      {[24, 28, 30, 34, 38].map(sz => (
+                        <button 
+                          key={sz} 
+                          type="button"
+                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
+                          onClick={() => setHeadlineFontSize(sz)}
+                        >
+                          {sz}px
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
-                <span className="hn-footer-handle">/ {socialHandle}</span>
+              )}
+
+              <div className="hn-headline-item">
+                <h1 
+                  ref={headline1Ref}
+                  className="hn-headline-1 oncard-editable" 
+                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
+                >
+                  {headline1}
+                </h1>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
               </div>
-            )}
+
+              <div className="hn-headline-item">
+                <h2 
+                  ref={headline2Ref}
+                  className="hn-headline-2 oncard-editable" 
+                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
+                >
+                  {headline2}
+                </h2>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
+              </div>
+            </div>
           </div>
         );
       }
@@ -509,160 +795,213 @@ export default function App() {
       {/* Top Navbar */}
       <nav className="navbar">
         <div className="navbar-brand">
-          <NabiganjLogo customLogo={customLogo} size={36} />
-          <div>
-            <span style={{ fontWeight: 800 }}>News Postcard</span>
-            <span style={{ fontSize: '0.8rem', color: '#666', marginLeft: '8px' }}>Hello Nabiganj & TV Template</span>
+          <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} size={28} />
+          <div className="navbar-brand-text">
+            <span className="navbar-title">News Postcard</span>
+            <span className="navbar-subtitle">
+              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : 'Hello Nabiganj'}
+            </span>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="navbar-actions">
           <button 
-            className="btn-secondary" 
-            onClick={handleResetToReference} 
-            title="রেফারেন্স পোস্টকার্ডে রিসেট করুন"
-          >
-            <RotateCcw size={16} />
-            রেফারেন্স রিসেট
-          </button>
-
-          <button 
-            className="btn-secondary" 
+            className="btn-secondary nav-action-btn" 
             onClick={handleCopyToClipboard}
             title="ছবি কপি করুন"
+            aria-label="কপি"
           >
-            <Copy size={16} />
-            কপি করুন
+            <Copy size={18} />
           </button>
 
           <button 
-            className="btn-primary" 
+            className="btn-primary nav-action-btn nav-download-btn" 
             onClick={() => handleDownload(2)}
             disabled={isExporting}
+            title={isExporting ? 'ডাউনলোড প্রস্তুত হচ্ছে...' : 'HD ডাউনলোড করুন'}
+            aria-label="HD ডাউনলোড"
           >
             <Download size={18} />
-            {isExporting ? 'তৈরি হচ্ছে...' : 'HD ডাউনলোড (PNG)'}
           </button>
         </div>
       </nav>
 
       <main className="main-content">
-        {/* Editor Controls Panel */}
+        {/* Editor Controls Panel - Unified Single Screen (No Tabs!) */}
         <section className="editor-panel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
             <h2 className="editor-title" style={{ borderBottom: 'none', paddingBottom: 0, margin: 0 }}>
               পোস্টকার্ড এডিটর
             </h2>
-            <span className="control-badge">লাইভ প্রিভিউ</span>
+            <div className="template-switcher">
+              <button 
+                type="button" 
+                className={`template-switch-btn ${selectedTemplate === 'hello-probash' ? 'active probash' : ''}`}
+                onClick={() => setSelectedTemplate('hello-probash')}
+                title="হ্যালো প্রবাস নিউজ পোস্টকার্ড"
+              >
+                🔴 হ্যালো প্রবাস
+              </button>
+              <button 
+                type="button" 
+                className={`template-switch-btn ${selectedTemplate === 'hello-nabiganj' ? 'active nabiganj' : ''}`}
+                onClick={() => setSelectedTemplate('hello-nabiganj')}
+                title="হ্যালো নবীগঞ্জ পোস্টকার্ড"
+              >
+                🟢 হ্যালো নবীগঞ্জ
+              </button>
+            </div>
           </div>
 
-          {/* Template Selector */}
-          <div className="form-group">
-            <label className="form-label">টেমপ্লেট সিলেক্ট করুন</label>
-            <select 
-              className="form-select"
-              value={selectedTemplate}
-              onChange={e => setSelectedTemplate(e.target.value as TemplateType)}
-            >
-              <option value="hello-nabiganj">⭐ Hello Nabiganj (অফিসিয়াল নিউজ পোস্টকার্ড)</option>
-              <option value="news-red">News Red (Sky Style)</option>
-              <option value="modern">Modern Dark</option>
-              <option value="breaking">Breaking News (ব্রেকিং)</option>
-              <option value="elegant">Elegant Light</option>
-              <option value="quote">Quote Card (উক্তি)</option>
-            </select>
+          {/* Quick Notice for in-place editing */}
+          <div className="direct-edit-notice">
+            <Sparkles size={16} color="#d97706" style={{ flexShrink: 0 }} />
+            <span>সরাসরি পোস্টকার্ডের ছবি, শিরোনাম বা তারিখে ট্যাপ করেও এডিট করতে পারবেন!</span>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="editor-tabs">
-            <button 
-              className={`editor-tab-btn ${activeTab === 'content' ? 'active' : ''}`}
-              onClick={() => setActiveTab('content')}
-            >
-              <Type size={16} />
-              টেক্সট
-            </button>
-            <button 
-              className={`editor-tab-btn ${activeTab === 'photo' ? 'active' : ''}`}
-              onClick={() => setActiveTab('photo')}
-            >
-              <ImageIcon size={16} />
-              ছবি ও পজিশন
-            </button>
-            <button 
-              className={`editor-tab-btn ${activeTab === 'brand' ? 'active' : ''}`}
-              onClick={() => setActiveTab('brand')}
-            >
-              <Palette size={16} />
-              ব্র্যান্ড ও কালার
-            </button>
-          </div>
+          {/* Hidden File Input for Image Upload */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            accept="image/*" 
+            onChange={handleImageUpload} 
+            style={{ display: 'none' }} 
+          />
 
-          {/* TAB 1: Content & Headlines */}
-          {activeTab === 'content' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="form-label">শিরোনাম ১ম লাইন (সাদা)</label>
-                  <input 
-                    type="color" 
-                    value={headline1Color} 
-                    onChange={e => setHeadline1Color(e.target.value)} 
-                    className="color-input-native"
-                    title="১ম লাইনের রং"
-                  />
+          {/* SECTION 1: News Main Photo & Zoom */}
+          <div className="editor-section-card">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Camera size={16} color="#e50914" />
+              খবরের মূল ছবি ও জুম
+            </label>
+
+            <div className="photo-action-row">
+              <button 
+                type="button" 
+                className="btn-upload-direct"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload size={16} />
+                <span>{thumbnail ? 'ছবি পরিবর্তন করুন' : 'নতুন ছবি আপলোড'}</span>
+              </button>
+
+              {thumbnail && (
+                <div 
+                  className="photo-mini-thumb" 
+                  onClick={() => fileInputRef.current?.click()} 
+                  title="ছবি পরিবর্তন করতে ক্লিক করুন"
+                >
+                  <img src={thumbnail} alt="Preview" />
+                  <span className="thumb-edit-overlay"><Camera size={12} /></span>
                 </div>
-                <textarea 
-                  className="form-textarea" 
-                  value={headline1} 
-                  onChange={e => setHeadline1(e.target.value)}
-                  placeholder="১ম লাইনের শিরোনাম..."
-                  rows={2}
-                />
+              )}
+            </div>
+
+            {/* Zoom Slider only (no x/y offsets) */}
+            <div className="slider-group" style={{ marginTop: '0.75rem' }}>
+              <div className="slider-header">
+                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ZoomIn size={14} /> ছবির জুম (Zoom)
+                </span>
+                <span style={{ fontWeight: 700, color: '#111827' }}>{imageZoom}%</span>
               </div>
-
-              <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="form-label">শিরোনাম ২য় লাইন (হলুদ)</label>
-                  <input 
-                    type="color" 
-                    value={headline2Color} 
-                    onChange={e => setHeadline2Color(e.target.value)} 
-                    className="color-input-native"
-                    title="২য় লাইনের রং"
-                  />
-                </div>
-                <textarea 
-                  className="form-textarea" 
-                  value={headline2} 
-                  onChange={e => setHeadline2(e.target.value)}
-                  placeholder="২য় লাইনের হাইলাইট শিরোনাম..."
-                  rows={2}
-                />
-              </div>
-
-              <div className="slider-group">
-                <div className="slider-header">
-                  <span>ফন্ট সাইজ</span>
-                  <span>{headlineFontSize}px</span>
-                </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button 
+                  type="button" 
+                  className="zoom-step-btn"
+                  onClick={() => setImageZoom(prev => Math.max(80, prev - 10))}
+                  title="জুম কমান"
+                >
+                  -
+                </button>
                 <input 
                   type="range" 
-                  min="22" 
-                  max="44" 
-                  value={headlineFontSize} 
-                  onChange={e => setHeadlineFontSize(Number(e.target.value))}
+                  min="80" 
+                  max="200" 
+                  value={imageZoom} 
+                  onChange={e => setImageZoom(Number(e.target.value))}
                   className="slider-input"
                 />
+                <button 
+                  type="button" 
+                  className="zoom-step-btn"
+                  onClick={() => setImageZoom(prev => Math.min(200, prev + 10))}
+                  title="জুম বাড়ান"
+                >
+                  +
+                </button>
+                {imageZoom !== 100 && (
+                  <button 
+                    type="button" 
+                    className="zoom-reset-btn"
+                    onClick={() => setImageZoom(100)}
+                    title="রিসেট ১০০%"
+                  >
+                    ১০০%
+                  </button>
+                )}
               </div>
+            </div>
+          </div>
 
+          {/* SECTION 2: Headlines */}
+          <div className="editor-section-card">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Type size={16} color="#e50914" />
+              খবরের শিরোনাম
+            </label>
+
+            <div className="form-group">
+              <label className="form-sublabel">শিরোনাম ১ম লাইন (সাদা)</label>
+              <textarea 
+                className="form-textarea" 
+                value={headline1} 
+                onChange={e => setHeadline1(e.target.value)}
+                placeholder="১ম লাইনের শিরোনাম..."
+                rows={2}
+              />
+            </div>
+
+            <div className="form-group" style={{ marginTop: '0.6rem' }}>
+              <label className="form-sublabel">শিরোনাম ২য় লাইন (হাইলাইট হলুদ)</label>
+              <textarea 
+                className="form-textarea" 
+                value={headline2} 
+                onChange={e => setHeadline2(e.target.value)}
+                placeholder="২য় লাইনের হাইলাইট শিরোনাম..."
+                rows={2}
+              />
+            </div>
+
+            {/* Font Size Slider */}
+            <div className="slider-group" style={{ marginTop: '0.6rem' }}>
+              <div className="slider-header">
+                <span>ফন্ট সাইজ</span>
+                <span style={{ fontWeight: 700, color: '#111827' }}>{headlineFontSize}px</span>
+              </div>
+              <input 
+                type="range" 
+                min="22" 
+                max="44" 
+                value={headlineFontSize} 
+                onChange={e => setHeadlineFontSize(Number(e.target.value))}
+                className="slider-input"
+              />
+            </div>
+          </div>
+
+          {/* SECTION 3: Date (Only for templates with date like hello-nabiganj) */}
+          {selectedTemplate === 'hello-nabiganj' && (
+            <div className="editor-section-card">
               <div className="form-group">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="form-label">তারিখ</label>
+                  <label className="form-sublabel" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <Calendar size={14} color="#e50914" /> তারিখ
+                  </label>
                   <button 
                     type="button" 
                     onClick={() => setDate(getBengaliToday())}
-                    style={{ fontSize: '0.75rem', color: '#d60000', fontWeight: 700 }}
+                    className="btn-today-text"
                   >
                     আজকের তারিখ বসান
                   </button>
@@ -674,267 +1013,22 @@ export default function App() {
                   onChange={e => setDate(e.target.value)}
                 />
               </div>
-
-              <div className="form-group">
-                <label className="form-label">বাটন টেক্সট (CTA)</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input 
-                    type="text" 
-                    className="form-input" 
-                    value={ctaText} 
-                    onChange={e => setCtaText(e.target.value)}
-                    placeholder="যেমন: বিস্তারিত ক্যাপশনে"
-                  />
-                  <input 
-                    type="color" 
-                    value={ctaBgColor} 
-                    onChange={e => setCtaBgColor(e.target.value)} 
-                    className="color-input-native"
-                    title="বাটন ব্যাকগ্রাউন্ড কালার"
-                  />
-                </div>
-              </div>
-
-              {selectedTemplate !== 'hello-nabiganj' && (
-                <>
-                  <div className="form-group">
-                    <label className="form-label">ক্যাটাগরি / ব্রেকিং ট্যাগ</label>
-                    <input 
-                      type="text" 
-                      className="form-input" 
-                      value={category} 
-                      onChange={e => setCategory(e.target.value)}
-                    />
-                  </div>
-                  {selectedTemplate === 'modern' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                      <div className="form-group">
-                        <label className="form-label">লাইক</label>
-                        <input type="text" className="form-input" value={likes} onChange={e => setLikes(e.target.value)} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">কমেন্ট</label>
-                        <input type="text" className="form-input" value={comments} onChange={e => setComments(e.target.value)} />
-                      </div>
-                      <div className="form-group">
-                        <label className="form-label">শেয়ার</label>
-                        <input type="text" className="form-input" value={shares} onChange={e => setShares(e.target.value)} />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-
-          {/* TAB 2: Photo & Position Controls */}
-          {activeTab === 'photo' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">খবরের মূল ছবি আপলোড করুন</label>
-                <div className="image-upload-wrapper">
-                  {thumbnail ? (
-                    <img src={thumbnail} className="image-upload-preview" alt="Preview" />
-                  ) : (
-                    <>
-                      <Upload size={28} style={{ marginBottom: '6px' }} />
-                      <span style={{ fontSize: '0.85rem' }}>ছবি ড্রপ করুন বা ব্রাউজ করুন</span>
-                    </>
-                  )}
-                  <input type="file" accept="image/*" onChange={handleImageUpload} />
-                </div>
-              </div>
-
-              <div className="slider-group">
-                <div className="slider-header">
-                  <span>জুম (Zoom)</span>
-                  <span>{imageZoom}%</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="80" 
-                  max="200" 
-                  value={imageZoom} 
-                  onChange={e => setImageZoom(Number(e.target.value))}
-                  className="slider-input"
-                />
-              </div>
-
-              <div className="slider-group">
-                <div className="slider-header">
-                  <span>উপরে-নিচে পজিশন (Y-Offset)</span>
-                  <span>{imageOffsetY}px</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="-150" 
-                  max="150" 
-                  value={imageOffsetY} 
-                  onChange={e => setImageOffsetY(Number(e.target.value))}
-                  className="slider-input"
-                />
-              </div>
-
-              <div className="slider-group">
-                <div className="slider-header">
-                  <span>ডানে-বামে পজিশন (X-Offset)</span>
-                  <span>{imageOffsetX}px</span>
-                </div>
-                <input 
-                  type="range" 
-                  min="-150" 
-                  max="150" 
-                  value={imageOffsetX} 
-                  onChange={e => setImageOffsetX(Number(e.target.value))}
-                  className="slider-input"
-                />
-              </div>
-
-              <button 
-                className="btn-secondary" 
-                style={{ width: '100%', justifyContent: 'center' }}
-                onClick={() => { setImageZoom(100); setImageOffsetY(0); setImageOffsetX(0); }}
-              >
-                ছবি রিসেট (Center & Normal)
-              </button>
-            </div>
-          )}
-
-          {/* TAB 3: Branding & Colors */}
-          {activeTab === 'brand' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div className="form-group">
-                <label className="form-label">চ্যানেল / পেইজ নাম</label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: '#666' }}>অংশ ১ (লাল)</span>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                      <input 
-                        type="text" 
-                        className="form-input" 
-                        value={brandName1} 
-                        onChange={e => setBrandName1(e.target.value)}
-                      />
-                      <input 
-                        type="color" 
-                        value={brandColor1} 
-                        onChange={e => setBrandColor1(e.target.value)} 
-                        className="color-input-native"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <span style={{ fontSize: '0.75rem', color: '#666' }}>অংশ ২ (সবুজ)</span>
-                    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                      <input 
-                        type="text" 
-                        className="form-input" 
-                        value={brandName2} 
-                        onChange={e => setBrandName2(e.target.value)}
-                      />
-                      <input 
-                        type="color" 
-                        value={brandColor2} 
-                        onChange={e => setBrandColor2(e.target.value)} 
-                        className="color-input-native"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">ট্যাগলাইন (Tagline)</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={brandTagline} 
-                  onChange={e => setBrandTagline(e.target.value)}
-                  placeholder="যেমন: নবীগঞ্জের কণ্ঠ"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">সোশ্যাল হ্যান্ডেল (Facebook/Insta/YT)</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={socialHandle} 
-                  onChange={e => setSocialHandle(e.target.value)}
-                  placeholder="hellonabiganj"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">কাস্টম লোগো আপলোড (অপশনাল)</label>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ fontSize: '0.85rem' }} />
-                  {customLogo && (
-                    <button 
-                      type="button" 
-                      onClick={() => setCustomLogo(null)}
-                      style={{ fontSize: '0.75rem', color: '#d60000', whiteSpace: 'nowrap' }}
-                    >
-                      ভেক্টর লোগো ফিরিয়ে আনুন
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div className="form-group">
-                  <label className="form-label">বর্ডার ফ্রেম কালার</label>
-                  <div className="color-picker-box">
-                    <input 
-                      type="color" 
-                      value={frameColor} 
-                      onChange={e => setFrameColor(e.target.value)} 
-                      className="color-input-native"
-                    />
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{frameColor}</span>
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">নিচের ব্যাকগ্রাউন্ড কালার</label>
-                  <div className="color-picker-box">
-                    <input 
-                      type="color" 
-                      value={cardBgColor} 
-                      onChange={e => setCardBgColor(e.target.value)} 
-                      className="color-input-native"
-                    />
-                    <span style={{ fontSize: '0.8rem', fontWeight: 600 }}>{cardBgColor}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', gap: '8px' }}>
-                <input 
-                  type="checkbox" 
-                  id="worldMapCheck"
-                  checked={showWorldMap} 
-                  onChange={e => setShowWorldMap(e.target.checked)}
-                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                />
-                <label htmlFor="worldMapCheck" style={{ fontSize: '0.9rem', cursor: 'pointer', fontWeight: 600 }}>
-                  ওয়ার্ল্ড ম্যাপ টেক্সচার প্রদর্শন করুন
-                </label>
-              </div>
             </div>
           )}
 
           {/* Quick Resolution Export Buttons */}
-          <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#666' }}>এক্সপোর্ট সাইজ:</span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <div className="export-actions-card">
+            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '8px' }}>
+              পোস্টকার্ড ডাউনলোড করুন:
+            </span>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <button 
                 className="btn-secondary" 
                 style={{ justifyContent: 'center' }}
                 onClick={() => handleDownload(1.35)}
                 disabled={isExporting}
               >
-                1080p (FB/Insta)
+                <Download size={16} /> 1080p HD
               </button>
               <button 
                 className="btn-primary" 
@@ -942,7 +1036,7 @@ export default function App() {
                 onClick={() => handleDownload(2)}
                 disabled={isExporting}
               >
-                1600p (Ultra HD)
+                <Download size={16} /> 1600p Ultra HD
               </button>
             </div>
           </div>
@@ -950,23 +1044,72 @@ export default function App() {
 
         {/* Live Preview Area */}
         <section className="preview-area">
-          <div className="action-bar-top">
-            <span style={{ fontSize: '0.95rem', fontWeight: 700, color: '#374151' }}>
-              পোস্টকার্ড প্রিভিউ (1:1 Square)
-            </span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button className="btn-secondary" onClick={handleResetToReference} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-                <RotateCcw size={14} /> রেফারেন্স
-              </button>
-              <button className="btn-secondary" onClick={handleCopyToClipboard} style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}>
-                <Copy size={14} /> কপি
-              </button>
+          <div className="preview-container-wrapper" ref={previewContainerRef}>
+            <div 
+              className="preview-scaler"
+              style={{
+                width: `${Math.round(800 * previewScale)}px`,
+                height: `${Math.round(800 * previewScale)}px`,
+                position: 'relative',
+                overflow: 'hidden',
+                margin: '0 auto',
+                borderRadius: '8px',
+                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)'
+              }}
+            >
+              <div 
+                style={{
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: 'top left',
+                  width: '800px',
+                  height: '800px',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0
+                }}
+              >
+                {renderTemplate()}
+              </div>
             </div>
-          </div>
 
-          <div className="preview-container-wrapper">
-            <div className="preview-scale-wrapper">
-              {renderTemplate()}
+            {/* Quick Font Size Bar right under the postcard preview */}
+            <div className="postcard-quick-bar hide-on-export">
+              <span className="quick-bar-label">
+                <Type size={14} color="#e50914" /> টেক্সট সাইজ:
+              </span>
+              <div className="quick-bar-controls">
+                <button 
+                  type="button" 
+                  className="quick-step-btn" 
+                  onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
+                  title="সাইজ ২px কমান"
+                >
+                  -
+                </button>
+                <input 
+                  type="range" 
+                  min="20" 
+                  max="44" 
+                  value={headlineFontSize} 
+                  onChange={e => setHeadlineFontSize(Number(e.target.value))} 
+                  className="quick-slider"
+                />
+                <button 
+                  type="button" 
+                  className="quick-step-btn" 
+                  onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
+                  title="সাইজ ২px বাড়ান"
+                >
+                  +
+                </button>
+                <span 
+                  className="quick-val-pill"
+                  onClick={() => setShowFontSizePopup(prev => !prev)}
+                  title="পপআপ খুলতে ক্লিক করুন"
+                >
+                  {headlineFontSize}px
+                </span>
+              </div>
             </div>
           </div>
         </section>
