@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { toPng, toBlob } from 'html-to-image';
 import { 
-  Download, Upload, Globe, ChevronDown, Quote, 
-  Copy, Check, Type, Camera, Pencil, Calendar,
-  ZoomIn, Sparkles,
+  Download, Globe, ChevronDown, Quote, 
+  Copy, Check, Type, Camera, Pencil,
+  ZoomIn,
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
@@ -66,8 +66,8 @@ export default function App() {
   const frameColor = '#fe0312';
   const socialHandle = 'hellonabiganj';
   const customLogo = null;
-  const imageOffsetX = 0;
-  const imageOffsetY = 0;
+  const [imageOffsetX, setImageOffsetX] = useState(0);
+  const [imageOffsetY, setImageOffsetY] = useState(0);
 
   // UI state
   const [isExporting, setIsExporting] = useState(false);
@@ -76,6 +76,7 @@ export default function App() {
   // Refs for in-place direct editing and file picker
   const postcardRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const photoSlotRef = useRef<HTMLDivElement>(null);
   const headline1Ref = useRef<HTMLHeadingElement>(null);
   const headline2Ref = useRef<HTMLHeadingElement>(null);
   const dateRef = useRef<HTMLSpanElement>(null);
@@ -129,6 +130,162 @@ export default function App() {
     }
   }, [date]);
 
+  // Gestures for 2-finger pinch zoom and swipe/drag image pan
+  const gestureRef = useRef({
+    isDragging: false,
+    isPinching: false,
+    startX: 0,
+    startY: 0,
+    startOffsetX: 0,
+    startOffsetY: 0,
+    startDist: 0,
+    startZoom: 100,
+    midX: 0,
+    midY: 0,
+    hasMoved: false
+  });
+
+  const imageStateRef = useRef({
+    zoom: imageZoom,
+    offsetX: imageOffsetX,
+    offsetY: imageOffsetY,
+    scale: previewScale
+  });
+  imageStateRef.current = {
+    zoom: imageZoom,
+    offsetX: imageOffsetX,
+    offsetY: imageOffsetY,
+    scale: previewScale
+  };
+
+  useEffect(() => {
+    const el = photoSlotRef.current;
+    if (!el) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      if ((e.target as HTMLElement).closest('.hn-photo-edit-badge')) return;
+
+      if (e.touches.length === 1) {
+        const t = e.touches[0];
+        gestureRef.current = {
+          isDragging: true,
+          isPinching: false,
+          startX: t.clientX,
+          startY: t.clientY,
+          startOffsetX: imageStateRef.current.offsetX,
+          startOffsetY: imageStateRef.current.offsetY,
+          startDist: 0,
+          startZoom: imageStateRef.current.zoom,
+          midX: 0,
+          midY: 0,
+          hasMoved: false
+        };
+      } else if (e.touches.length >= 2) {
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+        gestureRef.current = {
+          isDragging: false,
+          isPinching: true,
+          startX: 0,
+          startY: 0,
+          startOffsetX: imageStateRef.current.offsetX,
+          startOffsetY: imageStateRef.current.offsetY,
+          startDist: dist,
+          startZoom: imageStateRef.current.zoom,
+          midX: (t1.clientX + t2.clientX) / 2,
+          midY: (t1.clientY + t2.clientY) / 2,
+          hasMoved: false
+        };
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const g = gestureRef.current;
+      const curScale = imageStateRef.current.scale || 1;
+
+      if (e.touches.length >= 2 && g.isPinching) {
+        if (e.cancelable) e.preventDefault();
+        const t1 = e.touches[0];
+        const t2 = e.touches[1];
+        const currentDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+
+        if (g.startDist > 0) {
+          const factor = currentDist / g.startDist;
+          const nextZoom = Math.min(250, Math.max(50, Math.round(g.startZoom * factor)));
+          setImageZoom(nextZoom);
+        }
+
+        const curMidX = (t1.clientX + t2.clientX) / 2;
+        const curMidY = (t1.clientY + t2.clientY) / 2;
+        const dx = (curMidX - g.midX) / curScale;
+        const dy = (curMidY - g.midY) / curScale;
+        if (Math.hypot(dx, dy) > 3) g.hasMoved = true;
+        setImageOffsetX(Math.round(g.startOffsetX + dx));
+        setImageOffsetY(Math.round(g.startOffsetY + dy));
+      } else if (e.touches.length === 1 && g.isDragging) {
+        const t = e.touches[0];
+        const dx = (t.clientX - g.startX) / curScale;
+        const dy = (t.clientY - g.startY) / curScale;
+        if (Math.hypot(dx, dy) > 3) {
+          g.hasMoved = true;
+          if (e.cancelable) e.preventDefault();
+        }
+        setImageOffsetX(Math.round(g.startOffsetX + dx));
+        setImageOffsetY(Math.round(g.startOffsetY + dy));
+      }
+    };
+
+    const onTouchEnd = () => {
+      gestureRef.current.isDragging = false;
+      gestureRef.current.isPinching = false;
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      if (e.cancelable) e.preventDefault();
+      const step = e.deltaY < 0 ? 5 : -5;
+      setImageZoom(prev => Math.min(250, Math.max(50, prev + step)));
+    };
+
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    el.addEventListener('touchmove', onTouchMove, { passive: false });
+    el.addEventListener('touchend', onTouchEnd, { passive: true });
+    el.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => {
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove', onTouchMove);
+      el.removeEventListener('touchend', onTouchEnd);
+      el.removeEventListener('wheel', onWheel);
+    };
+  }, [selectedTemplate]);
+
+  // Desktop mouse drag to pan image
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest('.hn-photo-edit-badge')) return;
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const startOffsetX = imageOffsetX;
+    const startOffsetY = imageOffsetY;
+    const curScale = previewScale || 1;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const dx = (moveEvent.clientX - startX) / curScale;
+      const dy = (moveEvent.clientY - startY) / curScale;
+      setImageOffsetX(Math.round(startOffsetX + dx));
+      setImageOffsetY(Math.round(startOffsetY + dy));
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
@@ -141,6 +298,8 @@ export default function App() {
       reader.onload = () => {
         setThumbnail(reader.result as string);
         setImageZoom(100);
+        setImageOffsetX(0);
+        setImageOffsetY(0);
       };
       reader.readAsDataURL(file);
     }
@@ -223,9 +382,10 @@ export default function App() {
           >
             {/* 1. Underlying Photo Container */}
             <div 
+              ref={photoSlotRef}
               className="hp-photo-slot"
-              onClick={() => fileInputRef.current?.click()}
-              title="ছবি পরিবর্তন করতে ক্লিক করুন"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
             >
               {thumbnail ? (
                 <img 
@@ -233,17 +393,29 @@ export default function App() {
                   alt="News Main" 
                   className="hp-photo"
                   style={{
-                    transform: `scale(${imageZoom / 100})`
+                    transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                    transformOrigin: 'center center'
                   }}
+                  draggable={false}
                 />
               ) : (
-                <div className="hp-photo-empty">
+                <div 
+                  className="hp-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
                   ছবি আপলোড করুন
                 </div>
               )}
 
               {/* Floating Camera Button on Photo (visible in preview, hidden in export) */}
-              <div className="hn-photo-edit-badge hide-on-export">
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
                 <Camera size={14} />
                 <span>ছবি পরিবর্তন</span>
               </div>
@@ -269,7 +441,7 @@ export default function App() {
                 title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
               >
                 <Type size={12} color="#ffcb05" />
-                <span>সাইজ {headlineFontSize}px</span>
+                <span>সাইজ {headlineFontSize}</span>
               </button>
 
               {/* In-Place Font Size Popup */}
@@ -392,9 +564,10 @@ export default function App() {
           >
             {/* 1. Underlying Photo Container */}
             <div 
+              ref={photoSlotRef}
               className="hn-photo-slot"
-              onClick={() => fileInputRef.current?.click()}
-              title="ছবি পরিবর্তন করতে ক্লিক করুন"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
             >
               {thumbnail ? (
                 <img 
@@ -402,17 +575,29 @@ export default function App() {
                   alt="News Main" 
                   className="hn-photo"
                   style={{
-                    transform: `scale(${imageZoom / 100})`
+                    transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                    transformOrigin: 'center center'
                   }}
+                  draggable={false}
                 />
               ) : (
-                <div className="hn-photo-empty">
+                <div 
+                  className="hn-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
                   ছবি আপলোড করুন
                 </div>
               )}
 
               {/* Floating Camera Button on Photo (visible in preview, hidden in export) */}
-              <div className="hn-photo-edit-badge hide-on-export">
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
                 <Camera size={14} />
                 <span>ছবি পরিবর্তন</span>
               </div>
@@ -477,7 +662,7 @@ export default function App() {
                 title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
               >
                 <Type size={12} color="#ffcb05" />
-                <span>সাইজ {headlineFontSize}px</span>
+                <span>সাইজ {headlineFontSize}</span>
               </button>
 
               {/* In-Place Font Size Popup */}
@@ -853,12 +1038,6 @@ export default function App() {
             </div>
           </div>
 
-          {/* Quick Notice for in-place editing */}
-          <div className="direct-edit-notice">
-            <Sparkles size={16} color="#d97706" style={{ flexShrink: 0 }} />
-            <span>সরাসরি পোস্টকার্ডের ছবি, শিরোনাম বা তারিখে ট্যাপ করেও এডিট করতে পারবেন!</span>
-          </div>
-
           {/* Hidden File Input for Image Upload */}
           <input 
             type="file" 
@@ -868,37 +1047,7 @@ export default function App() {
             style={{ display: 'none' }} 
           />
 
-          {/* SECTION 1: News Main Photo */}
-          <div className="editor-section-card">
-            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Camera size={16} color="#e50914" />
-              খবরের মূল ছবি
-            </label>
-
-            <div className="photo-action-row">
-              <button 
-                type="button" 
-                className="btn-upload-direct"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload size={16} />
-                <span>{thumbnail ? 'ছবি পরিবর্তন করুন' : 'নতুন ছবি আপলোড'}</span>
-              </button>
-
-              {thumbnail && (
-                <div 
-                  className="photo-mini-thumb" 
-                  onClick={() => fileInputRef.current?.click()} 
-                  title="ছবি পরিবর্তন করতে ক্লিক করুন"
-                >
-                  <img src={thumbnail} alt="Preview" />
-                  <span className="thumb-edit-overlay"><Camera size={12} /></span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* SECTION 2: Headlines */}
+          {/* SECTION: Headlines */}
           <div className="editor-section-card">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Type size={16} color="#e50914" />
@@ -927,32 +1076,6 @@ export default function App() {
               />
             </div>
           </div>
-
-          {/* SECTION 3: Date (Only for templates with date like hello-nabiganj) */}
-          {selectedTemplate === 'hello-nabiganj' && (
-            <div className="editor-section-card">
-              <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <label className="form-sublabel" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Calendar size={14} color="#e50914" /> তারিখ
-                  </label>
-                  <button 
-                    type="button" 
-                    onClick={() => setDate(getBengaliToday())}
-                    className="btn-today-text"
-                  >
-                    আজকের তারিখ বসান
-                  </button>
-                </div>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={date} 
-                  onChange={e => setDate(e.target.value)}
-                />
-              </div>
-            </div>
-          )}
 
           {/* Quick Resolution Export Buttons */}
           <div className="export-actions-card">
@@ -1015,14 +1138,14 @@ export default function App() {
               {/* Row 1: Text Size */}
               <div className="quick-bar-row">
                 <span className="quick-bar-label">
-                  <Type size={14} color="#e50914" /> টেক্সট সাইজ:
+                  <Type size={13} color="#e50914" /> টেক্সট:
                 </span>
                 <div className="quick-bar-controls">
                   <button 
                     type="button" 
                     className="quick-step-btn" 
                     onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                    title="সাইজ ২px কমান"
+                    title="সাইজ ২ কমান"
                   >
                     -
                   </button>
@@ -1038,16 +1161,16 @@ export default function App() {
                     type="button" 
                     className="quick-step-btn" 
                     onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                    title="সাইজ ২px বাড়ান"
+                    title="সাইজ ২ বাড়ান"
                   >
                     +
                   </button>
                   <span 
                     className="quick-val-pill"
                     onClick={() => setShowFontSizePopup(prev => !prev)}
-                    title="পপআপ খুলতে ক্লিক করুন"
+                    title="ফন্ট সাইজ পপআপ"
                   >
-                    {headlineFontSize}px
+                    {headlineFontSize}
                   </span>
                 </div>
               </div>
@@ -1055,21 +1178,21 @@ export default function App() {
               {/* Row 2: Image Zoom */}
               <div className="quick-bar-row">
                 <span className="quick-bar-label">
-                  <ZoomIn size={14} color="#e50914" /> ছবির জুম:
+                  <ZoomIn size={13} color="#e50914" /> জুম:
                 </span>
                 <div className="quick-bar-controls">
                   <button 
                     type="button" 
                     className="quick-step-btn" 
-                    onClick={() => setImageZoom(prev => Math.max(80, prev - 10))}
-                    title="জুম ১০% কমান"
+                    onClick={() => setImageZoom(prev => Math.max(50, prev - 10))}
+                    title="জুম কমান"
                   >
                     -
                   </button>
                   <input 
                     type="range" 
-                    min="80" 
-                    max="200" 
+                    min="50" 
+                    max="220" 
                     value={imageZoom} 
                     onChange={e => setImageZoom(Number(e.target.value))} 
                     className="quick-slider"
@@ -1077,15 +1200,19 @@ export default function App() {
                   <button 
                     type="button" 
                     className="quick-step-btn" 
-                    onClick={() => setImageZoom(prev => Math.min(200, prev + 10))}
-                    title="জুম ১০% বাড়ান"
+                    onClick={() => setImageZoom(prev => Math.min(220, prev + 10))}
+                    title="জুম বাড়ান"
                   >
                     +
                   </button>
                   <span 
                     className="quick-val-pill"
-                    onClick={() => setImageZoom(100)}
-                    title="ক্লিক করে ১০০% রিসেট করুন"
+                    onClick={() => {
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="ক্লিক করে ১০০% ও পজিশন রিসেট করুন"
                   >
                     {imageZoom}%
                   </span>

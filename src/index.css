@@ -434,15 +434,15 @@ button {
 /* Quick Controls Bar (Font Size & Image Zoom) right under the Postcard */
 .postcard-quick-bar {
   width: 100%;
-  max-width: 500px;
+  max-width: 440px;
   background-color: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 10px 14px;
+  border-radius: 10px;
+  padding: 6px 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   box-sizing: border-box;
 }
 
@@ -450,49 +450,52 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
 }
 
 .quick-bar-row + .quick-bar-row {
-  padding-top: 8px;
-  border-top: 1px dashed #e5e7eb;
+  padding-top: 5px;
+  border-top: 1px dashed #f0f0f0;
 }
 
 .quick-bar-label {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.85rem;
+  gap: 4px;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #1f2937;
+  color: #374151;
   white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 52px;
 }
 
 .quick-bar-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
-  max-width: 320px;
   justify-content: flex-end;
 }
 
 .quick-step-btn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 6px;
   border: 1px solid #d1d5db;
   background-color: #f9fafb;
   color: #111827;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.15s;
+  padding: 0;
 }
 
 .quick-step-btn:hover {
@@ -505,21 +508,23 @@ button {
   flex: 1;
   accent-color: #fe0312;
   cursor: pointer;
-  height: 6px;
-  min-width: 60px;
+  height: 5px;
+  min-width: 45px;
 }
 
 .quick-val-pill {
-  font-size: 0.8rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #dc2626;
   background-color: #fee2e2;
-  padding: 3px 8px;
-  border-radius: 6px;
+  padding: 2px 6px;
+  border-radius: 5px;
   white-space: nowrap;
   border: 1px solid #fca5a5;
   cursor: pointer;
   flex-shrink: 0;
+  min-width: 30px;
+  text-align: center;
 }
 
 /* Postcard Design Base */
@@ -1074,7 +1079,13 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-hello-probash .hp-photo-slot:active {
+  cursor: grabbing;
 }
 
 .template-hello-probash .hp-photo {
@@ -1082,7 +1093,10 @@ button {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.1s ease-out;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
 }
 
 .template-hello-probash .hp-photo-empty {
@@ -1134,14 +1148,23 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-hello-nabiganj .hn-photo-slot:active {
+  cursor: grabbing;
 }
 
 .template-hello-nabiganj .hn-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.05s ease-out;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
 }
 
 .template-hello-nabiganj .hn-photo-empty {
