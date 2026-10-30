@@ -527,6 +527,57 @@ button {
   text-align: center;
 }
 
+.quick-fit-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.quick-fit-btn {
+  padding: 3px 9px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.quick-fit-btn:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.quick-fit-btn.active {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #dc2626;
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.2);
+}
+
+.photo-blur-backdrop {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  object-fit: cover;
+  filter: blur(18px) brightness(0.65);
+  transform: scale(1.15);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
 /* Postcard Design Base */
 .postcard {
   width: 800px;
@@ -1089,9 +1140,10 @@ button {
 }
 
 .template-hello-probash .hp-photo {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   display: block;
   pointer-events: none;
   user-select: none;
@@ -1158,9 +1210,10 @@ button {
 }
 
 .template-hello-nabiganj .hn-photo {
+  position: relative;
+  z-index: 2;
   width: 100%;
   height: 100%;
-  object-fit: cover;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;

@@ -54,6 +54,7 @@ export default function App() {
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
   const [imageZoom, setImageZoom] = useState(100);
+  const [imageFitMode, setImageFitMode] = useState<'cover' | 'contain'>('contain');
 
   // Legacy template constants
   const category = 'আন্তর্জাতিক';
@@ -300,6 +301,7 @@ export default function App() {
         setImageZoom(100);
         setImageOffsetX(0);
         setImageOffsetY(0);
+        setImageFitMode('contain');
       };
       reader.readAsDataURL(file);
     }
@@ -388,16 +390,27 @@ export default function App() {
               title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
             >
               {thumbnail ? (
-                <img 
-                  src={thumbnail} 
-                  alt="News Main" 
-                  className="hp-photo"
-                  style={{
-                    transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
-                    transformOrigin: 'center center'
-                  }}
-                  draggable={false}
-                />
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="hp-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
               ) : (
                 <div 
                   className="hp-photo-empty"
@@ -570,16 +583,27 @@ export default function App() {
               title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
             >
               {thumbnail ? (
-                <img 
-                  src={thumbnail} 
-                  alt="News Main" 
-                  className="hn-photo"
-                  style={{
-                    transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
-                    transformOrigin: 'center center'
-                  }}
-                  draggable={false}
-                />
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="hn-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
               ) : (
                 <div 
                   className="hn-photo-empty"
@@ -1184,14 +1208,14 @@ export default function App() {
                   <button 
                     type="button" 
                     className="quick-step-btn" 
-                    onClick={() => setImageZoom(prev => Math.max(50, prev - 10))}
+                    onClick={() => setImageZoom(prev => Math.max(30, prev - 10))}
                     title="জুম কমান"
                   >
                     -
                   </button>
                   <input 
                     type="range" 
-                    min="50" 
+                    min="30" 
                     max="220" 
                     value={imageZoom} 
                     onChange={e => setImageZoom(Number(e.target.value))} 
@@ -1216,6 +1240,41 @@ export default function App() {
                   >
                     {imageZoom}%
                   </span>
+                </div>
+              </div>
+
+              {/* Row 3: Fit Mode Toggle (সম্পূর্ণ ছবি vs ফ্রেম ফিল) */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  ভিউ:
+                </span>
+                <div className="quick-fit-toggle">
+                  <button 
+                    type="button"
+                    className={`quick-fit-btn ${imageFitMode === 'contain' ? 'active' : ''}`}
+                    onClick={() => {
+                      setImageFitMode('contain');
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="সম্পূর্ণ ছবি দেখান (কোনো অংশ কাটবে না)"
+                  >
+                    🖼️ সম্পূর্ণ ছবি
+                  </button>
+                  <button 
+                    type="button"
+                    className={`quick-fit-btn ${imageFitMode === 'cover' ? 'active' : ''}`}
+                    onClick={() => {
+                      setImageFitMode('cover');
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="ফ্রেম পূরণ করুন"
+                  >
+                    ✂️ ফ্রেম ফিল
+                  </button>
                 </div>
               </div>
             </div>
