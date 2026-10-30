@@ -210,7 +210,6 @@ export default function App() {
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case 'hello-nabiganj': {
-        const isCustomDate = date !== '২৯ অক্টোবর ২০২৬';
         const isCustomCta = ctaText !== 'বিস্তারিত ক্যাপশনে' && ctaText !== '';
         const isCustomHandle = socialHandle !== 'hellonabiganj';
         const isCustomBrand = (brandName1 !== 'HELLO' || brandName2 !== 'NABIGANJ' || brandTagline !== 'নবীগঞ্জের কণ্ঠ' || customLogo !== null);
@@ -280,13 +279,12 @@ export default function App() {
               </div>
             )}
 
-            {isCustomDate && (
-              <div className="hn-custom-date-patch">
-                <img src="/calendar-exact.png" alt="Calendar" />
-                <span className="separator">|</span>
-                <span>{date}</span>
-              </div>
-            )}
+            {/* Top Date Box - Always rendered dynamically */}
+            <div className="hn-date-box">
+              <img src="/calendar-exact.svg" alt="Calendar" className="hn-calendar-icon" />
+              <span className="hn-date-separator">|</span>
+              <span className="hn-date-text">{date}</span>
+            </div>
 
             {isCustomCta && (
               <div className="hn-custom-cta-pill" style={{ backgroundColor: ctaBgColor }}>

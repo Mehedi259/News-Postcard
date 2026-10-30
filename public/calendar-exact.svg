@@ -1,0 +1,28 @@
+<svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Calendar outer red body -->
+  <rect x="3" y="5" width="30" height="28" rx="5" fill="#e50914"/>
+  <!-- Two top binder loops -->
+  <rect x="8" y="1" width="3.5" height="7" rx="1.75" fill="#e50914" stroke="#ffffff" stroke-width="1.2"/>
+  <rect x="24.5" y="1" width="3.5" height="7" rx="1.75" fill="#e50914" stroke="#ffffff" stroke-width="1.2"/>
+  <!-- White inner sheet -->
+  <rect x="5.5" y="12" width="25" height="18.5" rx="2.5" fill="#ffffff"/>
+  <!-- 3 rows x 5 columns red square dots -->
+  <!-- Row 1 -->
+  <rect x="7.8" y="14.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="12.7" y="14.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="17.6" y="14.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="22.5" y="14.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="27.4" y="14.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <!-- Row 2 -->
+  <rect x="7.8" y="19" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="12.7" y="19" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="17.6" y="19" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="22.5" y="19" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="27.4" y="19" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <!-- Row 3 -->
+  <rect x="7.8" y="23.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="12.7" y="23.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="17.6" y="23.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="22.5" y="23.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+  <rect x="27.4" y="23.5" width="2.8" height="2.8" rx="0.6" fill="#e50914"/>
+</svg>

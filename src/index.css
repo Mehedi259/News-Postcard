@@ -860,33 +860,40 @@ button {
   object-fit: contain;
 }
 
-.template-hello-nabiganj .hn-custom-date-patch {
+.template-hello-nabiganj .hn-date-box {
   position: absolute;
-  top: 25px;
-  right: 35px;
-  height: 38px;
-  background-color: #ffffff;
-  padding: 0 8px;
+  top: 36px;
+  right: 42px;
+  height: 36px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   font-family: 'Noto Serif Bengali', serif;
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
   color: #111111;
-  z-index: 15;
+  z-index: 20;
+  white-space: nowrap;
+  user-select: none;
 }
 
-.template-hello-nabiganj .hn-custom-date-patch img {
-  width: 22px;
-  height: 22px;
+.template-hello-nabiganj .hn-date-box .hn-calendar-icon {
+  width: 25px;
+  height: 25px;
   object-fit: contain;
+  display: block;
 }
 
-.template-hello-nabiganj .hn-custom-date-patch .separator {
-  color: #555;
+.template-hello-nabiganj .hn-date-box .hn-date-separator {
+  color: #444444;
   font-weight: 300;
-  font-size: 18px;
+  font-size: 19px;
+  margin: 0 1px;
+}
+
+.template-hello-nabiganj .hn-date-box .hn-date-text {
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .template-hello-nabiganj .hn-custom-cta-pill {
