@@ -744,3 +744,329 @@ button {
   height: 30px;
   filter: brightness(0) invert(1);
 }
+
+/* ====================================================
+   HELLO NABIGANJ - 100% Pixel-Perfect News Postcard
+==================================================== */
+.template-hello-nabiganj {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  user-select: none;
+}
+
+/* 1. Underlying Photo Container */
+.template-hello-nabiganj .hn-photo-slot {
+  position: absolute;
+  left: 40px;
+  top: 110px;
+  width: 720px;
+  height: 344px;
+  border-radius: 16px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-hello-nabiganj .hn-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.05s ease-out;
+}
+
+.template-hello-nabiganj .hn-photo-empty {
+  color: #777;
+  font-size: 1.5rem;
+  font-family: 'Noto Serif Bengali', serif;
+  font-weight: 600;
+}
+
+/* 2. Master Template Overlay */
+.template-hello-nabiganj .hn-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 800px;
+  pointer-events: none;
+  z-index: 10;
+  display: block;
+}
+
+/* 3. Dynamic Headline Section */
+.template-hello-nabiganj .hn-headline-area {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 526px;
+  z-index: 20;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.template-hello-nabiganj .hn-headline-1 {
+  font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 6px 0;
+  padding: 0 8px;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.template-hello-nabiganj .hn-headline-2 {
+  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  letter-spacing: -0.6px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.9);
+  white-space: nowrap;
+}
+
+/* 4. Overlays when customized */
+.template-hello-nabiganj .hn-custom-emblem {
+  position: absolute;
+  left: calc(50% - 50px);
+  top: 418px;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 4px solid #fe0312;
+  background-color: #ffffff;
+  overflow: hidden;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.template-hello-nabiganj .hn-custom-emblem img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+}
+
+.template-hello-nabiganj .hn-custom-date-patch {
+  position: absolute;
+  top: 25px;
+  right: 35px;
+  height: 38px;
+  background-color: #ffffff;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111111;
+  z-index: 15;
+}
+
+.template-hello-nabiganj .hn-custom-date-patch img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.template-hello-nabiganj .hn-custom-date-patch .separator {
+  color: #555;
+  font-weight: 300;
+  font-size: 18px;
+}
+
+.template-hello-nabiganj .hn-custom-cta-pill {
+  position: absolute;
+  bottom: 95px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffcb05;
+  color: #000000;
+  font-family: 'Noto Serif Bengali', serif;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 6px 26px;
+  border-radius: 10px;
+  z-index: 15;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  white-space: nowrap;
+}
+
+.template-hello-nabiganj .hn-custom-footer-pill {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fe0312;
+  color: #ffffff;
+  height: 32px;
+  padding: 0 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 15;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+}
+
+.template-hello-nabiganj .hn-custom-brand-patch {
+  position: absolute;
+  top: 18px;
+  left: 95px;
+  background-color: #ffffff;
+  padding: 0 8px;
+  z-index: 15;
+}
+
+
+/* UI Controls and Tabs */
+.editor-tabs {
+  display: flex;
+  background-color: #f3f4f6;
+  border-radius: var(--radius-md);
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.editor-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.editor-tab-btn.active {
+  background-color: #ffffff;
+  color: var(--text-primary);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.control-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.slider-input {
+  width: 100%;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+
+.color-picker-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f9fafb;
+  border: 1px solid var(--border-color);
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+}
+
+.color-input-native {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: transparent;
+  padding: 0;
+}
+
+.action-bar-top {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 1rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-secondary {
+  background-color: #ffffff;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.toast-banner {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background-color: #111827;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  z-index: 100;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
