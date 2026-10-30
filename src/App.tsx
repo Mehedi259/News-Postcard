@@ -868,11 +868,11 @@ export default function App() {
             style={{ display: 'none' }} 
           />
 
-          {/* SECTION 1: News Main Photo & Zoom */}
+          {/* SECTION 1: News Main Photo */}
           <div className="editor-section-card">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Camera size={16} color="#e50914" />
-              খবরের মূল ছবি ও জুম
+              খবরের মূল ছবি
             </label>
 
             <div className="photo-action-row">
@@ -895,52 +895,6 @@ export default function App() {
                   <span className="thumb-edit-overlay"><Camera size={12} /></span>
                 </div>
               )}
-            </div>
-
-            {/* Zoom Slider only (no x/y offsets) */}
-            <div className="slider-group" style={{ marginTop: '0.75rem' }}>
-              <div className="slider-header">
-                <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <ZoomIn size={14} /> ছবির জুম (Zoom)
-                </span>
-                <span style={{ fontWeight: 700, color: '#111827' }}>{imageZoom}%</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <button 
-                  type="button" 
-                  className="zoom-step-btn"
-                  onClick={() => setImageZoom(prev => Math.max(80, prev - 10))}
-                  title="জুম কমান"
-                >
-                  -
-                </button>
-                <input 
-                  type="range" 
-                  min="80" 
-                  max="200" 
-                  value={imageZoom} 
-                  onChange={e => setImageZoom(Number(e.target.value))}
-                  className="slider-input"
-                />
-                <button 
-                  type="button" 
-                  className="zoom-step-btn"
-                  onClick={() => setImageZoom(prev => Math.min(200, prev + 10))}
-                  title="জুম বাড়ান"
-                >
-                  +
-                </button>
-                {imageZoom !== 100 && (
-                  <button 
-                    type="button" 
-                    className="zoom-reset-btn"
-                    onClick={() => setImageZoom(100)}
-                    title="রিসেট ১০০%"
-                  >
-                    ১০০%
-                  </button>
-                )}
-              </div>
             </div>
           </div>
 
@@ -970,22 +924,6 @@ export default function App() {
                 onChange={e => setHeadline2(e.target.value)}
                 placeholder="২য় লাইনের হাইলাইট শিরোনাম..."
                 rows={2}
-              />
-            </div>
-
-            {/* Font Size Slider */}
-            <div className="slider-group" style={{ marginTop: '0.6rem' }}>
-              <div className="slider-header">
-                <span>ফন্ট সাইজ</span>
-                <span style={{ fontWeight: 700, color: '#111827' }}>{headlineFontSize}px</span>
-              </div>
-              <input 
-                type="range" 
-                min="22" 
-                max="44" 
-                value={headlineFontSize} 
-                onChange={e => setHeadlineFontSize(Number(e.target.value))}
-                className="slider-input"
               />
             </div>
           </div>
@@ -1072,43 +1010,86 @@ export default function App() {
               </div>
             </div>
 
-            {/* Quick Font Size Bar right under the postcard preview */}
+            {/* Quick Controls Bar (Font Size & Image Zoom) right under the postcard preview */}
             <div className="postcard-quick-bar hide-on-export">
-              <span className="quick-bar-label">
-                <Type size={14} color="#e50914" /> টেক্সট সাইজ:
-              </span>
-              <div className="quick-bar-controls">
-                <button 
-                  type="button" 
-                  className="quick-step-btn" 
-                  onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                  title="সাইজ ২px কমান"
-                >
-                  -
-                </button>
-                <input 
-                  type="range" 
-                  min="20" 
-                  max="44" 
-                  value={headlineFontSize} 
-                  onChange={e => setHeadlineFontSize(Number(e.target.value))} 
-                  className="quick-slider"
-                />
-                <button 
-                  type="button" 
-                  className="quick-step-btn" 
-                  onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                  title="সাইজ ২px বাড়ান"
-                >
-                  +
-                </button>
-                <span 
-                  className="quick-val-pill"
-                  onClick={() => setShowFontSizePopup(prev => !prev)}
-                  title="পপআপ খুলতে ক্লিক করুন"
-                >
-                  {headlineFontSize}px
+              {/* Row 1: Text Size */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  <Type size={14} color="#e50914" /> টেক্সট সাইজ:
                 </span>
+                <div className="quick-bar-controls">
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
+                    title="সাইজ ২px কমান"
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="20" 
+                    max="44" 
+                    value={headlineFontSize} 
+                    onChange={e => setHeadlineFontSize(Number(e.target.value))} 
+                    className="quick-slider"
+                  />
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
+                    title="সাইজ ২px বাড়ান"
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => setShowFontSizePopup(prev => !prev)}
+                    title="পপআপ খুলতে ক্লিক করুন"
+                  >
+                    {headlineFontSize}px
+                  </span>
+                </div>
+              </div>
+
+              {/* Row 2: Image Zoom */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  <ZoomIn size={14} color="#e50914" /> ছবির জুম:
+                </span>
+                <div className="quick-bar-controls">
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setImageZoom(prev => Math.max(80, prev - 10))}
+                    title="জুম ১০% কমান"
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="80" 
+                    max="200" 
+                    value={imageZoom} 
+                    onChange={e => setImageZoom(Number(e.target.value))} 
+                    className="quick-slider"
+                  />
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setImageZoom(prev => Math.min(200, prev + 10))}
+                    title="জুম ১০% বাড়ান"
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => setImageZoom(100)}
+                    title="ক্লিক করে ১০০% রিসেট করুন"
+                  >
+                    {imageZoom}%
+                  </span>
+                </div>
               </div>
             </div>
           </div>

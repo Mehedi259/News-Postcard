@@ -431,20 +431,32 @@ button {
   max-width: 100%;
 }
 
-/* Quick Font Size Bar right under the Postcard */
+/* Quick Controls Bar (Font Size & Image Zoom) right under the Postcard */
 .postcard-quick-bar {
   width: 100%;
   max-width: 500px;
   background-color: #ffffff;
   border: 1px solid var(--border-color);
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.quick-bar-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  box-sizing: border-box;
+  width: 100%;
+}
+
+.quick-bar-row + .quick-bar-row {
+  padding-top: 8px;
+  border-top: 1px dashed #e5e7eb;
 }
 
 .quick-bar-label {
