@@ -3,7 +3,7 @@ import { toPng, toBlob } from 'html-to-image';
 import { 
   Download, Globe, ChevronDown, Quote, 
   Copy, Check, Type, Camera, Pencil,
-  ZoomIn,
+  ZoomIn, Calendar,
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
@@ -47,16 +47,16 @@ export default function App() {
 
   // Exact reference default values
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
-  const headline1Color = '#ffffff';
+  const [headline1Color, setHeadline1Color] = useState('#ffffff');
   const [headline1FontSize, setHeadline1FontSize] = useState(30);
 
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
-  const headline2Color = '#ffcb05';
+  const [headline2Color, setHeadline2Color] = useState('#ffcb05');
   const [headline2FontSize, setHeadline2FontSize] = useState(34);
 
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState(getBengaliToday);
-  void setDate;
+  const [showDate, setShowDate] = useState(true);
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -381,9 +381,39 @@ export default function App() {
     }
   };
 
+  const renderTopDate = () => {
+    if (!showDate) return null;
+    return (
+      <div 
+        className="hn-top-date"
+        title="তারিখ পরিবর্তন করতে ক্লিক করুন"
+      >
+        <Calendar size={15} className="date-icon" />
+        <span 
+          ref={dateRef}
+          className="date-text oncard-editable"
+          contentEditable={!isExporting}
+          suppressContentEditableWarning={true}
+          onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+        >
+          {date}
+        </span>
+        <span className="date-pencil hide-on-export">
+          <Pencil size={10} />
+        </span>
+      </div>
+    );
+  };
+
   const renderHeadlineArea = () => (
     <div className="hn-headline-area">
-      {/* On-Card Floating Font Size Control Badge */}
+      {/* On-Card Floating Font Size & Color Control Badge */}
       <button 
         type="button" 
         className="hn-size-badge hide-on-export"
@@ -391,18 +421,18 @@ export default function App() {
           e.stopPropagation();
           setShowFontSizePopup(prev => !prev);
         }}
-        title="শিরোনামের সাইজ পরিবর্তন করতে ক্লিক করুন"
+        title="শিরোনামের সাইজ ও রং পরিবর্তন করতে ক্লিক করুন"
       >
         <Type size={12} color="#ffcb05" />
         <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize}</span>
       </button>
 
-      {/* In-Place Font Size Popup */}
+      {/* In-Place Font Size & Color Popup */}
       {showFontSizePopup && (
         <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
           <div className="hn-size-popup-header">
             <span className="hn-size-popup-title">
-              <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
+              <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ ও রং (Font & Color)
             </span>
             <button 
               type="button" 
@@ -459,6 +489,28 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              <div className="hn-popup-color-row">
+                <span className="hn-popup-color-label">রং:</span>
+                {['#ffffff', '#ffcb05', '#38bdf8', '#4ade80', '#fb923c', '#f472b6'].map(c => (
+                  <button 
+                    key={c}
+                    type="button"
+                    className={`hn-color-swatch ${headline1Color.toLowerCase() === c.toLowerCase() ? 'active' : ''}`}
+                    style={{ backgroundColor: c }}
+                    onClick={() => setHeadline1Color(c)}
+                    title={c}
+                  />
+                ))}
+                <label className="hn-color-picker-label" title="অন্যান্য রং">
+                  <input 
+                    type="color" 
+                    value={headline1Color} 
+                    onChange={e => setHeadline1Color(e.target.value)} 
+                    className="hn-native-color-picker"
+                  />
+                  🎨
+                </label>
+              </div>
             </div>
 
             <div className="hn-size-divider" />
@@ -506,6 +558,28 @@ export default function App() {
                     {sz}
                   </button>
                 ))}
+              </div>
+              <div className="hn-popup-color-row">
+                <span className="hn-popup-color-label">রং:</span>
+                {['#ffcb05', '#ffffff', '#38bdf8', '#a3e635', '#f87171', '#fb923c'].map(c => (
+                  <button 
+                    key={c}
+                    type="button"
+                    className={`hn-color-swatch ${headline2Color.toLowerCase() === c.toLowerCase() ? 'active' : ''}`}
+                    style={{ backgroundColor: c }}
+                    onClick={() => setHeadline2Color(c)}
+                    title={c}
+                  />
+                ))}
+                <label className="hn-color-picker-label" title="অন্যান্য রং">
+                  <input 
+                    type="color" 
+                    value={headline2Color} 
+                    onChange={e => setHeadline2Color(e.target.value)} 
+                    className="hn-native-color-picker"
+                  />
+                  🎨
+                </label>
               </div>
             </div>
           </div>
@@ -627,7 +701,10 @@ export default function App() {
               alt="Hello Probash News Postcard Frame" 
             />
 
-            {/* 3. Dynamic Headline Section - In-Place Editable */}
+            {/* 3. Top Date Display */}
+            {renderTopDate()}
+
+            {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
           </div>
         );
@@ -698,7 +775,10 @@ export default function App() {
               alt="Hello Desh Postcard Frame" 
             />
 
-            {/* 3. Dynamic Headline Section - In-Place Editable */}
+            {/* 3. Top Date Display */}
+            {renderTopDate()}
+
+            {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
           </div>
         );
@@ -769,7 +849,10 @@ export default function App() {
               alt="Hello Nabiganj Postcard Frame" 
             />
 
-            {/* 3. Dynamic Headline Section - In-Place Editable */}
+            {/* 3. Top Date Display */}
+            {renderTopDate()}
+
+            {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
           </div>
         );
@@ -1053,6 +1136,46 @@ export default function App() {
             style={{ display: 'none' }} 
           />
 
+          {/* SECTION: Date */}
+          <div className="editor-section-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showDate ? '8px' : 0 }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                <Calendar size={16} color="#e50914" />
+                তারিখ (Date)
+              </label>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                <input 
+                  type="checkbox" 
+                  checked={showDate} 
+                  onChange={e => setShowDate(e.target.checked)}
+                  style={{ accentColor: '#e50914', cursor: 'pointer' }}
+                />
+                তারিখ প্রদর্শন
+              </label>
+            </div>
+            {showDate && (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input 
+                  type="text" 
+                  className="form-textarea" 
+                  value={date} 
+                  onChange={e => setDate(e.target.value)}
+                  placeholder="উদা: ৩১ অক্টোবর ২০২৬"
+                  style={{ flex: 1, padding: '7px 10px', height: '36px', minHeight: 'unset', resize: 'none' }}
+                />
+                <button 
+                  type="button" 
+                  className="btn-secondary" 
+                  onClick={() => setDate(getBengaliToday())}
+                  title="আজকের তারিখ সেট করুন"
+                  style={{ padding: '7px 10px', fontSize: '12px', whiteSpace: 'nowrap', height: '36px' }}
+                >
+                  আজকের তারিখ
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* SECTION: Headlines */}
           <div className="editor-section-card">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -1062,26 +1185,50 @@ export default function App() {
 
             <div className="form-group">
               <div className="form-sublabel-row">
-                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন (সাদা)</label>
-                <div className="inline-size-stepper">
-                  <span className="inline-size-tag">সাইজ:</span>
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
-                    title="১ম লাইনের সাইজ ২px কমান"
-                  >
-                    -
-                  </button>
-                  <span className="inline-size-val">{headline1FontSize}px</span>
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
-                    title="১ম লাইনের সাইজ ২px বাড়ান"
-                  >
-                    +
-                  </button>
+                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="inline-color-picker">
+                    {['#ffffff', '#ffcb05', '#38bdf8', '#4ade80', '#fb923c'].map(col => (
+                      <button
+                        key={col}
+                        type="button"
+                        className={`color-dot ${headline1Color.toLowerCase() === col.toLowerCase() ? 'active' : ''}`}
+                        style={{ backgroundColor: col }}
+                        onClick={() => setHeadline1Color(col)}
+                        title={col}
+                      />
+                    ))}
+                    <label className="custom-color-btn" title="কাস্টম রং বাছুন">
+                      <input 
+                        type="color" 
+                        value={headline1Color} 
+                        onChange={e => setHeadline1Color(e.target.value)} 
+                        style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
+                      />
+                      <span className="color-wheel-icon" style={{ backgroundColor: headline1Color }} />
+                    </label>
+                  </div>
+
+                  <div className="inline-size-stepper">
+                    <span className="inline-size-tag">সাইজ:</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
+                      title="১ম লাইনের সাইজ ২px কমান"
+                    >
+                      -
+                    </button>
+                    <span className="inline-size-val">{headline1FontSize}px</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
+                      title="১ম লাইনের সাইজ ২px বাড়ান"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
               <textarea 
@@ -1095,26 +1242,50 @@ export default function App() {
 
             <div className="form-group" style={{ marginTop: '0.6rem' }}>
               <div className="form-sublabel-row">
-                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন (হাইলাইট হলুদ)</label>
-                <div className="inline-size-stepper">
-                  <span className="inline-size-tag">সাইজ:</span>
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
-                    title="২য় লাইনের সাইজ ২px কমান"
-                  >
-                    -
-                  </button>
-                  <span className="inline-size-val">{headline2FontSize}px</span>
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
-                    title="২য় লাইনের সাইজ ২px বাড়ান"
-                  >
-                    +
-                  </button>
+                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div className="inline-color-picker">
+                    {['#ffcb05', '#ffffff', '#38bdf8', '#a3e635', '#f87171'].map(col => (
+                      <button
+                        key={col}
+                        type="button"
+                        className={`color-dot ${headline2Color.toLowerCase() === col.toLowerCase() ? 'active' : ''}`}
+                        style={{ backgroundColor: col }}
+                        onClick={() => setHeadline2Color(col)}
+                        title={col}
+                      />
+                    ))}
+                    <label className="custom-color-btn" title="কাস্টম রং বাছুন">
+                      <input 
+                        type="color" 
+                        value={headline2Color} 
+                        onChange={e => setHeadline2Color(e.target.value)} 
+                        style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
+                      />
+                      <span className="color-wheel-icon" style={{ backgroundColor: headline2Color }} />
+                    </label>
+                  </div>
+
+                  <div className="inline-size-stepper">
+                    <span className="inline-size-tag">সাইজ:</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
+                      title="২য় লাইনের সাইজ ২px কমান"
+                    >
+                      -
+                    </button>
+                    <span className="inline-size-val">{headline2FontSize}px</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
+                      title="২য় লাইনের সাইজ ২px বাড়ান"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
               </div>
               <textarea 
@@ -1222,6 +1393,15 @@ export default function App() {
                   >
                     {headline1FontSize}px
                   </span>
+                  <label className="quick-color-indicator" title="১ম লাইনের রং পরিবর্তন করুন">
+                    <input 
+                      type="color" 
+                      value={headline1Color} 
+                      onChange={e => setHeadline1Color(e.target.value)} 
+                      style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
+                    />
+                    <span className="quick-color-dot" style={{ backgroundColor: headline1Color }} />
+                  </label>
                 </div>
               </div>
 
@@ -1262,6 +1442,15 @@ export default function App() {
                   >
                     {headline2FontSize}px
                   </span>
+                  <label className="quick-color-indicator" title="২য় লাইনের রং পরিবর্তন করুন">
+                    <input 
+                      type="color" 
+                      value={headline2Color} 
+                      onChange={e => setHeadline2Color(e.target.value)} 
+                      style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
+                    />
+                    <span className="quick-color-dot" style={{ backgroundColor: headline2Color }} />
+                  </label>
                 </div>
               </div>
 
