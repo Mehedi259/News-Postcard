@@ -7,17 +7,20 @@ import {
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
-type TemplateType = 'hello-probash' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking';
+type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking';
 
-// Brand Logo Component supporting Hello Probash and Hello Nabiganj
+// Brand Logo Component supporting Hello Probash, Hello Desh and Hello Nabiganj
 const BrandLogo = ({ selectedTemplate, customLogo, size = 28 }: { selectedTemplate: TemplateType; customLogo?: string | null; size?: number }) => {
   if (customLogo) {
     return <img src={customLogo} alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
   }
   if (selectedTemplate === 'hello-probash') {
-    return <img src="/hello-probash-logo.png" alt="Hello Probash Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
+    return <img src="/hello-probash-logo.png" alt="Hello Probash Logo" style={{ height: size, objectFit: 'contain' }} />;
   }
-  return <img src="/reference-logo.png" alt="Hello Nabiganj Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
+  if (selectedTemplate === 'hello-desh') {
+    return <img src="/hello-desh-logo.png" alt="Hello Desh Logo" style={{ height: size, objectFit: 'contain' }} />;
+  }
+  return <img src="/hello-nabiganj-logo.png" alt="Hello Nabiganj Logo" style={{ height: size, objectFit: 'contain' }} />;
 };
 
 const NabiganjLogo = ({ customLogo, size = 28 }: { customLogo?: string | null; size?: number }) => (
@@ -49,7 +52,8 @@ export default function App() {
   const headline2Color = '#ffcb05';
   const [headlineFontSize, setHeadlineFontSize] = useState(30);
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
-  const [date, setDate] = useState('২৯ অক্টোবর ২০২৬');
+  const [date, setDate] = useState(getBengaliToday);
+  void setDate;
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -569,6 +573,199 @@ export default function App() {
         );
       }
 
+      case 'hello-desh': {
+        return (
+          <div 
+            className="postcard template-hello-desh" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="hd-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="hd-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="hd-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Floating Camera Button on Photo (visible in preview, hidden in export) */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/hello-desh-master.png" 
+              className="hd-master-overlay" 
+              alt="Hello Desh Postcard Frame" 
+            />
+
+            {/* 3. Dynamic Headline Section - In-Place Editable */}
+            <div className="hn-headline-area">
+              {/* On-Card Floating Font Size Control Badge */}
+              <button 
+                type="button" 
+                className="hn-size-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowFontSizePopup(prev => !prev);
+                }}
+                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
+              >
+                <Type size={12} color="#ffcb05" />
+                <span>সাইজ {headlineFontSize}</span>
+              </button>
+
+              {/* In-Place Font Size Popup */}
+              {showFontSizePopup && (
+                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
+                  <div className="hn-size-popup-header">
+                    <span className="hn-size-popup-title">
+                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
+                    </span>
+                    <button 
+                      type="button" 
+                      className="hn-size-popup-close" 
+                      onClick={() => setShowFontSizePopup(false)}
+                      title="বন্ধ করুন"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="hn-size-popup-body">
+                    <div className="hn-size-popup-row">
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
+                        title="সাইজ ২ কমান"
+                      >
+                        -
+                      </button>
+                      <input 
+                        type="range" 
+                        min="20" 
+                        max="44" 
+                        value={headlineFontSize} 
+                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
+                        className="hn-popup-slider" 
+                      />
+                      <button 
+                        type="button"
+                        className="hn-popup-step-btn" 
+                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
+                        title="সাইজ ২ বাড়ান"
+                      >
+                        +
+                      </button>
+                      <span className="hn-popup-badge-val">{headlineFontSize}</span>
+                    </div>
+
+                    <div className="hn-size-presets">
+                      {[24, 28, 30, 34, 38].map(sz => (
+                        <button 
+                          key={sz} 
+                          type="button"
+                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
+                          onClick={() => setHeadlineFontSize(sz)}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="hn-headline-item">
+                <h1 
+                  ref={headline1Ref}
+                  className="hn-headline-1 oncard-editable" 
+                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
+                >
+                  {headline1}
+                </h1>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
+              </div>
+
+              <div className="hn-headline-item">
+                <h2 
+                  ref={headline2Ref}
+                  className="hn-headline-2 oncard-editable" 
+                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
+                >
+                  {headline2}
+                </h2>
+                <span className="hn-pencil-hint hide-on-export">
+                  <Pencil size={11} />
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
       case 'hello-nabiganj': {
         return (
           <div 
@@ -627,53 +824,14 @@ export default function App() {
               </div>
             </div>
 
-            {/* 2. Master Template Overlay (authentic borders, sides, map, frame, emblem, footer) */}
+            {/* 2. Master Template Overlay */}
             <img 
-              src="/postcard-master-template.png" 
+              src="/hello-nabiganj-master.png" 
               className="hn-master-overlay" 
               alt="Hello Nabiganj Postcard Frame" 
             />
 
-            {/* 3. Top Date Box - Dynamic + In-Place Editable */}
-            <div className="hn-date-box">
-              <img 
-                src="/calendar-exact.svg" 
-                alt="Calendar" 
-                className="hn-calendar-icon" 
-                onClick={() => setDate(getBengaliToday())}
-                title="আজকের তারিখ বসান"
-              />
-              <span className="hn-date-separator">|</span>
-              <span 
-                ref={dateRef}
-                className="hn-date-text oncard-editable"
-                contentEditable={!isExporting}
-                suppressContentEditableWarning={true}
-                onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    e.currentTarget.blur();
-                  }
-                }}
-                title="ক্লিক করে তারিখ পরিবর্তন করুন"
-              >
-                {date}
-              </span>
-              <button 
-                type="button" 
-                className="hn-date-edit-btn hide-on-export"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDate(getBengaliToday());
-                }}
-                title="আজকের তারিখ বসান"
-              >
-                আজ
-              </button>
-            </div>
-
-            {/* 4. Dynamic Headline Section - In-Place Editable */}
+            {/* 3. Dynamic Headline Section - In-Place Editable */}
             <div className="hn-headline-area">
               {/* On-Card Floating Font Size Control Badge */}
               <button 
@@ -712,7 +870,7 @@ export default function App() {
                         type="button"
                         className="hn-popup-step-btn" 
                         onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                        title="সাইজ ২px কমান"
+                        title="সাইজ ২ কমান"
                       >
                         -
                       </button>
@@ -728,11 +886,11 @@ export default function App() {
                         type="button"
                         className="hn-popup-step-btn" 
                         onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                        title="সাইজ ২px বাড়ান"
+                        title="সাইজ ২ বাড়ান"
                       >
                         +
                       </button>
-                      <span className="hn-popup-badge-val">{headlineFontSize}px</span>
+                      <span className="hn-popup-badge-val">{headlineFontSize}</span>
                     </div>
 
                     <div className="hn-size-presets">
@@ -743,7 +901,7 @@ export default function App() {
                           className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
                           onClick={() => setHeadlineFontSize(sz)}
                         >
-                          {sz}px
+                          {sz}
                         </button>
                       ))}
                     </div>
@@ -1008,7 +1166,7 @@ export default function App() {
           <div className="navbar-brand-text">
             <span className="navbar-title">News Postcard</span>
             <span className="navbar-subtitle">
-              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : 'Hello Nabiganj'}
+              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : 'Hello Nabiganj'}
             </span>
           </div>
         </div>
@@ -1053,11 +1211,19 @@ export default function App() {
               </button>
               <button 
                 type="button" 
+                className={`template-switch-btn ${selectedTemplate === 'hello-desh' ? 'active desh' : ''}`}
+                onClick={() => setSelectedTemplate('hello-desh')}
+                title="হ্যালো দেশ পোস্টকার্ড"
+              >
+                🟢 হ্যালো দেশ
+              </button>
+              <button 
+                type="button" 
                 className={`template-switch-btn ${selectedTemplate === 'hello-nabiganj' ? 'active nabiganj' : ''}`}
                 onClick={() => setSelectedTemplate('hello-nabiganj')}
                 title="হ্যালো নবীগঞ্জ পোস্টকার্ড"
               >
-                🟢 হ্যালো নবীগঞ্জ
+                🔴 হ্যালো নবীগঞ্জ
               </button>
             </div>
           </div>

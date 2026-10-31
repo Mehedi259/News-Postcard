@@ -1097,11 +1097,18 @@ button {
   box-shadow: 0 1px 3px rgba(220, 38, 38, 0.3);
 }
 
-.template-switch-btn.active.nabiganj {
-  background-color: #15803d;
+.template-switch-btn.active.desh {
+  background-color: #059669;
   color: #ffffff;
-  border-color: #15803d;
-  box-shadow: 0 1px 3px rgba(21, 128, 61, 0.3);
+  border-color: #059669;
+  box-shadow: 0 1px 3px rgba(5, 150, 105, 0.3);
+}
+
+.template-switch-btn.active.nabiganj {
+  background-color: #b91c1c;
+  color: #ffffff;
+  border-color: #b91c1c;
+  box-shadow: 0 1px 3px rgba(185, 28, 28, 0.3);
 }
 
 /* ====================================================
@@ -1121,8 +1128,8 @@ button {
   position: absolute;
   left: 47px;
   top: 115px;
-  width: 707px;
-  height: 335px;
+  width: 706px;
+  height: 345px;
   border-radius: 19px;
   overflow: hidden;
   z-index: 1;
@@ -1174,6 +1181,81 @@ button {
 }
 
 /* ====================================================
+   HELLO DESH - 100% Pixel-Perfect News Postcard
+==================================================== */
+.template-hello-desh {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  user-select: none;
+}
+
+.template-hello-desh .hd-photo-slot {
+  position: absolute;
+  left: 50px;
+  top: 103px;
+  width: 700px;
+  height: 373px;
+  border-radius: 20px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-hello-desh .hd-photo-slot:active {
+  cursor: grabbing;
+}
+
+.template-hello-desh .hd-photo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
+}
+
+.template-hello-desh .hd-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f9fafb;
+}
+
+.template-hello-desh .hd-photo-slot:hover .hn-photo-edit-badge {
+  background-color: #059669;
+  border-color: #34d399;
+  transform: scale(1.04);
+}
+
+.template-hello-desh .hd-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 800px;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+  display: block;
+}
+
+/* ====================================================
    HELLO NABIGANJ - 100% Pixel-Perfect News Postcard
 ==================================================== */
 .template-hello-nabiganj {
@@ -1189,11 +1271,11 @@ button {
 /* 1. Underlying Photo Container */
 .template-hello-nabiganj .hn-photo-slot {
   position: absolute;
-  left: 40px;
-  top: 110px;
-  width: 720px;
-  height: 344px;
-  border-radius: 16px;
+  left: 47px;
+  top: 115px;
+  width: 706px;
+  height: 345px;
+  border-radius: 19px;
   overflow: hidden;
   z-index: 1;
   background-color: #111111;
@@ -1255,6 +1337,12 @@ button {
   transform: scale(1.04);
 }
 
+.template-hello-probash .hp-photo-slot:hover .hn-photo-edit-badge {
+  background-color: #e50914;
+  border-color: #ff4d4d;
+  transform: scale(1.04);
+}
+
 /* 2. Master Template Overlay */
 .template-hello-nabiganj .hn-master-overlay {
   position: absolute;
@@ -1288,7 +1376,8 @@ button {
 
 /* 4. Dynamic Headline Section */
 .template-hello-nabiganj .hn-headline-area,
-.template-hello-probash .hn-headline-area {
+.template-hello-probash .hn-headline-area,
+.template-hello-desh .hn-headline-area {
   position: absolute;
   left: 14px;
   right: 14px;
@@ -1310,7 +1399,8 @@ button {
 }
 
 .template-hello-nabiganj .hn-headline-1,
-.template-hello-probash .hn-headline-1 {
+.template-hello-probash .hn-headline-1,
+.template-hello-desh .hn-headline-1 {
   font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
   font-weight: 700;
   line-height: 1.25;
@@ -1322,7 +1412,8 @@ button {
 }
 
 .template-hello-nabiganj .hn-headline-2,
-.template-hello-probash .hn-headline-2 {
+.template-hello-probash .hn-headline-2,
+.template-hello-desh .hn-headline-2 {
   font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
   font-weight: 800;
   line-height: 1.15;
