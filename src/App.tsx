@@ -57,6 +57,8 @@ export default function App() {
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState(getBengaliToday);
   const [showDate, setShowDate] = useState(true);
+  const [dateFontSize, setDateFontSize] = useState(15);
+  const [dateColor, setDateColor] = useState('#1f2937');
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -388,12 +390,17 @@ export default function App() {
         className="hn-top-date"
         title="তারিখ পরিবর্তন করতে ক্লিক করুন"
       >
-        <Calendar size={15} className="date-icon" />
+        <Calendar 
+          size={Math.max(12, Math.round(dateFontSize * 0.95))} 
+          className="date-icon" 
+          style={{ color: dateColor }} 
+        />
         <span 
           ref={dateRef}
           className="date-text oncard-editable"
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
+          style={{ fontSize: `${dateFontSize}px`, color: dateColor }}
           onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -1095,7 +1102,7 @@ export default function App() {
       <main className="main-content">
         {/* Editor Controls Panel - Unified Single Screen (No Tabs!) */}
         <section className="editor-panel">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+          <div className="editor-header-wrap">
             <h2 className="editor-title" style={{ borderBottom: 'none', paddingBottom: 0, margin: 0 }}>
               পোস্টকার্ড এডিটর
             </h2>
@@ -1154,25 +1161,75 @@ export default function App() {
               </label>
             </div>
             {showDate && (
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input 
-                  type="text" 
-                  className="form-textarea" 
-                  value={date} 
-                  onChange={e => setDate(e.target.value)}
-                  placeholder="উদা: ৩১ অক্টোবর ২০২৬"
-                  style={{ flex: 1, padding: '7px 10px', height: '36px', minHeight: 'unset', resize: 'none' }}
-                />
-                <button 
-                  type="button" 
-                  className="btn-secondary" 
-                  onClick={() => setDate(getBengaliToday())}
-                  title="আজকের তারিখ সেট করুন"
-                  style={{ padding: '7px 10px', fontSize: '12px', whiteSpace: 'nowrap', height: '36px' }}
-                >
-                  আজকের তারিখ
-                </button>
-              </div>
+              <>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input 
+                    type="text" 
+                    className="form-textarea" 
+                    value={date} 
+                    onChange={e => setDate(e.target.value)}
+                    placeholder="উদা: ৩১ অক্টোবর ২০২৬"
+                    style={{ flex: 1, padding: '7px 10px', height: '36px', minHeight: 'unset', resize: 'none' }}
+                  />
+                  <button 
+                    type="button" 
+                    className="btn-secondary" 
+                    onClick={() => setDate(getBengaliToday())}
+                    title="আজকের তারিখ সেট করুন"
+                    style={{ padding: '7px 10px', fontSize: '12px', whiteSpace: 'nowrap', height: '36px' }}
+                  >
+                    আজকের তারিখ
+                  </button>
+                </div>
+
+                <div className="date-style-row">
+                  <div className="date-color-controls">
+                    <span className="inline-size-tag">রং:</span>
+                    <div className="inline-color-picker">
+                      {['#1f2937', '#dc2626', '#059669', '#1e3a8a', '#d97706', '#ffffff'].map(col => (
+                        <button
+                          key={col}
+                          type="button"
+                          className={`color-dot ${dateColor.toLowerCase() === col.toLowerCase() ? 'active' : ''}`}
+                          style={{ backgroundColor: col }}
+                          onClick={() => setDateColor(col)}
+                          title={col}
+                        />
+                      ))}
+                      <label className="custom-color-btn" title="তারিখের কাস্টম রং বাছুন">
+                        <input 
+                          type="color" 
+                          value={dateColor} 
+                          onChange={e => setDateColor(e.target.value)} 
+                          style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
+                        />
+                        <span className="color-wheel-icon" style={{ backgroundColor: dateColor }} />
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="inline-size-stepper">
+                    <span className="inline-size-tag">সাইজ:</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setDateFontSize(prev => Math.max(11, prev - 1))}
+                      title="তারিখের সাইজ ১px কমান"
+                    >
+                      -
+                    </button>
+                    <span className="inline-size-val">{dateFontSize}px</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setDateFontSize(prev => Math.min(26, prev + 1))}
+                      title="তারিখের সাইজ ১px বাড়ান"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </>
             )}
           </div>
 
@@ -1186,7 +1243,7 @@ export default function App() {
             <div className="form-group">
               <div className="form-sublabel-row">
                 <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="form-sublabel-actions">
                   <div className="inline-color-picker">
                     {['#ffffff', '#ffcb05', '#38bdf8', '#4ade80', '#fb923c'].map(col => (
                       <button
@@ -1243,7 +1300,7 @@ export default function App() {
             <div className="form-group" style={{ marginTop: '0.6rem' }}>
               <div className="form-sublabel-row">
                 <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন</label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div className="form-sublabel-actions">
                   <div className="inline-color-picker">
                     {['#ffcb05', '#ffffff', '#38bdf8', '#a3e635', '#f87171'].map(col => (
                       <button
