@@ -1470,11 +1470,52 @@ button {
   opacity: 1;
 }
 
-/* On-Card Font Size Badge & Popover */
-.hn-size-badge {
+/* On-Card Controls: Drag Handle, Size Badge & Popover */
+.hn-headline-controls-row {
   position: absolute;
-  top: -30px;
+  top: -34px;
+  left: 0;
   right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  pointer-events: auto;
+  z-index: 25;
+}
+
+.hn-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(17, 24, 39, 0.85);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s ease;
+}
+
+.hn-drag-handle:hover {
+  background: #0f172a;
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: scale(1.04);
+}
+
+.hn-drag-handle:active {
+  cursor: grabbing;
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.hn-size-badge {
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   color: #ffffff;
@@ -1483,7 +1524,7 @@ button {
   padding: 3px 10px;
   font-size: 11px;
   font-weight: 700;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
   cursor: pointer;
@@ -1496,25 +1537,73 @@ button {
   background: #000000;
   border-color: #ffcb05;
   color: #ffcb05;
-  transform: scale(1.05);
+  transform: scale(1.04);
 }
 
 .hn-size-popup {
   position: absolute;
-  top: -315px;
+  bottom: calc(100% + 40px);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(17, 24, 39, 0.95);
+  background: rgba(17, 24, 39, 0.96);
   backdrop-filter: blur(14px);
   border: 1.5px solid #ffcb05;
   border-radius: 12px;
   padding: 10px 14px;
-  width: 320px;
-  max-width: 90%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
-  z-index: 30;
+  width: 330px;
+  max-width: 95%;
+  max-height: 420px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  z-index: 35;
   color: #ffffff;
   animation: fadeInPop 0.2s ease;
+}
+
+.hn-popup-select {
+  width: 100%;
+  background: #1f2937;
+  color: #f3f4f6;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.hn-popup-select:focus {
+  border-color: #ffcb05;
+}
+
+.hn-popup-select option {
+  background: #111827;
+  color: #ffffff;
+}
+
+.font-family-select {
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  max-width: 175px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.font-family-select:hover {
+  border-color: #9ca3af;
+}
+
+.font-family-select:focus {
+  border-color: #e50914;
+  box-shadow: 0 0 0 2px rgba(229, 9, 20, 0.15);
 }
 
 @keyframes fadeInPop {

@@ -3,7 +3,7 @@ import { toPng, toBlob } from 'html-to-image';
 import { 
   Download, Globe, ChevronDown, Quote, 
   Copy, Check, Type, Camera, Pencil,
-  ZoomIn, Calendar, MoveVertical,
+  ZoomIn, Calendar, MoveVertical, Move,
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
@@ -27,6 +27,16 @@ const NabiganjLogo = ({ customLogo, size = 28 }: { customLogo?: string | null; s
   <BrandLogo selectedTemplate="hello-nabiganj" customLogo={customLogo} size={size} />
 );
 
+export const BENGALI_FONTS = [
+  { id: "'Noto Serif Bengali', serif", name: 'নোটো সেরিফ (Classic News)' },
+  { id: "'Anek Bangla', sans-serif", name: 'অনেকা বাংলা (Modern Bold)' },
+  { id: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি (Clean Sans)' },
+  { id: "'Tiro Bangla', serif", name: 'তিরো বাংলা (Traditional)' },
+  { id: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স (Standard Sans)' },
+  { id: "'Mina', sans-serif", name: 'মিনা (Minimal Slim)' },
+  { id: "'Galada', cursive", name: 'গালদা (Stylized Cursive)' },
+];
+
 function getBengaliToday(): string {
   const bengaliMonths = [
     'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
@@ -49,17 +59,22 @@ export default function App() {
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
   const [headline1Color, setHeadline1Color] = useState('#ffffff');
   const [headline1FontSize, setHeadline1FontSize] = useState(30);
+  const [headline1FontFamily, setHeadline1FontFamily] = useState("'Noto Serif Bengali', serif");
 
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
   const [headline2Color, setHeadline2Color] = useState('#ffcb05');
   const [headline2FontSize, setHeadline2FontSize] = useState(34);
+  const [headline2FontFamily, setHeadline2FontFamily] = useState("'Anek Bangla', sans-serif");
   const [headlineGap, setHeadlineGap] = useState(6);
+  const [headlineY, setHeadlineY] = useState(526);
+  const [headlineX, setHeadlineX] = useState(0);
 
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState(getBengaliToday);
   const [showDate, setShowDate] = useState(true);
   const [dateFontSize, setDateFontSize] = useState(15);
   const [dateColor, setDateColor] = useState('#1f2937');
+  const [dateFontFamily, setDateFontFamily] = useState("'Anek Bangla', sans-serif");
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -297,6 +312,60 @@ export default function App() {
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  // Mouse & Touch drag to reposition headlines freely on postcard
+  const handleHeadlineMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startY = e.clientY;
+    const startX = e.clientX;
+    const initialY = headlineY;
+    const initialX = headlineX;
+    const curScale = previewScale || 1;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const dy = (moveEvent.clientY - startY) / curScale;
+      const dx = (moveEvent.clientX - startX) / curScale;
+      setHeadlineY(Math.min(680, Math.max(440, Math.round(initialY + dy))));
+      setHeadlineX(Math.min(120, Math.max(-120, Math.round(initialX + dx))));
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const handleHeadlineTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const startY = t.clientY;
+    const startX = t.clientX;
+    const initialY = headlineY;
+    const initialX = headlineX;
+    const curScale = previewScale || 1;
+
+    const onTouchMove = (moveEvent: TouchEvent) => {
+      if (moveEvent.cancelable) moveEvent.preventDefault();
+      const curT = moveEvent.touches[0];
+      const dy = (curT.clientY - startY) / curScale;
+      const dx = (curT.clientX - startX) / curScale;
+      setHeadlineY(Math.min(680, Math.max(440, Math.round(initialY + dy))));
+      setHeadlineX(Math.min(120, Math.max(-120, Math.round(initialX + dx))));
+    };
+
+    const onTouchEnd = () => {
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
@@ -401,7 +470,7 @@ export default function App() {
           className="date-text oncard-editable"
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
-          style={{ fontSize: `${dateFontSize}px`, color: dateColor }}
+          style={{ fontSize: `${dateFontSize}px`, color: dateColor, fontFamily: dateFontFamily }}
           onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -420,27 +489,45 @@ export default function App() {
   };
 
   const renderHeadlineArea = () => (
-    <div className="hn-headline-area">
-      {/* On-Card Floating Font Size & Color Control Badge */}
-      <button 
-        type="button" 
-        className="hn-size-badge hide-on-export"
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowFontSizePopup(prev => !prev);
-        }}
-        title="শিরোনামের সাইজ, রং ও গ্যাপ পরিবর্তন করতে ক্লিক করুন"
-      >
-        <Type size={12} color="#ffcb05" />
-        <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize} | গ্যাপ {headlineGap}</span>
-      </button>
+    <div 
+      className="hn-headline-area"
+      style={{
+        top: `${headlineY}px`,
+        transform: headlineX ? `translateX(${headlineX}px)` : undefined
+      }}
+    >
+      {/* On-Card Controls: Move Handle and Size/Style Badge */}
+      <div className="hn-headline-controls-row hide-on-export">
+        <div 
+          className="hn-drag-handle"
+          onMouseDown={handleHeadlineMouseDown}
+          onTouchStart={handleHeadlineTouchStart}
+          title="মাউস দিয়ে চেপে বা আঙুল দিয়ে ড্র্যাগ করে হেডলাইনের অবস্থান সরান"
+        >
+          <Move size={12} color="#ffffff" />
+          <span>পজিশন সরান</span>
+        </div>
+
+        <button 
+          type="button" 
+          className="hn-size-badge"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowFontSizePopup(prev => !prev);
+          }}
+          title="শিরোনামের সাইজ, রং, ফন্ট ও গ্যাপ পরিবর্তন করতে ক্লিক করুন"
+        >
+          <Type size={12} color="#ffcb05" />
+          <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize} | গ্যাপ {headlineGap}</span>
+        </button>
+      </div>
 
       {/* In-Place Font Size & Color Popup */}
       {showFontSizePopup && (
         <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
           <div className="hn-size-popup-header">
             <span className="hn-size-popup-title">
-              <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ ও রং (Font & Color)
+              <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ, ফন্ট ও অবস্থান
             </span>
             <button 
               type="button" 
@@ -456,7 +543,7 @@ export default function App() {
             {/* 1st Line Controls */}
             <div className="hn-size-popup-section">
               <div className="hn-size-section-label">
-                <span className="hn-size-dot dot-white"></span> শিরোনাম ১ম লাইন (সাদা)
+                <span className="hn-size-dot dot-white"></span> শিরোনাম ১ম লাইন
               </div>
               <div className="hn-size-popup-row">
                 <button 
@@ -519,6 +606,17 @@ export default function App() {
                   🎨
                 </label>
               </div>
+              <div style={{ marginTop: '5px' }}>
+                <select 
+                  className="hn-popup-select"
+                  value={headline1FontFamily}
+                  onChange={e => setHeadline1FontFamily(e.target.value)}
+                >
+                  {BENGALI_FONTS.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="hn-size-divider" />
@@ -526,7 +624,7 @@ export default function App() {
             {/* 2nd Line Controls */}
             <div className="hn-size-popup-section">
               <div className="hn-size-section-label">
-                <span className="hn-size-dot dot-yellow"></span> শিরোনাম ২য় লাইন (হলুদ)
+                <span className="hn-size-dot dot-yellow"></span> শিরোনাম ২য় লাইন
               </div>
               <div className="hn-size-popup-row">
                 <button 
@@ -589,6 +687,17 @@ export default function App() {
                   🎨
                 </label>
               </div>
+              <div style={{ marginTop: '5px' }}>
+                <select 
+                  className="hn-popup-select"
+                  value={headline2FontFamily}
+                  onChange={e => setHeadline2FontFamily(e.target.value)}
+                >
+                  {BENGALI_FONTS.map(f => (
+                    <option key={f.id} value={f.id}>{f.name}</option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div className="hn-size-divider" />
@@ -638,6 +747,54 @@ export default function App() {
                 ))}
               </div>
             </div>
+
+            <div className="hn-size-divider" />
+
+            {/* Headline Vertical Position Y Controls */}
+            <div className="hn-size-popup-section">
+              <div className="hn-size-section-label">
+                <Move size={12} color="#38bdf8" /> শিরোনামের উচ্চতা / অবস্থান (Position Y)
+              </div>
+              <div className="hn-size-popup-row">
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadlineY(prev => Math.max(440, prev - 4))}
+                  title="উপরে তুলুন"
+                >
+                  -
+                </button>
+                <input 
+                  type="range" 
+                  min="440" 
+                  max="680" 
+                  value={headlineY} 
+                  onChange={(e) => setHeadlineY(Number(e.target.value))} 
+                  className="hn-popup-slider" 
+                />
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadlineY(prev => Math.min(680, prev + 4))}
+                  title="নিচে নামান"
+                >
+                  +
+                </button>
+                <span className="hn-popup-badge-val">{headlineY}px</span>
+              </div>
+              <div className="hn-size-presets">
+                {[500, 526, 550, 580, 620].map(py => (
+                  <button 
+                    key={py} 
+                    type="button"
+                    className={`hn-size-preset-btn ${headlineY === py ? 'active' : ''}`}
+                    onClick={() => setHeadlineY(py)}
+                  >
+                    {py === 526 ? 'ডিফল্ট' : `${py}px`}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -646,7 +803,12 @@ export default function App() {
         <h1 
           ref={headline1Ref}
           className="hn-headline-1 oncard-editable" 
-          style={{ color: headline1Color, fontSize: `${headline1FontSize}px`, margin: 0 }}
+          style={{ 
+            color: headline1Color, 
+            fontSize: `${headline1FontSize}px`, 
+            fontFamily: headline1FontFamily,
+            margin: 0 
+          }}
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
           onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
@@ -669,7 +831,11 @@ export default function App() {
         <h2 
           ref={headline2Ref}
           className="hn-headline-2 oncard-editable" 
-          style={{ color: headline2Color, fontSize: `${headline2FontSize}px` }}
+          style={{ 
+            color: headline2Color, 
+            fontSize: `${headline2FontSize}px`,
+            fontFamily: headline2FontFamily 
+          }}
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
           onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
@@ -1277,6 +1443,17 @@ export default function App() {
                       +
                     </button>
                   </div>
+
+                  <select 
+                    className="font-family-select"
+                    value={dateFontFamily}
+                    onChange={e => setDateFontFamily(e.target.value)}
+                    title="তারিখের ফন্ট বাছুন"
+                  >
+                    {BENGALI_FONTS.map(f => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
                 </div>
               </>
             )}
@@ -1291,7 +1468,19 @@ export default function App() {
 
             <div className="form-group">
               <div className="form-sublabel-row">
-                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন</label>
+                  <select 
+                    className="font-family-select"
+                    value={headline1FontFamily}
+                    onChange={e => setHeadline1FontFamily(e.target.value)}
+                    title="১ম লাইনের ফন্ট নির্বাচন করুন"
+                  >
+                    {BENGALI_FONTS.map(f => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-sublabel-actions">
                   <div className="inline-color-picker">
                     {['#ffffff', '#ffcb05', '#38bdf8', '#4ade80', '#fb923c'].map(col => (
@@ -1348,7 +1537,19 @@ export default function App() {
 
             <div className="form-group" style={{ marginTop: '0.6rem' }}>
               <div className="form-sublabel-row">
-                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন</label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                  <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন</label>
+                  <select 
+                    className="font-family-select"
+                    value={headline2FontFamily}
+                    onChange={e => setHeadline2FontFamily(e.target.value)}
+                    title="২য় লাইনের ফন্ট নির্বাচন করুন"
+                  >
+                    {BENGALI_FONTS.map(f => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </select>
+                </div>
                 <div className="form-sublabel-actions">
                   <div className="inline-color-picker">
                     {['#ffcb05', '#ffffff', '#38bdf8', '#a3e635', '#f87171'].map(col => (
@@ -1403,39 +1604,82 @@ export default function App() {
               />
             </div>
 
-            {/* Headline Line Gap Control */}
-            <div className="headline-gap-card-row" style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-              <span className="form-sublabel" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
-                <MoveVertical size={14} color="#8b5cf6" /> লাইনের দূরত্ব (Gap)
-              </span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <input 
-                  type="range" 
-                  min="0" 
-                  max="36" 
-                  value={headlineGap} 
-                  onChange={e => setHeadlineGap(Number(e.target.value))} 
-                  style={{ width: '80px', accentColor: '#8b5cf6', cursor: 'pointer', height: '5px' }}
-                />
-                <div className="inline-size-stepper">
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
-                    title="গ্যাপ ২px কমান"
-                  >
-                    -
-                  </button>
-                  <span className="inline-size-val" style={{ minWidth: '32px' }}>{headlineGap}px</span>
-                  <button 
-                    type="button" 
-                    className="inline-step-btn" 
-                    onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
-                    title="গ্যাপ ২px বাড়ান"
-                  >
-                    +
-                  </button>
+            {/* Headline Position & Line Gap Controls */}
+            <div className="headline-gap-card-row" style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed #e5e7eb', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* Row: Vertical Position Y */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                <span className="form-sublabel" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <Move size={14} color="#0284c7" /> উচ্চতা / অবস্থান (Position Y)
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input 
+                    type="range" 
+                    min="440" 
+                    max="680" 
+                    value={headlineY} 
+                    onChange={e => setHeadlineY(Number(e.target.value))} 
+                    style={{ width: '75px', accentColor: '#0284c7', cursor: 'pointer', height: '5px' }}
+                  />
+                  <div className="inline-size-stepper">
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadlineY(prev => Math.max(440, prev - 4))}
+                      title="উপরে তুলুন"
+                    >
+                      -
+                    </button>
+                    <span className="inline-size-val" style={{ minWidth: '38px' }}>{headlineY}px</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadlineY(prev => Math.min(680, prev + 4))}
+                      title="নিচে নামান"
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+              </div>
+
+              {/* Row: Line Gap */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                <span className="form-sublabel" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <MoveVertical size={14} color="#8b5cf6" /> লাইনের দূরত্ব (Gap)
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="36" 
+                    value={headlineGap} 
+                    onChange={e => setHeadlineGap(Number(e.target.value))} 
+                    style={{ width: '75px', accentColor: '#8b5cf6', cursor: 'pointer', height: '5px' }}
+                  />
+                  <div className="inline-size-stepper">
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
+                      title="গ্যাপ ২px কমান"
+                    >
+                      -
+                    </button>
+                    <span className="inline-size-val" style={{ minWidth: '32px' }}>{headlineGap}px</span>
+                    <button 
+                      type="button" 
+                      className="inline-step-btn" 
+                      onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
+                      title="গ্যাপ ২px বাড়ান"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ fontSize: '11px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span>💡 কার্ডে "পজিশন সরান" বাটন ড্র্যাগ করেও সরানো যায়</span>
               </div>
             </div>
           </div>
@@ -1632,6 +1876,46 @@ export default function App() {
                     title="লাইন গ্যাপ পপআপ"
                   >
                     {headlineGap}px
+                  </span>
+                </div>
+              </div>
+
+              {/* Row 4: Headline Vertical Position (উচ্চতা / নিচে নামানো) */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  <Move size={13} color="#0284c7" /> উচ্চতা:
+                </span>
+                <div className="quick-bar-controls">
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineY(prev => Math.max(440, prev - 4))}
+                    title="হেডলাইন উপরে তুলুন"
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="440" 
+                    max="680" 
+                    value={headlineY} 
+                    onChange={e => setHeadlineY(Number(e.target.value))} 
+                    className="quick-slider"
+                  />
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineY(prev => Math.min(680, prev + 4))}
+                    title="হেডলাইন নিচে নামান"
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => setShowFontSizePopup(prev => !prev)}
+                    title="পজিশন পপআপ"
+                  >
+                    {headlineY}px
                   </span>
                 </div>
               </div>
