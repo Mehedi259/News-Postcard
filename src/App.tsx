@@ -48,9 +48,12 @@ export default function App() {
   // Exact reference default values
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
   const headline1Color = '#ffffff';
+  const [headline1FontSize, setHeadline1FontSize] = useState(30);
+
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
   const headline2Color = '#ffcb05';
-  const [headlineFontSize, setHeadlineFontSize] = useState(30);
+  const [headline2FontSize, setHeadline2FontSize] = useState(34);
+
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState(getBengaliToday);
   void setDate;
@@ -378,6 +381,185 @@ export default function App() {
     }
   };
 
+  const renderHeadlineArea = () => (
+    <div className="hn-headline-area">
+      {/* On-Card Floating Font Size Control Badge */}
+      <button 
+        type="button" 
+        className="hn-size-badge hide-on-export"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowFontSizePopup(prev => !prev);
+        }}
+        title="শিরোনামের সাইজ পরিবর্তন করতে ক্লিক করুন"
+      >
+        <Type size={12} color="#ffcb05" />
+        <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize}</span>
+      </button>
+
+      {/* In-Place Font Size Popup */}
+      {showFontSizePopup && (
+        <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
+          <div className="hn-size-popup-header">
+            <span className="hn-size-popup-title">
+              <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
+            </span>
+            <button 
+              type="button" 
+              className="hn-size-popup-close" 
+              onClick={() => setShowFontSizePopup(false)}
+              title="বন্ধ করুন"
+            >
+              ✕
+            </button>
+          </div>
+
+          <div className="hn-size-popup-body">
+            {/* 1st Line Controls */}
+            <div className="hn-size-popup-section">
+              <div className="hn-size-section-label">
+                <span className="hn-size-dot dot-white"></span> শিরোনাম ১ম লাইন (সাদা)
+              </div>
+              <div className="hn-size-popup-row">
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
+                  title="সাইজ ২ কমান"
+                >
+                  -
+                </button>
+                <input 
+                  type="range" 
+                  min="16" 
+                  max="48" 
+                  value={headline1FontSize} 
+                  onChange={(e) => setHeadline1FontSize(Number(e.target.value))} 
+                  className="hn-popup-slider" 
+                />
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
+                  title="সাইজ ২ বাড়ান"
+                >
+                  +
+                </button>
+                <span className="hn-popup-badge-val">{headline1FontSize}px</span>
+              </div>
+              <div className="hn-size-presets">
+                {[22, 26, 30, 34, 38].map(sz => (
+                  <button 
+                    key={sz} 
+                    type="button"
+                    className={`hn-size-preset-btn ${headline1FontSize === sz ? 'active' : ''}`}
+                    onClick={() => setHeadline1FontSize(sz)}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="hn-size-divider" />
+
+            {/* 2nd Line Controls */}
+            <div className="hn-size-popup-section">
+              <div className="hn-size-section-label">
+                <span className="hn-size-dot dot-yellow"></span> শিরোনাম ২য় লাইন (হলুদ)
+              </div>
+              <div className="hn-size-popup-row">
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
+                  title="সাইজ ২ কমান"
+                >
+                  -
+                </button>
+                <input 
+                  type="range" 
+                  min="18" 
+                  max="54" 
+                  value={headline2FontSize} 
+                  onChange={(e) => setHeadline2FontSize(Number(e.target.value))} 
+                  className="hn-popup-slider" 
+                />
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
+                  title="সাইজ ২ বাড়ান"
+                >
+                  +
+                </button>
+                <span className="hn-popup-badge-val">{headline2FontSize}px</span>
+              </div>
+              <div className="hn-size-presets">
+                {[26, 30, 34, 38, 44].map(sz => (
+                  <button 
+                    key={sz} 
+                    type="button"
+                    className={`hn-size-preset-btn ${headline2FontSize === sz ? 'active' : ''}`}
+                    onClick={() => setHeadline2FontSize(sz)}
+                  >
+                    {sz}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="hn-headline-item">
+        <h1 
+          ref={headline1Ref}
+          className="hn-headline-1 oncard-editable" 
+          style={{ color: headline1Color, fontSize: `${headline1FontSize}px` }}
+          contentEditable={!isExporting}
+          suppressContentEditableWarning={true}
+          onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+          title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
+        >
+          {headline1}
+        </h1>
+        <span className="hn-pencil-hint hide-on-export">
+          <Pencil size={11} />
+        </span>
+      </div>
+
+      <div className="hn-headline-item">
+        <h2 
+          ref={headline2Ref}
+          className="hn-headline-2 oncard-editable" 
+          style={{ color: headline2Color, fontSize: `${headline2FontSize}px` }}
+          contentEditable={!isExporting}
+          suppressContentEditableWarning={true}
+          onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+          title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
+        >
+          {headline2}
+        </h2>
+        <span className="hn-pencil-hint hide-on-export">
+          <Pencil size={11} />
+        </span>
+      </div>
+    </div>
+  );
+
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case 'hello-probash': {
@@ -446,129 +628,7 @@ export default function App() {
             />
 
             {/* 3. Dynamic Headline Section - In-Place Editable */}
-            <div className="hn-headline-area">
-              {/* On-Card Floating Font Size Control Badge */}
-              <button 
-                type="button" 
-                className="hn-size-badge hide-on-export"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFontSizePopup(prev => !prev);
-                }}
-                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
-              >
-                <Type size={12} color="#ffcb05" />
-                <span>সাইজ {headlineFontSize}</span>
-              </button>
-
-              {/* In-Place Font Size Popup */}
-              {showFontSizePopup && (
-                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
-                  <div className="hn-size-popup-header">
-                    <span className="hn-size-popup-title">
-                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
-                    </span>
-                    <button 
-                      type="button" 
-                      className="hn-size-popup-close" 
-                      onClick={() => setShowFontSizePopup(false)}
-                      title="বন্ধ করুন"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="hn-size-popup-body">
-                    <div className="hn-size-popup-row">
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                        title="সাইজ ২px কমান"
-                      >
-                        -
-                      </button>
-                      <input 
-                        type="range" 
-                        min="20" 
-                        max="44" 
-                        value={headlineFontSize} 
-                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
-                        className="hn-popup-slider" 
-                      />
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                        title="সাইজ ২px বাড়ান"
-                      >
-                        +
-                      </button>
-                      <span className="hn-popup-badge-val">{headlineFontSize}px</span>
-                    </div>
-
-                    <div className="hn-size-presets">
-                      {[24, 28, 30, 34, 38].map(sz => (
-                        <button 
-                          key={sz} 
-                          type="button"
-                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
-                          onClick={() => setHeadlineFontSize(sz)}
-                        >
-                          {sz}px
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="hn-headline-item">
-                <h1 
-                  ref={headline1Ref}
-                  className="hn-headline-1 oncard-editable" 
-                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
-                >
-                  {headline1}
-                </h1>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-
-              <div className="hn-headline-item">
-                <h2 
-                  ref={headline2Ref}
-                  className="hn-headline-2 oncard-editable" 
-                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
-                >
-                  {headline2}
-                </h2>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-            </div>
+            {renderHeadlineArea()}
           </div>
         );
       }
@@ -639,129 +699,7 @@ export default function App() {
             />
 
             {/* 3. Dynamic Headline Section - In-Place Editable */}
-            <div className="hn-headline-area">
-              {/* On-Card Floating Font Size Control Badge */}
-              <button 
-                type="button" 
-                className="hn-size-badge hide-on-export"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFontSizePopup(prev => !prev);
-                }}
-                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
-              >
-                <Type size={12} color="#ffcb05" />
-                <span>সাইজ {headlineFontSize}</span>
-              </button>
-
-              {/* In-Place Font Size Popup */}
-              {showFontSizePopup && (
-                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
-                  <div className="hn-size-popup-header">
-                    <span className="hn-size-popup-title">
-                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
-                    </span>
-                    <button 
-                      type="button" 
-                      className="hn-size-popup-close" 
-                      onClick={() => setShowFontSizePopup(false)}
-                      title="বন্ধ করুন"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="hn-size-popup-body">
-                    <div className="hn-size-popup-row">
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                        title="সাইজ ২ কমান"
-                      >
-                        -
-                      </button>
-                      <input 
-                        type="range" 
-                        min="20" 
-                        max="44" 
-                        value={headlineFontSize} 
-                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
-                        className="hn-popup-slider" 
-                      />
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                        title="সাইজ ২ বাড়ান"
-                      >
-                        +
-                      </button>
-                      <span className="hn-popup-badge-val">{headlineFontSize}</span>
-                    </div>
-
-                    <div className="hn-size-presets">
-                      {[24, 28, 30, 34, 38].map(sz => (
-                        <button 
-                          key={sz} 
-                          type="button"
-                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
-                          onClick={() => setHeadlineFontSize(sz)}
-                        >
-                          {sz}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="hn-headline-item">
-                <h1 
-                  ref={headline1Ref}
-                  className="hn-headline-1 oncard-editable" 
-                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
-                >
-                  {headline1}
-                </h1>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-
-              <div className="hn-headline-item">
-                <h2 
-                  ref={headline2Ref}
-                  className="hn-headline-2 oncard-editable" 
-                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
-                >
-                  {headline2}
-                </h2>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-            </div>
+            {renderHeadlineArea()}
           </div>
         );
       }
@@ -832,129 +770,7 @@ export default function App() {
             />
 
             {/* 3. Dynamic Headline Section - In-Place Editable */}
-            <div className="hn-headline-area">
-              {/* On-Card Floating Font Size Control Badge */}
-              <button 
-                type="button" 
-                className="hn-size-badge hide-on-export"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFontSizePopup(prev => !prev);
-                }}
-                title="টেক্সটের সাইজ পরিবর্তন করতে ক্লিক করুন"
-              >
-                <Type size={12} color="#ffcb05" />
-                <span>সাইজ {headlineFontSize}</span>
-              </button>
-
-              {/* In-Place Font Size Popup */}
-              {showFontSizePopup && (
-                <div className="hn-size-popup hide-on-export" onClick={(e) => e.stopPropagation()}>
-                  <div className="hn-size-popup-header">
-                    <span className="hn-size-popup-title">
-                      <Type size={13} color="#ffcb05" /> শিরোনাম সাইজ (Font Size)
-                    </span>
-                    <button 
-                      type="button" 
-                      className="hn-size-popup-close" 
-                      onClick={() => setShowFontSizePopup(false)}
-                      title="বন্ধ করুন"
-                    >
-                      ✕
-                    </button>
-                  </div>
-
-                  <div className="hn-size-popup-body">
-                    <div className="hn-size-popup-row">
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                        title="সাইজ ২ কমান"
-                      >
-                        -
-                      </button>
-                      <input 
-                        type="range" 
-                        min="20" 
-                        max="44" 
-                        value={headlineFontSize} 
-                        onChange={(e) => setHeadlineFontSize(Number(e.target.value))} 
-                        className="hn-popup-slider" 
-                      />
-                      <button 
-                        type="button"
-                        className="hn-popup-step-btn" 
-                        onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                        title="সাইজ ২ বাড়ান"
-                      >
-                        +
-                      </button>
-                      <span className="hn-popup-badge-val">{headlineFontSize}</span>
-                    </div>
-
-                    <div className="hn-size-presets">
-                      {[24, 28, 30, 34, 38].map(sz => (
-                        <button 
-                          key={sz} 
-                          type="button"
-                          className={`hn-size-preset-btn ${headlineFontSize === sz ? 'active' : ''}`}
-                          onClick={() => setHeadlineFontSize(sz)}
-                        >
-                          {sz}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="hn-headline-item">
-                <h1 
-                  ref={headline1Ref}
-                  className="hn-headline-1 oncard-editable" 
-                  style={{ color: headline1Color, fontSize: `${headlineFontSize}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ১ম লাইনের শিরোনাম লিখুন"
-                >
-                  {headline1}
-                </h1>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-
-              <div className="hn-headline-item">
-                <h2 
-                  ref={headline2Ref}
-                  className="hn-headline-2 oncard-editable" 
-                  style={{ color: headline2Color, fontSize: `${Math.round(headlineFontSize * 1.13)}px` }}
-                  contentEditable={!isExporting}
-                  suppressContentEditableWarning={true}
-                  onBlur={(e) => setHeadline2(e.currentTarget.innerText.trim() || headline2)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  title="ক্লিক করে ২য় লাইনের শিরোনাম লিখুন"
-                >
-                  {headline2}
-                </h2>
-                <span className="hn-pencil-hint hide-on-export">
-                  <Pencil size={11} />
-                </span>
-              </div>
-            </div>
+            {renderHeadlineArea()}
           </div>
         );
       }
@@ -1245,7 +1061,29 @@ export default function App() {
             </label>
 
             <div className="form-group">
-              <label className="form-sublabel">শিরোনাম ১ম লাইন (সাদা)</label>
+              <div className="form-sublabel-row">
+                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ১ম লাইন (সাদা)</label>
+                <div className="inline-size-stepper">
+                  <span className="inline-size-tag">সাইজ:</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
+                    title="১ম লাইনের সাইজ ২px কমান"
+                  >
+                    -
+                  </button>
+                  <span className="inline-size-val">{headline1FontSize}px</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
+                    title="১ম লাইনের সাইজ ২px বাড়ান"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
               <textarea 
                 className="form-textarea" 
                 value={headline1} 
@@ -1256,7 +1094,29 @@ export default function App() {
             </div>
 
             <div className="form-group" style={{ marginTop: '0.6rem' }}>
-              <label className="form-sublabel">শিরোনাম ২য় লাইন (হাইলাইট হলুদ)</label>
+              <div className="form-sublabel-row">
+                <label className="form-sublabel" style={{ margin: 0 }}>শিরোনাম ২য় লাইন (হাইলাইট হলুদ)</label>
+                <div className="inline-size-stepper">
+                  <span className="inline-size-tag">সাইজ:</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
+                    title="২য় লাইনের সাইজ ২px কমান"
+                  >
+                    -
+                  </button>
+                  <span className="inline-size-val">{headline2FontSize}px</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
+                    title="২য় লাইনের সাইজ ২px বাড়ান"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
               <textarea 
                 className="form-textarea" 
                 value={headline2} 
@@ -1325,33 +1185,33 @@ export default function App() {
 
             {/* Quick Controls Bar (Font Size & Image Zoom) right under the postcard preview */}
             <div className="postcard-quick-bar hide-on-export">
-              {/* Row 1: Text Size */}
+              {/* Row 1: Headline 1 Size */}
               <div className="quick-bar-row">
                 <span className="quick-bar-label">
-                  <Type size={13} color="#e50914" /> টেক্সট:
+                  <Type size={13} color="#e50914" /> ১ম লাইন:
                 </span>
                 <div className="quick-bar-controls">
                   <button 
                     type="button" 
                     className="quick-step-btn" 
-                    onClick={() => setHeadlineFontSize(prev => Math.max(20, prev - 2))}
-                    title="সাইজ ২ কমান"
+                    onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
+                    title="১ম লাইনের সাইজ ২ কমান"
                   >
                     -
                   </button>
                   <input 
                     type="range" 
-                    min="20" 
-                    max="44" 
-                    value={headlineFontSize} 
-                    onChange={e => setHeadlineFontSize(Number(e.target.value))} 
+                    min="16" 
+                    max="48" 
+                    value={headline1FontSize} 
+                    onChange={e => setHeadline1FontSize(Number(e.target.value))} 
                     className="quick-slider"
                   />
                   <button 
                     type="button" 
                     className="quick-step-btn" 
-                    onClick={() => setHeadlineFontSize(prev => Math.min(44, prev + 2))}
-                    title="সাইজ ২ বাড়ান"
+                    onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
+                    title="১ম লাইনের সাইজ ২ বাড়ান"
                   >
                     +
                   </button>
@@ -1360,7 +1220,47 @@ export default function App() {
                     onClick={() => setShowFontSizePopup(prev => !prev)}
                     title="ফন্ট সাইজ পপআপ"
                   >
-                    {headlineFontSize}
+                    {headline1FontSize}px
+                  </span>
+                </div>
+              </div>
+
+              {/* Row 2: Headline 2 Size */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  <Type size={13} color="#d97706" /> ২য় লাইন:
+                </span>
+                <div className="quick-bar-controls">
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
+                    title="২য় লাইনের সাইজ ২ কমান"
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="18" 
+                    max="54" 
+                    value={headline2FontSize} 
+                    onChange={e => setHeadline2FontSize(Number(e.target.value))} 
+                    className="quick-slider"
+                  />
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
+                    title="২য় লাইনের সাইজ ২ বাড়ান"
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => setShowFontSizePopup(prev => !prev)}
+                    title="ফন্ট সাইজ পপআপ"
+                  >
+                    {headline2FontSize}px
                   </span>
                 </div>
               </div>

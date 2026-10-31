@@ -1477,17 +1477,17 @@ button {
 
 .hn-size-popup {
   position: absolute;
-  top: -110px;
+  top: -210px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(17, 24, 39, 0.95);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
   border: 1.5px solid #ffcb05;
   border-radius: 12px;
   padding: 10px 14px;
   width: 320px;
   max-width: 90%;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
   z-index: 30;
   color: #ffffff;
   animation: fadeInPop 0.2s ease;
@@ -1502,7 +1502,9 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .hn-size-popup-title {
@@ -1536,7 +1538,99 @@ button {
 .hn-size-popup-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+}
+
+.hn-size-popup-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hn-size-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hn-size-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.hn-size-dot.dot-white {
+  background-color: #ffffff;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.hn-size-dot.dot-yellow {
+  background-color: #ffcb05;
+  box-shadow: 0 0 4px rgba(255, 203, 5, 0.8);
+}
+
+.hn-size-divider {
+  border-top: 1px dashed rgba(255, 255, 255, 0.15);
+  margin: 3px 0;
+}
+
+/* Form Sublabel Row with Inline Stepper */
+.form-sublabel-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.inline-size-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1px 4px;
+}
+
+.inline-size-tag {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.inline-step-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.inline-step-btn:hover {
+  background: #e50914;
+  color: #ffffff;
+  border-color: #e50914;
+}
+
+.inline-size-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: #111827;
+  min-width: 28px;
+  text-align: center;
 }
 
 .hn-size-popup-row {
