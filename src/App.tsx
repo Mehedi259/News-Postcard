@@ -3,7 +3,7 @@ import { toPng, toBlob } from 'html-to-image';
 import { 
   Download, Globe, ChevronDown, Quote, 
   Copy, Check, Type, Camera, Pencil,
-  ZoomIn, Calendar,
+  ZoomIn, Calendar, MoveVertical,
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
@@ -53,6 +53,7 @@ export default function App() {
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
   const [headline2Color, setHeadline2Color] = useState('#ffcb05');
   const [headline2FontSize, setHeadline2FontSize] = useState(34);
+  const [headlineGap, setHeadlineGap] = useState(6);
 
   const [showFontSizePopup, setShowFontSizePopup] = useState(false);
   const [date, setDate] = useState(getBengaliToday);
@@ -428,10 +429,10 @@ export default function App() {
           e.stopPropagation();
           setShowFontSizePopup(prev => !prev);
         }}
-        title="শিরোনামের সাইজ ও রং পরিবর্তন করতে ক্লিক করুন"
+        title="শিরোনামের সাইজ, রং ও গ্যাপ পরিবর্তন করতে ক্লিক করুন"
       >
         <Type size={12} color="#ffcb05" />
-        <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize}</span>
+        <span>সাইজ: ১ম {headline1FontSize} | ২য় {headline2FontSize} | গ্যাপ {headlineGap}</span>
       </button>
 
       {/* In-Place Font Size & Color Popup */}
@@ -589,15 +590,63 @@ export default function App() {
                 </label>
               </div>
             </div>
+
+            <div className="hn-size-divider" />
+
+            {/* Line Gap Controls */}
+            <div className="hn-size-popup-section">
+              <div className="hn-size-section-label">
+                <MoveVertical size={12} color="#a78bfa" /> লাইনের দূরত্ব / গ্যাপ (Line Gap)
+              </div>
+              <div className="hn-size-popup-row">
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
+                  title="গ্যাপ ২ কমান"
+                >
+                  -
+                </button>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="36" 
+                  value={headlineGap} 
+                  onChange={(e) => setHeadlineGap(Number(e.target.value))} 
+                  className="hn-popup-slider" 
+                />
+                <button 
+                  type="button"
+                  className="hn-popup-step-btn" 
+                  onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
+                  title="গ্যাপ ২ বাড়ান"
+                >
+                  +
+                </button>
+                <span className="hn-popup-badge-val">{headlineGap}px</span>
+              </div>
+              <div className="hn-size-presets">
+                {[0, 4, 6, 10, 16, 24].map(gp => (
+                  <button 
+                    key={gp} 
+                    type="button"
+                    className={`hn-size-preset-btn ${headlineGap === gp ? 'active' : ''}`}
+                    onClick={() => setHeadlineGap(gp)}
+                  >
+                    {gp}px
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
 
-      <div className="hn-headline-item">
+      <div className="hn-headline-item" style={{ marginBottom: `${headlineGap}px` }}>
         <h1 
           ref={headline1Ref}
           className="hn-headline-1 oncard-editable" 
-          style={{ color: headline1Color, fontSize: `${headline1FontSize}px` }}
+          style={{ color: headline1Color, fontSize: `${headline1FontSize}px`, margin: 0 }}
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
           onBlur={(e) => setHeadline1(e.currentTarget.innerText.trim() || headline1)}
@@ -1353,6 +1402,42 @@ export default function App() {
                 rows={2}
               />
             </div>
+
+            {/* Headline Line Gap Control */}
+            <div className="headline-gap-card-row" style={{ marginTop: '0.75rem', paddingTop: '0.6rem', borderTop: '1px dashed #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+              <span className="form-sublabel" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <MoveVertical size={14} color="#8b5cf6" /> লাইনের দূরত্ব (Gap)
+              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input 
+                  type="range" 
+                  min="0" 
+                  max="36" 
+                  value={headlineGap} 
+                  onChange={e => setHeadlineGap(Number(e.target.value))} 
+                  style={{ width: '80px', accentColor: '#8b5cf6', cursor: 'pointer', height: '5px' }}
+                />
+                <div className="inline-size-stepper">
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
+                    title="গ্যাপ ২px কমান"
+                  >
+                    -
+                  </button>
+                  <span className="inline-size-val" style={{ minWidth: '32px' }}>{headlineGap}px</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
+                    title="গ্যাপ ২px বাড়ান"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Quick Resolution Export Buttons */}
@@ -1508,6 +1593,46 @@ export default function App() {
                     />
                     <span className="quick-color-dot" style={{ backgroundColor: headline2Color }} />
                   </label>
+                </div>
+              </div>
+
+              {/* Row 3: Headline Line Spacing / Gap */}
+              <div className="quick-bar-row">
+                <span className="quick-bar-label">
+                  <MoveVertical size={13} color="#8b5cf6" /> গ্যাপ:
+                </span>
+                <div className="quick-bar-controls">
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
+                    title="লাইন গ্যাপ ২ কমান"
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="0" 
+                    max="36" 
+                    value={headlineGap} 
+                    onChange={e => setHeadlineGap(Number(e.target.value))} 
+                    className="quick-slider"
+                  />
+                  <button 
+                    type="button" 
+                    className="quick-step-btn" 
+                    onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
+                    title="লাইন গ্যাপ ২ বাড়ান"
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => setShowFontSizePopup(prev => !prev)}
+                    title="লাইন গ্যাপ পপআপ"
+                  >
+                    {headlineGap}px
+                  </span>
                 </div>
               </div>
 
