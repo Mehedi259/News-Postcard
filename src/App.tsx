@@ -1069,17 +1069,17 @@ export default function App() {
   };
 
   const renderCardLogo = () => {
-    if (selectedTemplate === 'press-studio-ribbon') return null;
+    // Only render for Press Studio templates (press-studio-102, 65, 122, 183)
+    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon') return null;
     const isRight = logoPosition === 'right';
-    const isHelloTmpl = selectedTemplate.startsWith('hello-');
     const isPs102 = selectedTemplate === 'press-studio-102';
     const isPs65 = selectedTemplate === 'press-studio-65';
     const isOtherPs = selectedTemplate === 'press-studio-122' || selectedTemplate === 'press-studio-183';
 
-    let defaultTop = '36px';
-    let defaultLeft = '48px';
-    let minW = '140px';
-    let minH = '48px';
+    let defaultTop = '40px';
+    let defaultLeft = '60px';
+    let minW = '145px';
+    let minH = '52px';
 
     if (isPs102) {
       defaultTop = '40px';
@@ -1096,12 +1096,13 @@ export default function App() {
       defaultLeft = '50%';
     }
 
-    const isCustomized = isRight || (logoPreset && logoPreset !== 'hello-probash') || !!customLogo;
+    const isCustomized = isRight || (logoPreset && logoPreset !== 'hello-probash') || !!customLogo || logoSize !== 100;
+    if (!isCustomized) return null;
 
     return (
       <>
         {/* If logo is moved or changed from default Hello Probash, mask original left baked spot */}
-        {isCustomized && !isPs65 && (
+        {!isPs65 && (
           <div 
             style={{
               position: 'absolute',
@@ -1125,10 +1126,10 @@ export default function App() {
             left: isPs65 ? '50%' : (isRight ? 'auto' : defaultLeft),
             right: isPs65 ? 'auto' : (isRight ? defaultLeft : 'auto'),
             zIndex: 26,
-            background: isPs65 ? '#ffffff' : (isCustomized ? '#ffffff' : 'transparent'),
+            background: '#ffffff',
             padding: '3px 8px',
             borderRadius: isPs65 ? '14px 14px 0 0' : '6px',
-            boxShadow: isCustomized ? '0 2px 8px rgba(0, 0, 0, 0.12)' : 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
             display: 'inline-flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1143,7 +1144,7 @@ export default function App() {
             selectedTemplate={selectedTemplate} 
             customLogo={customLogo} 
             logoPreset={logoPreset} 
-            size={isHelloTmpl ? 38 : 42} 
+            size={42} 
           />
         </div>
       </>
@@ -1151,7 +1152,35 @@ export default function App() {
   };
 
   const renderCardCtaBadge = () => {
-    if (!showCtaBadge) return null;
+    // Only render for Press Studio templates (press-studio-102, 65, 122, 183)
+    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon') return null;
+    if (!showCtaBadge) {
+      if (selectedTemplate === 'press-studio-102') {
+        return (
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: '52px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '260px',
+              height: '42px',
+              background: '#430b0b',
+              zIndex: 24,
+              borderRadius: '24px',
+              pointerEvents: 'none'
+            }}
+          />
+        );
+      }
+      return null;
+    }
+
+    // On PS102, default is already baked in
+    if (selectedTemplate === 'press-studio-102' && ctaText === 'বিস্তারিত কমেন্টে') {
+      return null;
+    }
+
     return (
       <div 
         className="ps-card-cta-badge"
@@ -1171,7 +1200,38 @@ export default function App() {
   };
 
   const renderCardFooter = () => {
-    if (!showSocialFooter) return null;
+    // Only render for Press Studio templates (press-studio-102, 65, 122, 183)
+    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon') return null;
+    if (!showSocialFooter) {
+      if (selectedTemplate === 'press-studio-102') {
+        return (
+          <div 
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              width: '800px',
+              height: '44px',
+              background: '#430b0b',
+              zIndex: 24,
+              pointerEvents: 'none'
+            }}
+          />
+        );
+      }
+      return null;
+    }
+
+    // If default links on PS102, the overlay image already has them perfectly drawn
+    const isDefaultFooter = 
+      selectedTemplate === 'press-studio-102' &&
+      websiteUrl.toUpperCase() === 'WWW.HELLOPROBASH.COM' &&
+      facebookHandle.toLowerCase() === 'helloprobash' &&
+      !youtubeHandle;
+
+    if (isDefaultFooter) {
+      return null;
+    }
     return (
       <div className="ps-card-footer-bar">
         <div className="ps-card-footer-item">
@@ -1289,18 +1349,11 @@ export default function App() {
               alt="Hello Probash News Postcard Frame" 
             />
 
-            {/* Dynamic Card Logo */}
-            {renderCardLogo()}
-
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
-
-            {/* Dynamic CTA & Footer */}
-            {renderCardCtaBadge()}
-            {renderCardFooter()}
           </div>
         );
       }
@@ -1370,18 +1423,11 @@ export default function App() {
               alt="Hello Desh Postcard Frame" 
             />
 
-            {/* Dynamic Card Logo */}
-            {renderCardLogo()}
-
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
-
-            {/* Dynamic CTA & Footer */}
-            {renderCardCtaBadge()}
-            {renderCardFooter()}
           </div>
         );
       }
@@ -1451,18 +1497,11 @@ export default function App() {
               alt="Hello Nabiganj Postcard Frame" 
             />
 
-            {/* Dynamic Card Logo */}
-            {renderCardLogo()}
-
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
-
-            {/* Dynamic CTA & Footer */}
-            {renderCardCtaBadge()}
-            {renderCardFooter()}
           </div>
         );
       }
