@@ -1462,7 +1462,7 @@ button {
 .template-hello-nabiganj .hn-headline-1,
 .template-hello-probash .hn-headline-1,
 .template-hello-desh .hn-headline-1 {
-  font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+  font-family: 'SolaimanLipi', 'Noto Serif Bengali', serif;
   font-weight: 700;
   line-height: 1.25;
   margin: 0;
@@ -1475,7 +1475,7 @@ button {
 .template-hello-nabiganj .hn-headline-2,
 .template-hello-probash .hn-headline-2,
 .template-hello-desh .hn-headline-2 {
-  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-family: 'SolaimanLipi', 'Anek Bangla', sans-serif;
   font-weight: 800;
   line-height: 1.15;
   margin: 0;
@@ -2818,7 +2818,7 @@ button {
 .template-ps122 .hn-headline-1,
 .template-ps183 .hn-headline-1,
 .template-ps-ribbon .hn-headline-1 {
-  font-family: 'Hind Siliguri', sans-serif;
+  font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
   font-weight: 700;
   line-height: 1.25;
   margin: 0;
@@ -2832,7 +2832,7 @@ button {
 .template-ps122 .hn-headline-2,
 .template-ps183 .hn-headline-2,
 .template-ps-ribbon .hn-headline-2 {
-  font-family: 'Hind Siliguri', sans-serif;
+  font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
   font-weight: 800;
   line-height: 1.15;
   margin: 0;
@@ -2889,7 +2889,7 @@ button {
 }
 
 .ps-top-date-box .date-text {
-  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #ffffff;
@@ -3258,5 +3258,245 @@ button {
   color: #fef08a;
   box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
+
+/* ====================================================
+   STUDIO 3-COLUMN RESPONSIVE LAYOUT
+==================================================== */
+.main-content.studio-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 1720px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
+
+@media (min-width: 1120px) {
+  .main-content.studio-layout {
+    display: grid;
+    grid-template-columns: 345px 1fr 345px;
+    align-items: start;
+    gap: 1.25rem;
+    padding: 1rem 1.5rem;
+    min-height: calc(100vh - 65px);
+  }
+}
+
+.studio-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 1120px) {
+  .studio-sidebar {
+    position: sticky;
+    top: 66px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+  .studio-sidebar::-webkit-scrollbar {
+    width: 5px;
+  }
+  .studio-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .studio-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  .studio-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+.studio-center-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (min-width: 1120px) {
+  .studio-center-stage {
+    position: sticky;
+    top: 66px;
+    height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.postcard-stage-viewport {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1119px) {
+  .studio-center-stage {
+    order: -1;
+  }
+}
+
+/* ====================================================
+   DYNAMIC CARD OVERLAYS: LOGO, CTA BADGE, FOOTER BAR
+==================================================== */
+.ps-card-logo-badge {
+  position: absolute;
+  z-index: 26;
+  background: #ffffff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.template-ps102 .ps-card-logo-badge {
+  top: 40px;
+  left: 60px;
+  min-width: 145px;
+  min-height: 52px;
+}
+
+.template-ps122 .ps-card-logo-badge,
+.template-ps183 .ps-card-logo-badge {
+  top: 26px;
+  left: 38px;
+  min-width: 140px;
+  min-height: 50px;
+}
+
+.template-ps65 .ps-card-logo-badge {
+  top: 362px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 14px 14px 0 0;
+}
+
+.template-hello-probash .ps-card-logo-badge,
+.template-hello-desh .ps-card-logo-badge,
+.template-hello-nabiganj .ps-card-logo-badge {
+  top: 36px;
+  left: 48px;
+  min-width: 140px;
+  min-height: 48px;
+}
+
+/* Dynamic Red Pill CTA Badge on Card */
+.ps-card-cta-badge {
+  position: absolute;
+  bottom: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 24;
+  background: linear-gradient(180deg, #dd3829, #c7281a);
+  color: #ffffff;
+  font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 4px 28px;
+  border-radius: 24px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  pointer-events: auto;
+  line-height: 1.3;
+}
+
+.template-hello-desh .ps-card-cta-badge {
+  background: linear-gradient(180deg, #10b981, #047857);
+}
+
+.template-ps122 .ps-card-cta-badge {
+  background: linear-gradient(180deg, #374151, #1f2937);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.template-ps183 .ps-card-cta-badge {
+  background: linear-gradient(180deg, #2563eb, #1d4ed8);
+}
+
+/* Dynamic Social & Website Footer Bar on Card */
+.ps-card-footer-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 800px;
+  height: 44px;
+  background: #75180d;
+  z-index: 24;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 45px;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: auto;
+}
+
+.template-hello-desh .ps-card-footer-bar {
+  background: #047857;
+}
+
+.template-hello-nabiganj .ps-card-footer-bar {
+  background: #7f1d1d;
+}
+
+.template-ps122 .ps-card-footer-bar {
+  background: #18181b;
+}
+
+.template-ps183 .ps-card-footer-bar {
+  background: #131d42;
+}
+
+.template-ps65 .ps-card-footer-bar {
+  background: #110000;
+}
+
+.ps-card-footer-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: 'SolaimanLipi', 'Hind Siliguri', sans-serif;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.ps-social-icon {
+  flex-shrink: 0;
+}
+
+.ps-card-footer-text {
+  color: #ffffff;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
 
 

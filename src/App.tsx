@@ -47,8 +47,8 @@ export interface BengaliFontOption {
 }
 
 export const BENGALI_FONTS: BengaliFontOption[] = [
-  { id: "'Hind Siliguri', sans-serif", family: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি বোল্ড (Hind Siliguri Bold)', weight: 700 },
   { id: "'SolaimanLipi', sans-serif", family: "'SolaimanLipi', sans-serif", name: 'সোলায়মানলিপি বোল্ড (SolaimanLipi Bold)', weight: 700 },
+  { id: "'Hind Siliguri', sans-serif", family: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি বোল্ড (Hind Siliguri Bold)', weight: 700 },
   { id: "'Noto Serif Bengali', serif", family: "'Noto Serif Bengali', serif", name: 'নোটো সেরিফ (Classic News)', weight: 700 },
   { id: "'Noto Sans Bengali', sans-serif:black", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স ব্ল্যাক (Noto Sans Bengali Black - 900)', weight: 900 },
   { id: "'Noto Sans Bengali', sans-serif", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স বোল্ড (Noto Sans Bengali Bold - 700)', weight: 700 },
@@ -88,12 +88,12 @@ export default function App() {
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
   const [headline1Color, setHeadline1Color] = useState('#ffffff');
   const [headline1FontSize, setHeadline1FontSize] = useState(30);
-  const [headline1FontFamily, setHeadline1FontFamily] = useState("'Hind Siliguri', sans-serif");
+  const [headline1FontFamily, setHeadline1FontFamily] = useState("'SolaimanLipi', sans-serif");
 
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
   const [headline2Color, setHeadline2Color] = useState('#ffcb05');
   const [headline2FontSize, setHeadline2FontSize] = useState(34);
-  const [headline2FontFamily, setHeadline2FontFamily] = useState("'Hind Siliguri', sans-serif");
+  const [headline2FontFamily, setHeadline2FontFamily] = useState("'SolaimanLipi', sans-serif");
   const [headlineGap, setHeadlineGap] = useState(6);
   const [headlineY, setHeadlineY] = useState(526);
   const [headlineX, setHeadlineX] = useState(0);
@@ -103,7 +103,7 @@ export default function App() {
   const [showDate, setShowDate] = useState(true);
   const [dateFontSize, setDateFontSize] = useState(15);
   const [dateColor, setDateColor] = useState('#1f2937');
-  const [dateFontFamily, setDateFontFamily] = useState("'Hind Siliguri', sans-serif");
+  const [dateFontFamily, setDateFontFamily] = useState("'SolaimanLipi', sans-serif");
   const [dateX, setDateX] = useState<number>(0);
   const [dateY, setDateY] = useState<number>(0);
 
@@ -177,10 +177,12 @@ export default function App() {
   useEffect(() => {
     const updateScale = () => {
       if (previewContainerRef.current) {
-        const containerWidth = previewContainerRef.current.clientWidth;
-        // Leave 16px safe margin inside container
-        const availableWidth = Math.max(260, containerWidth - 20);
-        const scale = Math.min(1, Math.max(0.2, availableWidth / 800));
+        const containerWidth = previewContainerRef.current.clientWidth || 600;
+        const rawHeight = previewContainerRef.current.clientHeight;
+        const containerHeight = rawHeight > 100 ? rawHeight : (window.innerHeight - 90);
+        const availableWidth = Math.max(260, containerWidth - 32);
+        const availableHeight = Math.max(260, containerHeight - 32);
+        const scale = Math.min(1, Math.max(0.25, Math.min(availableWidth / 800, availableHeight / 800)));
         setPreviewScale(scale);
       }
     };
@@ -670,8 +672,8 @@ export default function App() {
     setDateY(0);
     if (tmpl === 'press-studio-ribbon') {
       setHeadlineY(470);
-      setHeadline1FontFamily("'Hind Siliguri', sans-serif");
-      setHeadline2FontFamily("'Hind Siliguri', sans-serif");
+      setHeadline1FontFamily("'SolaimanLipi', sans-serif");
+      setHeadline2FontFamily("'SolaimanLipi', sans-serif");
       setHeadline1Color("#ffffff");
       setHeadline2Color("#fcee0a");
       setHeadline1FontSize(38);
@@ -1066,6 +1068,160 @@ export default function App() {
   );
   };
 
+  const renderCardLogo = () => {
+    if (selectedTemplate === 'press-studio-ribbon') return null;
+    const isRight = logoPosition === 'right';
+    const isHelloTmpl = selectedTemplate.startsWith('hello-');
+    const isPs102 = selectedTemplate === 'press-studio-102';
+    const isPs65 = selectedTemplate === 'press-studio-65';
+    const isOtherPs = selectedTemplate === 'press-studio-122' || selectedTemplate === 'press-studio-183';
+
+    let defaultTop = '36px';
+    let defaultLeft = '48px';
+    let minW = '140px';
+    let minH = '48px';
+
+    if (isPs102) {
+      defaultTop = '40px';
+      defaultLeft = '60px';
+      minW = '145px';
+      minH = '52px';
+    } else if (isOtherPs) {
+      defaultTop = '26px';
+      defaultLeft = '38px';
+      minW = '140px';
+      minH = '50px';
+    } else if (isPs65) {
+      defaultTop = '362px';
+      defaultLeft = '50%';
+    }
+
+    const isCustomized = isRight || (logoPreset && logoPreset !== 'hello-probash') || !!customLogo;
+
+    return (
+      <>
+        {/* If logo is moved or changed from default Hello Probash, mask original left baked spot */}
+        {isCustomized && !isPs65 && (
+          <div 
+            style={{
+              position: 'absolute',
+              top: defaultTop,
+              left: defaultLeft,
+              width: minW,
+              height: minH,
+              background: '#ffffff',
+              zIndex: 25,
+              borderRadius: '4px',
+              pointerEvents: 'none'
+            }}
+          />
+        )}
+
+        <div 
+          className="ps-card-logo-badge"
+          style={{
+            position: 'absolute',
+            top: defaultTop,
+            left: isPs65 ? '50%' : (isRight ? 'auto' : defaultLeft),
+            right: isPs65 ? 'auto' : (isRight ? defaultLeft : 'auto'),
+            zIndex: 26,
+            background: isPs65 ? '#ffffff' : (isCustomized ? '#ffffff' : 'transparent'),
+            padding: '3px 8px',
+            borderRadius: isPs65 ? '14px 14px 0 0' : '6px',
+            boxShadow: isCustomized ? '0 2px 8px rgba(0, 0, 0, 0.12)' : 'none',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transform: isPs65 
+              ? `translateX(-50%) scale(${logoSize / 100})` 
+              : `scale(${logoSize / 100})`,
+            transformOrigin: isPs65 ? 'center' : (isRight ? 'top right' : 'top left'),
+            pointerEvents: 'auto'
+          }}
+        >
+          <BrandLogo 
+            selectedTemplate={selectedTemplate} 
+            customLogo={customLogo} 
+            logoPreset={logoPreset} 
+            size={isHelloTmpl ? 38 : 42} 
+          />
+        </div>
+      </>
+    );
+  };
+
+  const renderCardCtaBadge = () => {
+    if (!showCtaBadge) return null;
+    return (
+      <div 
+        className="ps-card-cta-badge"
+        title="ক্লিক করে কমেন্ট টেক্সট এডিট করুন"
+      >
+        <span 
+          key={ctaText}
+          className="oncard-editable"
+          contentEditable={!isExporting}
+          suppressContentEditableWarning={true}
+          onBlur={(e) => setCtaText(e.currentTarget.innerText.trim() || ctaText)}
+        >
+          {ctaText}
+        </span>
+      </div>
+    );
+  };
+
+  const renderCardFooter = () => {
+    if (!showSocialFooter) return null;
+    return (
+      <div className="ps-card-footer-bar">
+        <div className="ps-card-footer-item">
+          <svg className="ps-social-icon" viewBox="0 0 24 24" width="16" height="16" fill="#1877F2">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+          <span 
+            key={facebookHandle}
+            className="ps-card-footer-text oncard-editable"
+            contentEditable={!isExporting}
+            suppressContentEditableWarning={true}
+            onBlur={(e) => setFacebookHandle(e.currentTarget.innerText.trim() || facebookHandle)}
+          >
+            {facebookHandle}
+          </span>
+        </div>
+
+        {youtubeHandle && (
+          <div className="ps-card-footer-item">
+            <svg className="ps-social-icon" viewBox="0 0 24 24" width="16" height="16" fill="#FF0000">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+            <span 
+              key={youtubeHandle}
+              className="ps-card-footer-text oncard-editable"
+              contentEditable={!isExporting}
+              suppressContentEditableWarning={true}
+              onBlur={(e) => setYoutubeHandle(e.currentTarget.innerText.trim() || youtubeHandle)}
+            >
+              {youtubeHandle}
+            </span>
+          </div>
+        )}
+
+        <div className="ps-card-footer-item">
+          <Globe size={16} color="#ffffff" />
+          <span 
+            key={websiteUrl}
+            className="ps-card-footer-text oncard-editable"
+            contentEditable={!isExporting}
+            suppressContentEditableWarning={true}
+            onBlur={(e) => setWebsiteUrl(e.currentTarget.innerText.trim() || websiteUrl)}
+          >
+            {websiteUrl}
+          </span>
+        </div>
+      </div>
+    );
+  };
+
   const renderTemplate = () => {
     switch (selectedTemplate) {
       case 'hello-probash': {
@@ -1133,11 +1289,18 @@ export default function App() {
               alt="Hello Probash News Postcard Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1207,11 +1370,18 @@ export default function App() {
               alt="Hello Desh Postcard Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1281,11 +1451,18 @@ export default function App() {
               alt="Hello Nabiganj Postcard Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderTopDate()}
 
             {/* 4. Dynamic Headline Section - In-Place Editable */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1642,11 +1819,18 @@ export default function App() {
               alt="Press Studio 65 Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Bottom Date Display */}
             {renderPressStudioDate('bottom-right')}
 
             {/* 4. Dynamic Headline Section */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1716,11 +1900,18 @@ export default function App() {
               alt="Press Studio 102 Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderPressStudioDate('top-right')}
 
             {/* 4. Dynamic Headline Section */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1790,11 +1981,18 @@ export default function App() {
               alt="Press Studio 122 Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderPressStudioDate('top-right')}
 
             {/* 4. Dynamic Headline Section */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -1864,11 +2062,18 @@ export default function App() {
               alt="Press Studio 183 Frame" 
             />
 
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
+
             {/* 3. Top Date Display */}
             {renderPressStudioDate('top-right')}
 
             {/* 4. Dynamic Headline Section */}
             {renderHeadlineArea()}
+
+            {/* Dynamic CTA & Footer */}
+            {renderCardCtaBadge()}
+            {renderCardFooter()}
           </div>
         );
       }
@@ -2077,9 +2282,9 @@ export default function App() {
       {/* Top Navbar */}
       <nav className="navbar">
         <div className="navbar-brand">
-          <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} logoPreset={logoPreset} size={28} />
+          <img src="/templates/hello-probash-brand-logo.png" alt="News Postcard Logo" style={{ height: '28px', objectFit: 'contain' }} />
           <div className="navbar-brand-text">
-            <span className="navbar-title">News Postcard</span>
+            <span className="navbar-title">News Postcard Studio</span>
             <span className="navbar-subtitle">
               {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : selectedTemplate === 'hello-nabiganj' ? 'Hello Nabiganj' : selectedTemplate === 'press-studio-ribbon' ? 'PS Curved Ribbon' : selectedTemplate.startsWith('press-studio') ? `Press Studio ${selectedTemplate.split('-')[2]}` : selectedTemplate}
             </span>
@@ -2108,11 +2313,13 @@ export default function App() {
         </div>
       </nav>
 
-      <main className="main-content">
-        {/* Editor Controls Panel - Unified Single Screen (No Tabs!) */}
-        <section className="editor-panel">
+      <main className="main-content studio-layout">
+        {/* ========================================================
+            COLUMN 1: LEFT SIDEBAR (Templates, Date, Headlines)
+           ======================================================== */}
+        <aside className="studio-sidebar left-sidebar">
           <div className="editor-header-wrap">
-            <h2 className="editor-title" style={{ borderBottom: 'none', paddingBottom: 0, margin: 0 }}>
+            <h2 className="editor-title" style={{ borderBottom: 'none', paddingBottom: 0, margin: 0, fontSize: '1rem' }}>
               পোস্টকার্ড এডিটর
             </h2>
             <div className="template-switcher-container">
@@ -2187,55 +2394,46 @@ export default function App() {
             </div>
           </div>
 
-          {/* Hidden File Input for Image Upload */}
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            accept="image/*" 
-            onChange={handleImageUpload} 
-            style={{ display: 'none' }} 
-          />
-
           {/* SECTION: Date */}
           <div className="editor-section-card">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: showDate ? '8px' : 0 }}>
               <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                <Calendar size={16} color="#e50914" />
+                <Calendar size={15} color="#e50914" />
                 তারিখ (Date)
               </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
                 <input 
                   type="checkbox" 
                   checked={showDate} 
                   onChange={e => setShowDate(e.target.checked)}
                   style={{ accentColor: '#e50914', cursor: 'pointer' }}
                 />
-                তারিখ প্রদর্শন
+                প্রদর্শন
               </label>
             </div>
             {showDate && (
               <>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                   <input 
                     type="text" 
                     className="form-textarea" 
                     value={date} 
                     onChange={e => setDate(e.target.value)}
                     placeholder="উদা: ৩১ অক্টোবর ২০২৬"
-                    style={{ flex: 1, padding: '7px 10px', height: '36px', minHeight: 'unset', resize: 'none' }}
+                    style={{ flex: 1, padding: '6px 8px', height: '34px', minHeight: 'unset', resize: 'none' }}
                   />
                   <button 
                     type="button" 
                     className="btn-secondary" 
                     onClick={() => setDate(getBengaliToday())}
                     title="আজকের তারিখ সেট করুন"
-                    style={{ padding: '7px 10px', fontSize: '12px', whiteSpace: 'nowrap', height: '36px' }}
+                    style={{ padding: '6px 8px', fontSize: '11px', whiteSpace: 'nowrap', height: '34px' }}
                   >
                     আজকের তারিখ
                   </button>
                 </div>
 
-                <div className="date-style-row">
+                <div className="date-style-row" style={{ marginTop: '6px' }}>
                   <div className="date-color-controls">
                     <span className="inline-size-tag">রং:</span>
                     <div className="inline-color-picker">
@@ -2294,50 +2492,48 @@ export default function App() {
                   </select>
                 </div>
 
-                {/* Date Position / Movement Controls */}
-                <div className="date-position-box" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e5e7eb' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#374151', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <Move size={13} color="#e50914" />
-                      তারিখ সরান / পজিশন (Move Date)
+                {/* Date Position / Movement Controls - Clean & Compact */}
+                <div className="date-position-box" style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '11px', fontWeight: 700, color: '#374151', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Move size={12} color="#e50914" />
+                      তারিখ সরান / পজিশন
                     </span>
                     {(dateX !== 0 || dateY !== 0) && (
                       <button
                         type="button"
                         onClick={() => { setDateX(0); setDateY(0); }}
                         style={{
-                          fontSize: '11px',
+                          fontSize: '10px',
                           color: '#e50914',
                           background: 'rgba(229, 9, 20, 0.08)',
                           border: '1px solid rgba(229, 9, 20, 0.2)',
-                          borderRadius: '4px',
+                          borderRadius: '3px',
                           cursor: 'pointer',
-                          padding: '2px 8px',
-                          fontWeight: 600,
-                          transition: 'all 0.15s ease'
+                          padding: '1px 6px',
+                          fontWeight: 600
                         }}
                         title="ডিফল্ট অবস্থানে রিসেট করুন"
                       >
-                        রিসেট (0, 0)
+                        রিসেট (0,0)
                       </button>
                     )}
                   </div>
 
-                  {/* Horizontal (X) & Vertical (Y) Controls */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     {/* Horizontal (X) */}
-                    <div style={{ background: '#f9fafb', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#4b5563', marginBottom: '4px' }}>
-                        <span>বামে ◀ ▶ ডানে (X)</span>
-                        <span style={{ fontWeight: 700, color: '#111827', fontSize: '11px' }}>{dateX > 0 ? `+${dateX}` : dateX}px</span>
+                    <div style={{ background: '#f9fafb', padding: '5px 7px', borderRadius: '5px', border: '1px solid #e5e7eb' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: '#4b5563', marginBottom: '2px' }}>
+                        <span>বামে/ডানে (X)</span>
+                        <span style={{ fontWeight: 700, color: '#111827' }}>{dateX > 0 ? `+${dateX}` : dateX}px</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <button
                           type="button"
                           className="inline-step-btn"
                           onClick={() => setDateX(prev => Math.max(-400, prev - 4))}
-                          title="বামে ৪px সরান"
-                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                          title="বামে ৪px"
+                          style={{ width: '20px', height: '20px', fontSize: '11px', padding: 0 }}
                         >
                           -
                         </button>
@@ -2347,14 +2543,14 @@ export default function App() {
                           max={350}
                           value={dateX}
                           onChange={e => setDateX(Number(e.target.value))}
-                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ew-resize' }}
+                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ew-resize', minWidth: 0, height: '4px' }}
                         />
                         <button
                           type="button"
                           className="inline-step-btn"
                           onClick={() => setDateX(prev => Math.min(400, prev + 4))}
-                          title="ডানে ৪px সরান"
-                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                          title="ডানে ৪px"
+                          style={{ width: '20px', height: '20px', fontSize: '11px', padding: 0 }}
                         >
                           +
                         </button>
@@ -2362,18 +2558,18 @@ export default function App() {
                     </div>
 
                     {/* Vertical (Y) */}
-                    <div style={{ background: '#f9fafb', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#4b5563', marginBottom: '4px' }}>
-                        <span>উপরে ▲ ▼ নিচে (Y)</span>
-                        <span style={{ fontWeight: 700, color: '#111827', fontSize: '11px' }}>{dateY > 0 ? `+${dateY}` : dateY}px</span>
+                    <div style={{ background: '#f9fafb', padding: '5px 7px', borderRadius: '5px', border: '1px solid #e5e7eb' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '10px', color: '#4b5563', marginBottom: '2px' }}>
+                        <span>উপরে/নিচে (Y)</span>
+                        <span style={{ fontWeight: 700, color: '#111827' }}>{dateY > 0 ? `+${dateY}` : dateY}px</span>
                       </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
                         <button
                           type="button"
                           className="inline-step-btn"
                           onClick={() => setDateY(prev => Math.max(-400, prev - 4))}
-                          title="উপরে ৪px সরান"
-                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                          title="উপরে ৪px"
+                          style={{ width: '20px', height: '20px', fontSize: '11px', padding: 0 }}
                         >
                           -
                         </button>
@@ -2383,14 +2579,14 @@ export default function App() {
                           max={350}
                           value={dateY}
                           onChange={e => setDateY(Number(e.target.value))}
-                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ns-resize' }}
+                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ns-resize', minWidth: 0, height: '4px' }}
                         />
                         <button
                           type="button"
                           className="inline-step-btn"
                           onClick={() => setDateY(prev => Math.min(400, prev + 4))}
-                          title="নিচে ৪px সরান"
-                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                          title="নিচে ৪px"
+                          style={{ width: '20px', height: '20px', fontSize: '11px', padding: 0 }}
                         >
                           +
                         </button>
@@ -2398,27 +2594,26 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Nudge presets / Tip */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', fontSize: '11px', color: '#6b7280' }}>
-                    <span>💡 কার্ডের উপর তারিখের ড্র্যাগ আইকন চেপেও সরানো যায়</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '5px', fontSize: '10px', color: '#6b7280' }}>
+                    <span>💡 ড্র্যাগ আইকন চেপেও সরানো যায়</span>
                     <div style={{ display: 'flex', gap: '3px' }}>
                       <button 
                         type="button" 
                         onClick={() => setDateY(prev => prev - 10)} 
                         className="inline-step-btn" 
                         title="১০px উপরে"
-                        style={{ padding: '1px 5px', fontSize: '10px' }}
+                        style={{ padding: '1px 5px', fontSize: '10px', height: '18px' }}
                       >
-                        ▲ ১০px
+                        ▲ ১০
                       </button>
                       <button 
                         type="button" 
                         onClick={() => setDateY(prev => prev + 10)} 
                         className="inline-step-btn" 
                         title="১০px নিচে"
-                        style={{ padding: '1px 5px', fontSize: '10px' }}
+                        style={{ padding: '1px 5px', fontSize: '10px', height: '18px' }}
                       >
-                        ▼ ১০px
+                        ▼ ১০
                       </button>
                     </div>
                   </div>
@@ -2430,7 +2625,7 @@ export default function App() {
           {/* SECTION: Headlines */}
           <div className="editor-section-card">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Type size={16} color="#e50914" />
+              <Type size={15} color="#e50914" />
               খবরের শিরোনাম
             </label>
 
@@ -2651,12 +2846,161 @@ export default function App() {
               </div>
             </div>
           </div>
+        </aside>
+
+        {/* ========================================================
+            COLUMN 2: CENTER STAGE (Postcard Canvas - Nothing Underneath!)
+           ======================================================== */}
+        <section className="studio-center-stage">
+          <div className="postcard-stage-viewport" ref={previewContainerRef}>
+            <div 
+              className="preview-scaler"
+              style={{
+                width: `${Math.round(800 * previewScale)}px`,
+                height: `${Math.round(800 * previewScale)}px`,
+                position: 'relative',
+                overflow: 'hidden',
+                margin: 'auto',
+                borderRadius: '8px',
+                boxShadow: '0 12px 32px rgba(0, 0, 0, 0.16)'
+              }}
+            >
+              <div 
+                style={{
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: 'top left',
+                  width: '800px',
+                  height: '800px',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0
+                }}
+              >
+                {renderTemplate()}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================================
+            COLUMN 3: RIGHT SIDEBAR (Photo, Branding, Links, Badge, Download)
+           ======================================================== */}
+        <aside className="studio-sidebar right-sidebar">
+          {/* Hidden File Input for Image Upload */}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            accept="image/*" 
+            onChange={handleImageUpload} 
+            style={{ display: 'none' }} 
+          />
+
+          {/* SECTION: Photo & Zoom */}
+          <div className="editor-section-card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                <Camera size={15} color="#e50914" />
+                ছবি ও জুম (Photo)
+              </label>
+              <button 
+                type="button" 
+                className="btn-secondary" 
+                onClick={() => fileInputRef.current?.click()}
+                style={{ padding: '4px 8px', fontSize: '11px', height: '28px', display: 'flex', alignItems: 'center', gap: '4px' }}
+              >
+                <Upload size={12} /> ছবি পরিবর্তন
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {/* Fit Mode Toggle */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className="form-sublabel" style={{ margin: 0 }}>ভিউ মোড:</span>
+                <div className="quick-fit-toggle" style={{ margin: 0 }}>
+                  <button 
+                    type="button"
+                    className={`quick-fit-btn ${imageFitMode === 'contain' ? 'active' : ''}`}
+                    onClick={() => {
+                      setImageFitMode('contain');
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="সম্পূর্ণ ছবি দেখান"
+                  >
+                    🖼️ সম্পূর্ণ ছবি
+                  </button>
+                  <button 
+                    type="button"
+                    className={`quick-fit-btn ${imageFitMode === 'cover' ? 'active' : ''}`}
+                    onClick={() => {
+                      setImageFitMode('cover');
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="ফ্রেম ফিল"
+                  >
+                    ✂️ ফ্রেম ফিল
+                  </button>
+                </div>
+              </div>
+
+              {/* Zoom Slider */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span className="form-sublabel" style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ZoomIn size={13} color="#e50914" /> জুম:
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setImageZoom(prev => Math.max(30, prev - 10))}
+                    title="জুম কমান"
+                    style={{ width: '22px', height: '22px', fontSize: '12px' }}
+                  >
+                    -
+                  </button>
+                  <input 
+                    type="range" 
+                    min="30" 
+                    max="220" 
+                    value={imageZoom} 
+                    onChange={e => setImageZoom(Number(e.target.value))} 
+                    style={{ width: '80px', accentColor: '#e50914', cursor: 'pointer', height: '5px' }}
+                  />
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setImageZoom(prev => Math.min(220, prev + 10))}
+                    title="জুম বাড়ান"
+                    style={{ width: '22px', height: '22px', fontSize: '12px' }}
+                  >
+                    +
+                  </button>
+                  <span 
+                    className="quick-val-pill"
+                    onClick={() => {
+                      setImageZoom(100);
+                      setImageOffsetX(0);
+                      setImageOffsetY(0);
+                    }}
+                    title="রিসেট করতে ক্লিক করুন"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {imageZoom}%
+                  </span>
+                </div>
+              </div>
+              <span style={{ fontSize: '11px', color: '#9ca3af' }}>💡 মাউস ড্র্যাগ করে কার্ডের ছবি পছন্দমতো সাজাতে পারেন</span>
+            </div>
+          </div>
 
           {/* SECTION: Branding, Custom Logo & Social Media */}
           <div className="editor-section-card">
             <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Palette size={16} color="#e50914" />
-              ব্র্যান্ডিং, লোগো ও সোশ্যাল মিডিয়া (Branding & Links)
+              <Palette size={15} color="#e50914" />
+              ব্র্যান্ডিং ও লোগো (Branding & Logo)
             </label>
 
             {/* Logo Presets Row */}
@@ -2700,15 +3044,15 @@ export default function App() {
                 style={{ display: 'none' }} 
               />
               
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
                 <button 
                   type="button" 
                   className="btn-secondary" 
                   onClick={() => logoFileInputRef.current?.click()}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', height: '36px', fontSize: '12px' }}
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', height: '34px', fontSize: '11px' }}
                 >
-                  <Upload size={14} />
-                  {customLogo ? 'লোগো পরিবর্তন করুন' : 'কাস্টম লোগো আপলোড (PNG/SVG)'}
+                  <Upload size={13} />
+                  {customLogo ? 'লোগো পরিবর্তন করুন' : 'কাস্টম লোগো আপলোড'}
                 </button>
 
                 {customLogo && (
@@ -2717,42 +3061,44 @@ export default function App() {
                     className="btn-delete-logo"
                     onClick={handleRemoveCustomLogo}
                     title="কাস্টম লোগো মুছুন"
-                    style={{ height: '36px', padding: '0 10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer' }}
+                    style={{ height: '34px', padding: '0 8px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '5px', cursor: 'pointer' }}
                   >
-                    <Trash2 size={14} />
+                    <Trash2 size={13} />
                   </button>
                 )}
               </div>
 
               {customLogo && (
-                <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '6px' }}>
-                  <img src={customLogo} alt="Custom Preview" style={{ maxHeight: '28px', maxWidth: '80px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>✓ কাস্টম লোগো সক্রিয় আছে</span>
+                <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px', background: '#f3f4f6', padding: '5px 8px', borderRadius: '5px' }}>
+                  <img src={customLogo} alt="Custom Preview" style={{ maxHeight: '24px', maxWidth: '70px', objectFit: 'contain' }} />
+                  <span style={{ fontSize: '10px', color: '#16a34a', fontWeight: 600 }}>✓ কাস্টম লোগো সক্রিয়</span>
                 </div>
               )}
 
               {/* Logo Size and Position Stepper */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
                 <span className="form-sublabel" style={{ margin: 0 }}>লোগোর অবস্থান:</span>
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button 
-                    type="button" 
-                    className={`badge-preset-btn ${logoPosition === 'right' ? 'active' : ''}`}
-                    onClick={() => setLogoPosition('right')}
-                  >
-                    ডানে
-                  </button>
+                <div style={{ display: 'flex', gap: '4px' }}>
                   <button 
                     type="button" 
                     className={`badge-preset-btn ${logoPosition === 'left' ? 'active' : ''}`}
                     onClick={() => setLogoPosition('left')}
+                    style={{ padding: '3px 10px', fontSize: '11px' }}
                   >
                     বামে
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`badge-preset-btn ${logoPosition === 'right' ? 'active' : ''}`}
+                    onClick={() => setLogoPosition('right')}
+                    style={{ padding: '3px 10px', fontSize: '11px' }}
+                  >
+                    ডানে
                   </button>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
                 <span className="form-sublabel" style={{ margin: 0 }}>লোগোর সাইজ:</span>
                 <div className="inline-size-stepper">
                   <button 
@@ -2777,10 +3123,10 @@ export default function App() {
             </div>
 
             {/* Social Links & Website URL Fields */}
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e5e7eb' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span className="form-sublabel" style={{ margin: 0 }}>সোশ্যাল লিংক ও ওয়েবসাইট:</span>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
                   <input 
                     type="checkbox" 
                     checked={showSocialFooter} 
@@ -2792,11 +3138,10 @@ export default function App() {
               </div>
 
               {showSocialFooter && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {/* Website URL */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                   <div>
-                    <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
-                      <Globe size={12} color="#2563eb" /> ওয়েবসাইটের লিংক (Website URL)
+                    <label style={{ fontSize: '10px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                      <Globe size={11} color="#2563eb" /> ওয়েবসাইটের লিংক (Website URL)
                     </label>
                     <input 
                       type="text" 
@@ -2804,14 +3149,13 @@ export default function App() {
                       value={websiteUrl} 
                       onChange={e => setWebsiteUrl(e.target.value)} 
                       placeholder="WWW.HELLOPROBASH.COM"
-                      style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                      style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
                     />
                   </div>
 
-                  {/* Facebook & YouTube 2-col row */}
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
                     <div>
-                      <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                      <label style={{ fontSize: '10px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
                         <span style={{ color: '#1877F2', fontWeight: 900 }}>f</span> ফেসবুক পেজ
                       </label>
                       <input 
@@ -2820,11 +3164,11 @@ export default function App() {
                         value={facebookHandle} 
                         onChange={e => setFacebookHandle(e.target.value)} 
                         placeholder="helloprobash"
-                        style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                        style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
                       />
                     </div>
                     <div>
-                      <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                      <label style={{ fontSize: '10px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
                         <span style={{ color: '#FF0000', fontWeight: 900 }}>▶</span> ইউটিউব চ্যানেল
                       </label>
                       <input 
@@ -2833,7 +3177,7 @@ export default function App() {
                         value={youtubeHandle} 
                         onChange={e => setYoutubeHandle(e.target.value)} 
                         placeholder="helloprobash"
-                        style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                        style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
                       />
                     </div>
                   </div>
@@ -2842,10 +3186,10 @@ export default function App() {
             </div>
 
             {/* Comment / Subtitle Badge */}
-            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e5e7eb' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span className="form-sublabel" style={{ margin: 0 }}>মন্তব্য / সাবটাইটেল (Comment Badge):</span>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
                   <input 
                     type="checkbox" 
                     checked={showCtaBadge} 
@@ -2858,13 +3202,14 @@ export default function App() {
 
               {showCtaBadge && (
                 <>
-                  <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', flexWrap: 'wrap' }}>
                     {['বিস্তারিত কমেন্টে', 'বিস্তারিত ক্যাপশনে', 'বিস্তারিত খবরে', 'আরও জানতে কমেন্ট দেখুন'].map(txt => (
                       <button 
                         key={txt}
                         type="button" 
                         className={`badge-preset-btn ${ctaText === txt ? 'active' : ''}`}
                         onClick={() => setCtaText(txt)}
+                        style={{ fontSize: '10px', padding: '2px 7px' }}
                       >
                         {txt}
                       </button>
@@ -2876,7 +3221,7 @@ export default function App() {
                     value={ctaText} 
                     onChange={e => setCtaText(e.target.value)} 
                     placeholder="উদা: বিস্তারিত কমেন্টে"
-                    style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                    style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
                   />
                 </>
               )}
@@ -2885,321 +3230,29 @@ export default function App() {
 
           {/* Quick Resolution Export Buttons */}
           <div className="export-actions-card">
-            <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '8px' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#374151', display: 'block', marginBottom: '6px' }}>
               পোস্টকার্ড ডাউনলোড করুন:
             </span>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
               <button 
                 className="btn-secondary" 
-                style={{ justifyContent: 'center' }}
+                style={{ justifyContent: 'center', height: '38px', fontSize: '12px' }}
                 onClick={() => handleDownload(1.35)}
                 disabled={isExporting}
               >
-                <Download size={16} /> 1080p HD
+                <Download size={15} /> 1080p HD
               </button>
               <button 
                 className="btn-primary" 
-                style={{ justifyContent: 'center' }}
+                style={{ justifyContent: 'center', height: '38px', fontSize: '12px' }}
                 onClick={() => handleDownload(2)}
                 disabled={isExporting}
               >
-                <Download size={16} /> 1600p Ultra HD
+                <Download size={15} /> 1600p Ultra HD
               </button>
             </div>
           </div>
-        </section>
-
-        {/* Live Preview Area */}
-        <section className="preview-area">
-          <div className="preview-container-wrapper" ref={previewContainerRef}>
-            <div 
-              className="preview-scaler"
-              style={{
-                width: `${Math.round(800 * previewScale)}px`,
-                height: `${Math.round(800 * previewScale)}px`,
-                position: 'relative',
-                overflow: 'hidden',
-                margin: '0 auto',
-                borderRadius: '8px',
-                boxShadow: '0 8px 24px rgba(0, 0, 0, 0.12)'
-              }}
-            >
-              <div 
-                style={{
-                  transform: `scale(${previewScale})`,
-                  transformOrigin: 'top left',
-                  width: '800px',
-                  height: '800px',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0
-                }}
-              >
-                {renderTemplate()}
-              </div>
-            </div>
-
-            {/* Quick Controls Bar (Font Size & Image Zoom) right under the postcard preview */}
-            <div className="postcard-quick-bar hide-on-export">
-              {/* Row 1: Headline 1 Size */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  <Type size={13} color="#e50914" /> ১ম লাইন:
-                </span>
-                <div className="quick-bar-controls">
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadline1FontSize(prev => Math.max(16, prev - 2))}
-                    title="১ম লাইনের সাইজ ২ কমান"
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="range" 
-                    min="16" 
-                    max="48" 
-                    value={headline1FontSize} 
-                    onChange={e => setHeadline1FontSize(Number(e.target.value))} 
-                    className="quick-slider"
-                  />
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadline1FontSize(prev => Math.min(48, prev + 2))}
-                    title="১ম লাইনের সাইজ ২ বাড়ান"
-                  >
-                    +
-                  </button>
-                  <span 
-                    className="quick-val-pill"
-                    onClick={() => setShowFontSizePopup(prev => !prev)}
-                    title="ফন্ট সাইজ পপআপ"
-                  >
-                    {headline1FontSize}px
-                  </span>
-                  <label className="quick-color-indicator" title="১ম লাইনের রং পরিবর্তন করুন">
-                    <input 
-                      type="color" 
-                      value={headline1Color} 
-                      onChange={e => setHeadline1Color(e.target.value)} 
-                      style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
-                    />
-                    <span className="quick-color-dot" style={{ backgroundColor: headline1Color }} />
-                  </label>
-                </div>
-              </div>
-
-              {/* Row 2: Headline 2 Size */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  <Type size={13} color="#d97706" /> ২য় লাইন:
-                </span>
-                <div className="quick-bar-controls">
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadline2FontSize(prev => Math.max(18, prev - 2))}
-                    title="২য় লাইনের সাইজ ২ কমান"
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="range" 
-                    min="18" 
-                    max="54" 
-                    value={headline2FontSize} 
-                    onChange={e => setHeadline2FontSize(Number(e.target.value))} 
-                    className="quick-slider"
-                  />
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadline2FontSize(prev => Math.min(54, prev + 2))}
-                    title="২য় লাইনের সাইজ ২ বাড়ান"
-                  >
-                    +
-                  </button>
-                  <span 
-                    className="quick-val-pill"
-                    onClick={() => setShowFontSizePopup(prev => !prev)}
-                    title="ফন্ট সাইজ পপআপ"
-                  >
-                    {headline2FontSize}px
-                  </span>
-                  <label className="quick-color-indicator" title="২য় লাইনের রং পরিবর্তন করুন">
-                    <input 
-                      type="color" 
-                      value={headline2Color} 
-                      onChange={e => setHeadline2Color(e.target.value)} 
-                      style={{ opacity: 0, position: 'absolute', width: 0, height: 0 }}
-                    />
-                    <span className="quick-color-dot" style={{ backgroundColor: headline2Color }} />
-                  </label>
-                </div>
-              </div>
-
-              {/* Row 3: Headline Line Spacing / Gap */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  <MoveVertical size={13} color="#8b5cf6" /> গ্যাপ:
-                </span>
-                <div className="quick-bar-controls">
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadlineGap(prev => Math.max(0, prev - 2))}
-                    title="লাইন গ্যাপ ২ কমান"
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="range" 
-                    min="0" 
-                    max="36" 
-                    value={headlineGap} 
-                    onChange={e => setHeadlineGap(Number(e.target.value))} 
-                    className="quick-slider"
-                  />
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadlineGap(prev => Math.min(36, prev + 2))}
-                    title="লাইন গ্যাপ ২ বাড়ান"
-                  >
-                    +
-                  </button>
-                  <span 
-                    className="quick-val-pill"
-                    onClick={() => setShowFontSizePopup(prev => !prev)}
-                    title="লাইন গ্যাপ পপআপ"
-                  >
-                    {headlineGap}px
-                  </span>
-                </div>
-              </div>
-
-              {/* Row 4: Headline Vertical Position (উচ্চতা / নিচে নামানো) */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  <Move size={13} color="#0284c7" /> উচ্চতা:
-                </span>
-                <div className="quick-bar-controls">
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadlineY(prev => Math.max(440, prev - 4))}
-                    title="হেডলাইন উপরে তুলুন"
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="range" 
-                    min="440" 
-                    max="680" 
-                    value={headlineY} 
-                    onChange={e => setHeadlineY(Number(e.target.value))} 
-                    className="quick-slider"
-                  />
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setHeadlineY(prev => Math.min(680, prev + 4))}
-                    title="হেডলাইন নিচে নামান"
-                  >
-                    +
-                  </button>
-                  <span 
-                    className="quick-val-pill"
-                    onClick={() => setShowFontSizePopup(prev => !prev)}
-                    title="পজিশন পপআপ"
-                  >
-                    {headlineY}px
-                  </span>
-                </div>
-              </div>
-
-              {/* Row 2: Image Zoom */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  <ZoomIn size={13} color="#e50914" /> জুম:
-                </span>
-                <div className="quick-bar-controls">
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setImageZoom(prev => Math.max(30, prev - 10))}
-                    title="জুম কমান"
-                  >
-                    -
-                  </button>
-                  <input 
-                    type="range" 
-                    min="30" 
-                    max="220" 
-                    value={imageZoom} 
-                    onChange={e => setImageZoom(Number(e.target.value))} 
-                    className="quick-slider"
-                  />
-                  <button 
-                    type="button" 
-                    className="quick-step-btn" 
-                    onClick={() => setImageZoom(prev => Math.min(220, prev + 10))}
-                    title="জুম বাড়ান"
-                  >
-                    +
-                  </button>
-                  <span 
-                    className="quick-val-pill"
-                    onClick={() => {
-                      setImageZoom(100);
-                      setImageOffsetX(0);
-                      setImageOffsetY(0);
-                    }}
-                    title="ক্লিক করে ১০০% ও পজিশন রিসেট করুন"
-                  >
-                    {imageZoom}%
-                  </span>
-                </div>
-              </div>
-
-              {/* Row 3: Fit Mode Toggle (সম্পূর্ণ ছবি vs ফ্রেম ফিল) */}
-              <div className="quick-bar-row">
-                <span className="quick-bar-label">
-                  ভিউ:
-                </span>
-                <div className="quick-fit-toggle">
-                  <button 
-                    type="button"
-                    className={`quick-fit-btn ${imageFitMode === 'contain' ? 'active' : ''}`}
-                    onClick={() => {
-                      setImageFitMode('contain');
-                      setImageZoom(100);
-                      setImageOffsetX(0);
-                      setImageOffsetY(0);
-                    }}
-                    title="সম্পূর্ণ ছবি দেখান (কোনো অংশ কাটবে না)"
-                  >
-                    🖼️ সম্পূর্ণ ছবি
-                  </button>
-                  <button 
-                    type="button"
-                    className={`quick-fit-btn ${imageFitMode === 'cover' ? 'active' : ''}`}
-                    onClick={() => {
-                      setImageFitMode('cover');
-                      setImageZoom(100);
-                      setImageOffsetX(0);
-                      setImageOffsetY(0);
-                    }}
-                    title="ফ্রেম পূরণ করুন"
-                  >
-                    ✂️ ফ্রেম ফিল
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        </aside>
       </main>
 
       {/* Toast Notification */}
