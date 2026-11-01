@@ -1089,12 +1089,11 @@ button {
   width: 100%;
 }
 
-@media (min-width: 520px) {
-  .editor-header-wrap {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+.template-switcher-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
 }
 
 .template-switcher {
@@ -1150,6 +1149,27 @@ button {
   color: #ffffff;
   border-color: #b91c1c;
   box-shadow: 0 1px 3px rgba(185, 28, 28, 0.3);
+}
+
+.template-switch-btn.active.ps-red {
+  background-color: #8b1a1a;
+  color: #ffffff;
+  border-color: #8b1a1a;
+  box-shadow: 0 1px 3px rgba(139, 26, 26, 0.4);
+}
+
+.template-switch-btn.active.ps-dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border-color: #1a1a1a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.template-switch-btn.active.ps-blue {
+  background-color: #1e3a5f;
+  color: #ffffff;
+  border-color: #1e3a5f;
+  box-shadow: 0 1px 3px rgba(30, 58, 95, 0.4);
 }
 
 /* ====================================================
@@ -2434,4 +2454,414 @@ button {
     padding: 5px 2px;
   }
 }
+
+
+/* ====================================================
+   PRESS STUDIO 65 - Probash Top Photo + Bottom Red
+==================================================== */
+.template-ps65 {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #1a0202;
+  user-select: none;
+}
+
+.template-ps65 .ps65-photo-slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 800px;
+  height: 498px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-ps65 .ps65-photo-slot:active {
+  cursor: grabbing;
+}
+
+.template-ps65 .ps65-photo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
+}
+
+.template-ps65 .ps65-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f9fafb;
+}
+
+.template-ps65 .ps65-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.template-ps65 .ps65-photo-slot:hover .hn-photo-edit-badge {
+  opacity: 1;
+}
+
+
+/* ====================================================
+   PRESS STUDIO 102 - Red Theme with Centered Photo
+==================================================== */
+.template-ps102 {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #550707;
+  user-select: none;
+}
+
+.template-ps102 .ps102-photo-slot {
+  position: absolute;
+  left: 63px;
+  top: 107px;
+  width: 674px;
+  height: 393px;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-ps102 .ps102-photo-slot:active {
+  cursor: grabbing;
+}
+
+.template-ps102 .ps102-photo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
+}
+
+.template-ps102 .ps102-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #f9fafb;
+}
+
+.template-ps102 .ps102-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.template-ps102 .ps102-photo-slot:hover .hn-photo-edit-badge {
+  opacity: 1;
+}
+
+
+/* ====================================================
+   PRESS STUDIO 122 - Dark BG with Large Rounded Photo
+==================================================== */
+.template-ps122 {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #0d0101;
+  user-select: none;
+}
+
+.template-ps122 .ps122-photo-slot {
+  position: absolute;
+  left: 36px;
+  top: 79px;
+  width: 730px;
+  height: 384px;
+  border-radius: 0 85px 0 85px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-ps122 .ps122-photo-slot:active {
+  cursor: grabbing;
+}
+
+.template-ps122 .ps122-photo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
+}
+
+.template-ps122 .ps122-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.template-ps122 .ps122-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.template-ps122 .ps122-photo-slot:hover .hn-photo-edit-badge {
+  opacity: 1;
+}
+
+
+/* ====================================================
+   PRESS STUDIO 183 - Blue Diamond Pattern with Photo
+==================================================== */
+.template-ps183 {
+  width: 800px;
+  height: 800px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: #081d33;
+  user-select: none;
+}
+
+.template-ps183 .ps183-photo-slot {
+  position: absolute;
+  left: 36px;
+  top: 86px;
+  width: 728px;
+  height: 454px;
+  border-radius: 18px;
+  overflow: hidden;
+  z-index: 1;
+  background-color: #0b2239;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.template-ps183 .ps183-photo-slot:active {
+  cursor: grabbing;
+}
+
+.template-ps183 .ps183-photo {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: none;
+}
+
+.template-ps183 .ps183-photo-empty {
+  color: #9ca3af;
+  font-size: 18px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background: #162d4a;
+}
+
+.template-ps183 .ps183-master-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.template-ps183 .ps183-photo-slot:hover .hn-photo-edit-badge {
+  opacity: 1;
+}
+
+
+/* ====================================================
+   PRESS STUDIO SHARED STYLES (Headlines & Dates)
+==================================================== */
+.template-ps65 .hn-headline-area,
+.template-ps102 .hn-headline-area,
+.template-ps122 .hn-headline-area,
+.template-ps183 .hn-headline-area {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  z-index: 20;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.template-ps65 .hn-headline-1,
+.template-ps102 .hn-headline-1,
+.template-ps122 .hn-headline-1,
+.template-ps183 .hn-headline-1 {
+  font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+  padding: 2px 10px;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 1px 3px rgba(0, 0, 0, 0.85);
+  letter-spacing: -0.2px;
+}
+
+.template-ps65 .hn-headline-2,
+.template-ps102 .hn-headline-2,
+.template-ps122 .hn-headline-2,
+.template-ps183 .hn-headline-2 {
+  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  margin: 0;
+  padding: 2px 10px;
+  letter-spacing: -0.6px;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.9);
+}
+
+/* Press Studio Dynamic Dates */
+.ps65-date-box {
+  position: absolute;
+  bottom: 27px;
+  right: 36px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ps65-date-box .date-text {
+  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.ps65-date-box .date-pencil {
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ps65-date-box:hover .date-pencil {
+  opacity: 1;
+}
+
+.ps-top-date-box {
+  position: absolute;
+  top: 35px;
+  right: 42px;
+  z-index: 25;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.ps-top-date-box .date-text {
+  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  line-height: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.ps-top-date-box .date-pencil {
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.ps-top-date-box:hover .date-pencil {
+  opacity: 1;
+}
+
 

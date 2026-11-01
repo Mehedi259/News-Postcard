@@ -7,14 +7,14 @@ import {
   Share2, ThumbsUp, MessageCircle
 } from 'lucide-react';
 
-type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking';
+type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking' | 'press-studio-65' | 'press-studio-102' | 'press-studio-122' | 'press-studio-183';
 
 // Brand Logo Component supporting Hello Probash, Hello Desh and Hello Nabiganj
 const BrandLogo = ({ selectedTemplate, customLogo, size = 28 }: { selectedTemplate: TemplateType; customLogo?: string | null; size?: number }) => {
   if (customLogo) {
     return <img src={customLogo} alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
   }
-  if (selectedTemplate === 'hello-probash') {
+  if (selectedTemplate === 'hello-probash' || selectedTemplate.startsWith('press-studio')) {
     return <img src="/hello-probash-logo.png" alt="Hello Probash Logo" style={{ height: size, objectFit: 'contain' }} />;
   }
   if (selectedTemplate === 'hello-desh') {
@@ -429,7 +429,7 @@ export default function App() {
         }
       });
       const link = document.createElement('a');
-      link.download = `postcard-hellonabiganj-${Date.now()}.png`;
+      link.download = `postcard-${selectedTemplate}-${Date.now()}.png`;
       link.href = dataUrl;
       link.click();
       showToast('পোস্টকার্ড ইমেজ সফলভাবে ডাউনলোড হয়েছে!');
@@ -504,6 +504,57 @@ export default function App() {
         </span>
       </div>
     );
+  };
+
+  const renderPressStudioDate = (position: 'top-right' | 'bottom-right') => {
+    if (!showDate) return null;
+    const dateFont = getFontFamilyAndWeight(dateFontFamily, 700);
+    return (
+      <div 
+        className={position === 'bottom-right' ? 'ps65-date-box' : 'ps-top-date-box'}
+        title="তারিখ পরিবর্তন করতে ক্লিক করুন"
+      >
+        <span 
+          ref={dateRef}
+          className="date-text oncard-editable"
+          contentEditable={!isExporting}
+          suppressContentEditableWarning={true}
+          style={{ 
+            fontSize: `${dateFontSize}px`, 
+            color: dateColor === '#1f2937' || !dateColor ? '#ffffff' : dateColor, 
+            fontFamily: dateFont.fontFamily, 
+            fontWeight: dateFont.fontWeight 
+          }}
+          onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              e.currentTarget.blur();
+            }
+          }}
+        >
+          {date}
+        </span>
+        <span className="date-pencil hide-on-export">
+          <Pencil size={10} />
+        </span>
+      </div>
+    );
+  };
+
+  const handleSelectTemplate = (tmpl: TemplateType) => {
+    setSelectedTemplate(tmpl);
+    if (tmpl === 'press-studio-65') {
+      setHeadlineY(536);
+    } else if (tmpl === 'press-studio-102') {
+      setHeadlineY(520);
+    } else if (tmpl === 'press-studio-122') {
+      setHeadlineY(490);
+    } else if (tmpl === 'press-studio-183') {
+      setHeadlineY(565);
+    } else {
+      setHeadlineY(526);
+    }
   };
 
   const renderHeadlineArea = () => {
@@ -1298,6 +1349,302 @@ export default function App() {
           </div>
         );
 
+      case 'press-studio-65': {
+        return (
+          <div 
+            className="postcard template-ps65" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="ps65-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="ps65-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="ps65-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Floating Camera Button */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/templates/probash-studio-65-overlay.png" 
+              className="ps65-master-overlay" 
+              alt="Press Studio 65 Frame" 
+            />
+
+            {/* 3. Bottom Date Display */}
+            {renderPressStudioDate('bottom-right')}
+
+            {/* 4. Dynamic Headline Section */}
+            {renderHeadlineArea()}
+          </div>
+        );
+      }
+
+      case 'press-studio-102': {
+        return (
+          <div 
+            className="postcard template-ps102" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="ps102-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="ps102-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="ps102-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Floating Camera Button */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/templates/probash-studio-102-overlay.png" 
+              className="ps102-master-overlay" 
+              alt="Press Studio 102 Frame" 
+            />
+
+            {/* 3. Top Date Display */}
+            {renderPressStudioDate('top-right')}
+
+            {/* 4. Dynamic Headline Section */}
+            {renderHeadlineArea()}
+          </div>
+        );
+      }
+
+      case 'press-studio-122': {
+        return (
+          <div 
+            className="postcard template-ps122" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="ps122-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="ps122-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="ps122-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Floating Camera Button */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/templates/probash-studio-122-overlay.png" 
+              className="ps122-master-overlay" 
+              alt="Press Studio 122 Frame" 
+            />
+
+            {/* 3. Top Date Display */}
+            {renderPressStudioDate('top-right')}
+
+            {/* 4. Dynamic Headline Section */}
+            {renderHeadlineArea()}
+          </div>
+        );
+      }
+
+      case 'press-studio-183': {
+        return (
+          <div 
+            className="postcard template-ps183" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="ps183-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="ps183-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="ps183-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Floating Camera Button */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Master Template Overlay */}
+            <img 
+              src="/templates/probash-studio-183-overlay.png" 
+              className="ps183-master-overlay" 
+              alt="Press Studio 183 Frame" 
+            />
+
+            {/* 3. Top Date Display */}
+            {renderPressStudioDate('top-right')}
+
+            {/* 4. Dynamic Headline Section */}
+            {renderHeadlineArea()}
+          </div>
+        );
+      }
+
       default:
         return null;
     }
@@ -1312,7 +1659,7 @@ export default function App() {
           <div className="navbar-brand-text">
             <span className="navbar-title">News Postcard</span>
             <span className="navbar-subtitle">
-              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : 'Hello Nabiganj'}
+              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : selectedTemplate === 'hello-nabiganj' ? 'Hello Nabiganj' : selectedTemplate.startsWith('press-studio') ? `Press Studio ${selectedTemplate.split('-')[2]}` : selectedTemplate}
             </span>
           </div>
         </div>
@@ -1346,31 +1693,67 @@ export default function App() {
             <h2 className="editor-title" style={{ borderBottom: 'none', paddingBottom: 0, margin: 0 }}>
               পোস্টকার্ড এডিটর
             </h2>
-            <div className="template-switcher">
-              <button 
-                type="button" 
-                className={`template-switch-btn ${selectedTemplate === 'hello-probash' ? 'active probash' : ''}`}
-                onClick={() => setSelectedTemplate('hello-probash')}
-                title="হ্যালো প্রবাস নিউজ পোস্টকার্ড"
-              >
-                🔴 হ্যালো প্রবাস
-              </button>
-              <button 
-                type="button" 
-                className={`template-switch-btn ${selectedTemplate === 'hello-desh' ? 'active desh' : ''}`}
-                onClick={() => setSelectedTemplate('hello-desh')}
-                title="হ্যালো দেশ পোস্টকার্ড"
-              >
-                🟢 হ্যালো দেশ
-              </button>
-              <button 
-                type="button" 
-                className={`template-switch-btn ${selectedTemplate === 'hello-nabiganj' ? 'active nabiganj' : ''}`}
-                onClick={() => setSelectedTemplate('hello-nabiganj')}
-                title="হ্যালো নবীগঞ্জ পোস্টকার্ড"
-              >
-                🔴 হ্যালো নবীগঞ্জ
-              </button>
+            <div className="template-switcher-container">
+              <div className="template-switcher">
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'hello-probash' ? 'active probash' : ''}`}
+                  onClick={() => handleSelectTemplate('hello-probash')}
+                  title="হ্যালো প্রবাস নিউজ পোস্টকার্ড"
+                >
+                  🔴 হ্যালো প্রবাস
+                </button>
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'hello-desh' ? 'active desh' : ''}`}
+                  onClick={() => handleSelectTemplate('hello-desh')}
+                  title="হ্যালো দেশ পোস্টকার্ড"
+                >
+                  🟢 হ্যালো দেশ
+                </button>
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'hello-nabiganj' ? 'active nabiganj' : ''}`}
+                  onClick={() => handleSelectTemplate('hello-nabiganj')}
+                  title="হ্যালো নবীগঞ্জ পোস্টকার্ড"
+                >
+                  🔴 হ্যালো নবীগঞ্জ
+                </button>
+              </div>
+              <div className="template-switcher">
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'press-studio-65' ? 'active ps-red' : ''}`}
+                  onClick={() => handleSelectTemplate('press-studio-65')}
+                  title="প্রেস স্টুডিও ৬৫"
+                >
+                  🎴 PS-65
+                </button>
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'press-studio-102' ? 'active ps-red' : ''}`}
+                  onClick={() => handleSelectTemplate('press-studio-102')}
+                  title="প্রেস স্টুডিও ১০২"
+                >
+                  🎴 PS-102
+                </button>
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'press-studio-122' ? 'active ps-dark' : ''}`}
+                  onClick={() => handleSelectTemplate('press-studio-122')}
+                  title="প্রেস স্টুডিও ১২২"
+                >
+                  🎴 PS-122
+                </button>
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'press-studio-183' ? 'active ps-blue' : ''}`}
+                  onClick={() => handleSelectTemplate('press-studio-183')}
+                  title="প্রেস স্টুডিও ১৮৩"
+                >
+                  🎴 PS-183
+                </button>
+              </div>
             </div>
           </div>
 
