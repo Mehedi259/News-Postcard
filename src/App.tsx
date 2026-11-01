@@ -4,27 +4,39 @@ import {
   Download, Globe, ChevronDown, Quote, 
   Copy, Check, Type, Camera, Pencil,
   ZoomIn, Calendar, MoveVertical, Move,
-  Share2, ThumbsUp, MessageCircle
+  Share2, ThumbsUp, MessageCircle,
+  Upload, Trash2, Palette
 } from 'lucide-react';
 
-type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking' | 'press-studio-65' | 'press-studio-102' | 'press-studio-122' | 'press-studio-183';
+type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking' | 'press-studio-65' | 'press-studio-102' | 'press-studio-122' | 'press-studio-183' | 'press-studio-ribbon';
 
-// Brand Logo Component supporting Hello Probash, Hello Desh and Hello Nabiganj
-const BrandLogo = ({ selectedTemplate, customLogo, size = 28 }: { selectedTemplate: TemplateType; customLogo?: string | null; size?: number }) => {
+// Brand Logo Component supporting Hello Probash, Hello Desh, Hello Nabiganj, and Custom Uploaded Logo
+const BrandLogo = ({ 
+  selectedTemplate, 
+  customLogo, 
+  logoPreset, 
+  size = 28 
+}: { 
+  selectedTemplate: TemplateType; 
+  customLogo?: string | null; 
+  logoPreset?: 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'custom';
+  size?: number 
+}) => {
   if (customLogo) {
-    return <img src={customLogo} alt="Logo" style={{ width: size, height: size, objectFit: 'contain' }} />;
+    return <img src={customLogo} alt="Brand Logo" style={{ maxHeight: size, maxWidth: size * 3.5, objectFit: 'contain' }} />;
   }
-  if (selectedTemplate === 'hello-probash' || selectedTemplate.startsWith('press-studio')) {
-    return <img src="/hello-probash-logo.png" alt="Hello Probash Logo" style={{ height: size, objectFit: 'contain' }} />;
-  }
-  if (selectedTemplate === 'hello-desh') {
+  const effective = logoPreset && logoPreset !== 'custom' ? logoPreset : selectedTemplate;
+  if (effective === 'hello-desh') {
     return <img src="/hello-desh-logo.png" alt="Hello Desh Logo" style={{ height: size, objectFit: 'contain' }} />;
   }
-  return <img src="/hello-nabiganj-logo.png" alt="Hello Nabiganj Logo" style={{ height: size, objectFit: 'contain' }} />;
+  if (effective === 'hello-nabiganj') {
+    return <img src="/hello-nabiganj-logo.png" alt="Hello Nabiganj Logo" style={{ height: size, objectFit: 'contain' }} />;
+  }
+  return <img src="/templates/hello-probash-press-logo.png" alt="Hello Probash Logo" style={{ height: size, objectFit: 'contain' }} />;
 };
 
-const NabiganjLogo = ({ customLogo, size = 28 }: { customLogo?: string | null; size?: number }) => (
-  <BrandLogo selectedTemplate="hello-nabiganj" customLogo={customLogo} size={size} />
+const NabiganjLogo = ({ customLogo, logoPreset, size = 28 }: { customLogo?: string | null; logoPreset?: any; size?: number }) => (
+  <BrandLogo selectedTemplate="hello-nabiganj" customLogo={customLogo} logoPreset={logoPreset} size={size} />
 );
 
 export interface BengaliFontOption {
@@ -103,12 +115,44 @@ export default function App() {
   const likes = '12k';
   const comments = '1.2k';
   const shares = '500';
-  const ctaText = 'বিস্তারিত কমেন্টে';
+
+  // Branding & Social Handles state
+  const [logoPreset, setLogoPreset] = useState<'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'custom'>('hello-probash');
+  const [customLogo, setCustomLogo] = useState<string | null>(null);
+  const [logoSize, setLogoSize] = useState<number>(100);
+  const [logoPosition, setLogoPosition] = useState<'right' | 'left'>('right');
+  const [websiteUrl, setWebsiteUrl] = useState<string>('WWW.HELLOPROBASH.COM');
+  const [facebookHandle, setFacebookHandle] = useState<string>('helloprobash');
+  const [youtubeHandle, setYoutubeHandle] = useState<string>('helloprobash');
+  const [ctaText, setCtaText] = useState<string>('বিস্তারিত কমেন্টে');
+  const [showCtaBadge, setShowCtaBadge] = useState<boolean>(true);
+  const [showSocialFooter, setShowSocialFooter] = useState<boolean>(true);
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCustomLogo(event.target?.result as string);
+        setLogoPreset('custom');
+        setToastMessage('কাস্টম লোগো সফলভাবে আপলোড হয়েছে!');
+        setTimeout(() => setToastMessage(null), 2500);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveCustomLogo = () => {
+    setCustomLogo(null);
+    setLogoPreset('hello-probash');
+    setToastMessage('ডিফল্ট লোগোতে ফিরে যাওয়া হয়েছে');
+    setTimeout(() => setToastMessage(null), 2000);
+  };
 
   // Compatibility defaults for other template modes
   const frameColor = '#fe0312';
-  const socialHandle = 'hellonabiganj';
-  const customLogo = null;
+  const socialHandle = facebookHandle || 'helloprobash';
   const [imageOffsetX, setImageOffsetX] = useState(0);
   const [imageOffsetY, setImageOffsetY] = useState(0);
 
@@ -544,7 +588,17 @@ export default function App() {
 
   const handleSelectTemplate = (tmpl: TemplateType) => {
     setSelectedTemplate(tmpl);
-    if (tmpl === 'press-studio-65') {
+    if (tmpl === 'press-studio-ribbon') {
+      setHeadlineY(470);
+      setHeadline1FontFamily("'SolaimanLipi', sans-serif");
+      setHeadline2FontFamily("'SolaimanLipi', sans-serif");
+      setHeadline1Color("#ffffff");
+      setHeadline2Color("#fcee0a");
+      setHeadline1FontSize(38);
+      setHeadline2FontSize(44);
+      setHeadlineGap(14);
+      setCtaText('বিস্তারিত কমেন্টে');
+    } else if (tmpl === 'press-studio-65') {
       setHeadlineY(536);
     } else if (tmpl === 'press-studio-102') {
       setHeadlineY(520);
@@ -1645,6 +1699,190 @@ export default function App() {
         );
       }
 
+      case 'press-studio-ribbon': {
+        const dateFont = getFontFamilyAndWeight(dateFontFamily, 700);
+        return (
+          <div 
+            className="postcard template-ps-ribbon" 
+            ref={postcardRef}
+          >
+            {/* 1. Underlying Photo Container */}
+            <div 
+              ref={photoSlotRef}
+              className="ps-ribbon-photo-slot"
+              onMouseDown={handleMouseDown}
+              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
+            >
+              {thumbnail ? (
+                <>
+                  {imageFitMode === 'contain' && (
+                    <img 
+                      src={thumbnail} 
+                      alt="Backdrop" 
+                      className="photo-blur-backdrop"
+                      aria-hidden="true"
+                    />
+                  )}
+                  <img 
+                    src={thumbnail} 
+                    alt="News Main" 
+                    className="ps-ribbon-photo"
+                    style={{
+                      objectFit: imageFitMode,
+                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
+                      transformOrigin: 'center center'
+                    }}
+                    draggable={false}
+                  />
+                </>
+              ) : (
+                <div 
+                  className="ps-ribbon-photo-empty"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{ cursor: 'pointer' }}
+                >
+                  ছবি আপলোড করুন
+                </div>
+              )}
+
+              {/* Top-Right Floating Brand Logo */}
+              <div 
+                className="ps-ribbon-logo-badge"
+                style={{
+                  transform: `scale(${logoSize / 100})`,
+                  transformOrigin: logoPosition === 'left' ? 'top left' : 'top right',
+                  left: logoPosition === 'left' ? '28px' : 'auto',
+                  right: logoPosition === 'right' ? '28px' : 'auto'
+                }}
+              >
+                <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} logoPreset={logoPreset} size={48} />
+              </div>
+
+              {/* Floating Camera Button */}
+              <div 
+                className="hn-photo-edit-badge hide-on-export"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                <Camera size={14} />
+                <span>ছবি পরিবর্তন</span>
+              </div>
+            </div>
+
+            {/* 2. Curved Ribbon Separator with Centered Date */}
+            <div className="ps-ribbon-curve-wrap">
+              <svg 
+                className="ps-ribbon-curve-svg" 
+                viewBox="0 0 800 55" 
+                preserveAspectRatio="none"
+              >
+                <path 
+                  d="M 0,38 Q 400,-10 800,38 L 800,55 L 0,55 Z" 
+                  fill="#670004" 
+                />
+                <path 
+                  d="M 0,36 Q 400,-12 800,36" 
+                  stroke="rgba(255, 255, 255, 0.22)" 
+                  strokeWidth="1.5" 
+                  fill="none" 
+                />
+              </svg>
+
+              {showDate && (
+                <div 
+                  className="ps-ribbon-date-badge"
+                  style={{
+                    fontFamily: dateFont.fontFamily,
+                    fontWeight: dateFont.fontWeight,
+                    fontSize: `${dateFontSize}px`,
+                    color: dateColor
+                  }}
+                >
+                  <span 
+                    ref={dateRef}
+                    className="oncard-editable"
+                    contentEditable={!isExporting}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+                  >
+                    {date}
+                  </span>
+                  <span className="date-pencil hide-on-export">
+                    <Pencil size={10} />
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Deep Red Headline Background with World Map & Grid Texture */}
+            {/* 3. Deep Red Headline Background with World Map & Grid Texture */}
+            <div className="ps-ribbon-content-body">
+              {/* Faint Red World Map Watermark */}
+              <img 
+                src="/world-map.svg" 
+                alt="Map Watermark" 
+                className="ps-ribbon-map-watermark" 
+                aria-hidden="true"
+              />
+
+              {/* Coordinate Grid Texture */}
+              <div className="ps-ribbon-grid-overlay" aria-hidden="true" />
+            </div>
+
+            {/* 4. Dynamic Headline Area */}
+            {renderHeadlineArea()}
+
+            {/* 5. Subtitle / Comment Text */}
+            {showCtaBadge && (
+              <div className="ps-ribbon-cta-wrap">
+                <span 
+                  className="ps-ribbon-cta-text oncard-editable"
+                  contentEditable={!isExporting}
+                  suppressContentEditableWarning={true}
+                  onBlur={(e) => setCtaText(e.currentTarget.innerText.trim() || ctaText)}
+                  title="ক্লিক করে কমেন্ট টেক্সট এডিট করুন"
+                >
+                  {ctaText}
+                </span>
+              </div>
+            )}
+
+            {/* 6. Bottom Social Media & Website Footer */}
+              {showSocialFooter && (
+                <div className="ps-ribbon-footer-bar">
+                  {/* Facebook */}
+                  <div className="ps-footer-item">
+                    <svg className="ps-social-icon ps-fb" viewBox="0 0 24 24" width="18" height="18" fill="#1877F2">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    <span className="ps-footer-handle">{facebookHandle}</span>
+                  </div>
+
+                  {/* YouTube */}
+                  <div className="ps-footer-item">
+                    <svg className="ps-social-icon ps-yt" viewBox="0 0 24 24" width="18" height="18" fill="#FF0000">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                    <span className="ps-footer-handle">{youtubeHandle}</span>
+                  </div>
+
+                  {/* Website URL */}
+                  <div className="ps-footer-item ps-website">
+                    <svg className="ps-social-icon ps-globe" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="2" y1="12" x2="22" y2="12"/>
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                    <span className="ps-footer-handle ps-web-text">{websiteUrl}</span>
+                  </div>
+                </div>
+              )}
+          </div>
+        );
+      }
+
       default:
         return null;
     }
@@ -1655,11 +1893,11 @@ export default function App() {
       {/* Top Navbar */}
       <nav className="navbar">
         <div className="navbar-brand">
-          <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} size={28} />
+          <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} logoPreset={logoPreset} size={28} />
           <div className="navbar-brand-text">
             <span className="navbar-title">News Postcard</span>
             <span className="navbar-subtitle">
-              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : selectedTemplate === 'hello-nabiganj' ? 'Hello Nabiganj' : selectedTemplate.startsWith('press-studio') ? `Press Studio ${selectedTemplate.split('-')[2]}` : selectedTemplate}
+              {selectedTemplate === 'hello-probash' ? 'Hello Probash NEWS' : selectedTemplate === 'hello-desh' ? 'Hello Desh' : selectedTemplate === 'hello-nabiganj' ? 'Hello Nabiganj' : selectedTemplate === 'press-studio-ribbon' ? 'PS Curved Ribbon' : selectedTemplate.startsWith('press-studio') ? `Press Studio ${selectedTemplate.split('-')[2]}` : selectedTemplate}
             </span>
           </div>
         </div>
@@ -1721,6 +1959,14 @@ export default function App() {
                 </button>
               </div>
               <div className="template-switcher">
+                <button 
+                  type="button" 
+                  className={`template-switch-btn ${selectedTemplate === 'press-studio-ribbon' ? 'active ps-gold' : ''}`}
+                  onClick={() => handleSelectTemplate('press-studio-ribbon')}
+                  title="PS রিবন (সৌদি ভিসা ও আধুনিক রিবন স্টাইল)"
+                >
+                  ⭐ PS রিবন
+                </button>
                 <button 
                   type="button" 
                   className={`template-switch-btn ${selectedTemplate === 'press-studio-65' ? 'active ps-red' : ''}`}
@@ -2089,6 +2335,237 @@ export default function App() {
               <div style={{ fontSize: '11px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>💡 কার্ডে "পজিশন সরান" বাটন ড্র্যাগ করেও সরানো যায়</span>
               </div>
+            </div>
+          </div>
+
+          {/* SECTION: Branding, Custom Logo & Social Media */}
+          <div className="editor-section-card">
+            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Palette size={16} color="#e50914" />
+              ব্র্যান্ডিং, লোগো ও সোশ্যাল মিডিয়া (Branding & Links)
+            </label>
+
+            {/* Logo Presets Row */}
+            <div style={{ marginBottom: '10px' }}>
+              <span className="form-sublabel">ব্র্যান্ড প্রিসেট / লোগো:</span>
+              <div className="brand-preset-btn-group">
+                <button 
+                  type="button" 
+                  className={`brand-preset-btn ${logoPreset === 'hello-probash' && !customLogo ? 'active probash' : ''}`}
+                  onClick={() => { setLogoPreset('hello-probash'); setCustomLogo(null); }}
+                  title="হ্যালো প্রবাস লোগো"
+                >
+                  🔴 হ্যালো প্রবাস
+                </button>
+                <button 
+                  type="button" 
+                  className={`brand-preset-btn ${logoPreset === 'hello-desh' && !customLogo ? 'active desh' : ''}`}
+                  onClick={() => { setLogoPreset('hello-desh'); setCustomLogo(null); }}
+                  title="হ্যালো দেশ লোগো"
+                >
+                  🟢 হ্যালো দেশ
+                </button>
+                <button 
+                  type="button" 
+                  className={`brand-preset-btn ${logoPreset === 'hello-nabiganj' && !customLogo ? 'active nabiganj' : ''}`}
+                  onClick={() => { setLogoPreset('hello-nabiganj'); setCustomLogo(null); }}
+                  title="হ্যালো নবীগঞ্জ লোগো"
+                >
+                  🔴 হ্যালো নবীগঞ্জ
+                </button>
+              </div>
+            </div>
+
+            {/* Custom Logo Upload Section */}
+            <div className="custom-logo-upload-wrap">
+              <input 
+                type="file" 
+                ref={logoFileInputRef} 
+                accept="image/*" 
+                onChange={handleLogoUpload} 
+                style={{ display: 'none' }} 
+              />
+              
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button 
+                  type="button" 
+                  className="btn-secondary" 
+                  onClick={() => logoFileInputRef.current?.click()}
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', height: '36px', fontSize: '12px' }}
+                >
+                  <Upload size={14} />
+                  {customLogo ? 'লোগো পরিবর্তন করুন' : 'কাস্টম লোগো আপলোড (PNG/SVG)'}
+                </button>
+
+                {customLogo && (
+                  <button 
+                    type="button" 
+                    className="btn-delete-logo"
+                    onClick={handleRemoveCustomLogo}
+                    title="কাস্টম লোগো মুছুন"
+                    style={{ height: '36px', padding: '0 10px', background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer' }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                )}
+              </div>
+
+              {customLogo && (
+                <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '8px', background: '#f3f4f6', padding: '6px 10px', borderRadius: '6px' }}>
+                  <img src={customLogo} alt="Custom Preview" style={{ maxHeight: '28px', maxWidth: '80px', objectFit: 'contain' }} />
+                  <span style={{ fontSize: '11px', color: '#16a34a', fontWeight: 600 }}>✓ কাস্টম লোগো সক্রিয় আছে</span>
+                </div>
+              )}
+
+              {/* Logo Size and Position Stepper */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                <span className="form-sublabel" style={{ margin: 0 }}>লোগোর অবস্থান:</span>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button 
+                    type="button" 
+                    className={`badge-preset-btn ${logoPosition === 'right' ? 'active' : ''}`}
+                    onClick={() => setLogoPosition('right')}
+                  >
+                    ডানে
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`badge-preset-btn ${logoPosition === 'left' ? 'active' : ''}`}
+                    onClick={() => setLogoPosition('left')}
+                  >
+                    বামে
+                  </button>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px' }}>
+                <span className="form-sublabel" style={{ margin: 0 }}>লোগোর সাইজ:</span>
+                <div className="inline-size-stepper">
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setLogoSize(prev => Math.max(50, prev - 10))}
+                    title="সাইজ ১০% কমান"
+                  >
+                    -
+                  </button>
+                  <span className="inline-size-val">{logoSize}%</span>
+                  <button 
+                    type="button" 
+                    className="inline-step-btn" 
+                    onClick={() => setLogoSize(prev => Math.min(180, prev + 10))}
+                    title="সাইজ ১০% বাড়ান"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Links & Website URL Fields */}
+            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span className="form-sublabel" style={{ margin: 0 }}>সোশ্যাল লিংক ও ওয়েবসাইট:</span>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={showSocialFooter} 
+                    onChange={e => setShowSocialFooter(e.target.checked)}
+                    style={{ accentColor: '#e50914', cursor: 'pointer' }}
+                  />
+                  ফুটার প্রদর্শন
+                </label>
+              </div>
+
+              {showSocialFooter && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {/* Website URL */}
+                  <div>
+                    <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                      <Globe size={12} color="#2563eb" /> ওয়েবসাইটের লিংক (Website URL)
+                    </label>
+                    <input 
+                      type="text" 
+                      className="form-textarea" 
+                      value={websiteUrl} 
+                      onChange={e => setWebsiteUrl(e.target.value)} 
+                      placeholder="WWW.HELLOPROBASH.COM"
+                      style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                    />
+                  </div>
+
+                  {/* Facebook & YouTube 2-col row */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                        <span style={{ color: '#1877F2', fontWeight: 900 }}>f</span> ফেসবুক পেজ
+                      </label>
+                      <input 
+                        type="text" 
+                        className="form-textarea" 
+                        value={facebookHandle} 
+                        onChange={e => setFacebookHandle(e.target.value)} 
+                        placeholder="helloprobash"
+                        style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', color: '#6b7280', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '2px' }}>
+                        <span style={{ color: '#FF0000', fontWeight: 900 }}>▶</span> ইউটিউব চ্যানেল
+                      </label>
+                      <input 
+                        type="text" 
+                        className="form-textarea" 
+                        value={youtubeHandle} 
+                        onChange={e => setYoutubeHandle(e.target.value)} 
+                        placeholder="helloprobash"
+                        style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Comment / Subtitle Badge */}
+            <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span className="form-sublabel" style={{ margin: 0 }}>মন্তব্য / সাবটাইটেল (Comment Badge):</span>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={showCtaBadge} 
+                    onChange={e => setShowCtaBadge(e.target.checked)}
+                    style={{ accentColor: '#e50914', cursor: 'pointer' }}
+                  />
+                  প্রদর্শন
+                </label>
+              </div>
+
+              {showCtaBadge && (
+                <>
+                  <div style={{ display: 'flex', gap: '6px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                    {['বিস্তারিত কমেন্টে', 'বিস্তারিত ক্যাপশনে', 'বিস্তারিত খবরে', 'আরও জানতে কমেন্ট দেখুন'].map(txt => (
+                      <button 
+                        key={txt}
+                        type="button" 
+                        className={`badge-preset-btn ${ctaText === txt ? 'active' : ''}`}
+                        onClick={() => setCtaText(txt)}
+                      >
+                        {txt}
+                      </button>
+                    ))}
+                  </div>
+                  <input 
+                    type="text" 
+                    className="form-textarea" 
+                    value={ctaText} 
+                    onChange={e => setCtaText(e.target.value)} 
+                    placeholder="উদা: বিস্তারিত কমেন্টে"
+                    style={{ padding: '7px 10px', height: '36px', minHeight: 'unset', width: '100%' }}
+                  />
+                </>
+              )}
             </div>
           </div>
 
