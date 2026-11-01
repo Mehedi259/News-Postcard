@@ -2775,7 +2775,7 @@ button {
 .template-ps122 .hn-headline-1,
 .template-ps183 .hn-headline-1,
 .template-ps-ribbon .hn-headline-1 {
-  font-family: 'Noto Serif Bengali', 'Tiro Bangla', serif;
+  font-family: 'Hind Siliguri', sans-serif;
   font-weight: 700;
   line-height: 1.25;
   margin: 0;
@@ -2789,7 +2789,7 @@ button {
 .template-ps122 .hn-headline-2,
 .template-ps183 .hn-headline-2,
 .template-ps-ribbon .hn-headline-2 {
-  font-family: 'Anek Bangla', 'Hind Siliguri', sans-serif;
+  font-family: 'Hind Siliguri', sans-serif;
   font-weight: 800;
   line-height: 1.15;
   margin: 0;

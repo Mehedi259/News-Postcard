@@ -47,11 +47,11 @@ export interface BengaliFontOption {
 }
 
 export const BENGALI_FONTS: BengaliFontOption[] = [
+  { id: "'Hind Siliguri', sans-serif", family: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি বোল্ড (Hind Siliguri Bold)', weight: 700 },
+  { id: "'SolaimanLipi', sans-serif", family: "'SolaimanLipi', sans-serif", name: 'সোলায়মানলিপি বোল্ড (SolaimanLipi Bold)', weight: 700 },
   { id: "'Noto Serif Bengali', serif", family: "'Noto Serif Bengali', serif", name: 'নোটো সেরিফ (Classic News)', weight: 700 },
-  { id: "'Hind Siliguri', sans-serif", family: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি বোল্ড (Hind Siliguri Bold / ExtraBold)', weight: 700 },
   { id: "'Noto Sans Bengali', sans-serif:black", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স ব্ল্যাক (Noto Sans Bengali Black - 900)', weight: 900 },
   { id: "'Noto Sans Bengali', sans-serif", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স বোল্ড (Noto Sans Bengali Bold - 700)', weight: 700 },
-  { id: "'SolaimanLipi', sans-serif", family: "'SolaimanLipi', sans-serif", name: 'সোলায়মানলিপি বোল্ড (SolaimanLipi Bold)', weight: 700 },
   { id: "'Anek Bangla', sans-serif", family: "'Anek Bangla', sans-serif", name: 'অনেকা বাংলা এক্সট্রা বোল্ড (Anek Bangla ExtraBold)', weight: 800 },
   { id: "'Tiro Bangla', serif", family: "'Tiro Bangla', serif", name: 'তিরো বাংলা (Traditional Serif)', weight: 700 },
   { id: "'Mina', sans-serif", family: "'Mina', sans-serif", name: 'মিনা (Minimal Slim)', weight: 700 },
@@ -88,12 +88,12 @@ export default function App() {
   const [headline1, setHeadline1] = useState('নবীগঞ্জে অবৈধ ব্যবসায়ীদের বিরুদ্ধে');
   const [headline1Color, setHeadline1Color] = useState('#ffffff');
   const [headline1FontSize, setHeadline1FontSize] = useState(30);
-  const [headline1FontFamily, setHeadline1FontFamily] = useState("'Noto Serif Bengali', serif");
+  const [headline1FontFamily, setHeadline1FontFamily] = useState("'Hind Siliguri', sans-serif");
 
   const [headline2, setHeadline2] = useState('তৎপরতার ২৪ ঘণ্টার মধ্যে এসিল্যান্ডের বদলি');
   const [headline2Color, setHeadline2Color] = useState('#ffcb05');
   const [headline2FontSize, setHeadline2FontSize] = useState(34);
-  const [headline2FontFamily, setHeadline2FontFamily] = useState("'Anek Bangla', sans-serif");
+  const [headline2FontFamily, setHeadline2FontFamily] = useState("'Hind Siliguri', sans-serif");
   const [headlineGap, setHeadlineGap] = useState(6);
   const [headlineY, setHeadlineY] = useState(526);
   const [headlineX, setHeadlineX] = useState(0);
@@ -103,7 +103,7 @@ export default function App() {
   const [showDate, setShowDate] = useState(true);
   const [dateFontSize, setDateFontSize] = useState(15);
   const [dateColor, setDateColor] = useState('#1f2937');
-  const [dateFontFamily, setDateFontFamily] = useState("'Anek Bangla', sans-serif");
+  const [dateFontFamily, setDateFontFamily] = useState("'Hind Siliguri', sans-serif");
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -590,8 +590,8 @@ export default function App() {
     setSelectedTemplate(tmpl);
     if (tmpl === 'press-studio-ribbon') {
       setHeadlineY(470);
-      setHeadline1FontFamily("'SolaimanLipi', sans-serif");
-      setHeadline2FontFamily("'SolaimanLipi', sans-serif");
+      setHeadline1FontFamily("'Hind Siliguri', sans-serif");
+      setHeadline2FontFamily("'Hind Siliguri', sans-serif");
       setHeadline1Color("#ffffff");
       setHeadline2Color("#fcee0a");
       setHeadline1FontSize(38);
