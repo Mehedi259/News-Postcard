@@ -104,6 +104,8 @@ export default function App() {
   const [dateFontSize, setDateFontSize] = useState(15);
   const [dateColor, setDateColor] = useState('#1f2937');
   const [dateFontFamily, setDateFontFamily] = useState("'Hind Siliguri', sans-serif");
+  const [dateX, setDateX] = useState<number>(0);
+  const [dateY, setDateY] = useState<number>(0);
 
   // Photo
   const [thumbnail, setThumbnail] = useState<string | null>('/reference-person.jpg');
@@ -427,6 +429,60 @@ export default function App() {
     window.addEventListener('touchend', onTouchEnd, { passive: true });
   };
 
+  // Mouse & Touch drag to reposition date freely on postcard
+  const handleDateMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startY = e.clientY;
+    const startX = e.clientX;
+    const initialY = dateY;
+    const initialX = dateX;
+    const curScale = previewScale || 1;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const dy = (moveEvent.clientY - startY) / curScale;
+      const dx = (moveEvent.clientX - startX) / curScale;
+      setDateY(Math.min(750, Math.max(-750, Math.round(initialY + dy))));
+      setDateX(Math.min(750, Math.max(-750, Math.round(initialX + dx))));
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const handleDateTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    const startY = t.clientY;
+    const startX = t.clientX;
+    const initialY = dateY;
+    const initialX = dateX;
+    const curScale = previewScale || 1;
+
+    const onTouchMove = (moveEvent: TouchEvent) => {
+      if (moveEvent.cancelable) moveEvent.preventDefault();
+      const curT = moveEvent.touches[0];
+      const dy = (curT.clientY - startY) / curScale;
+      const dx = (curT.clientX - startX) / curScale;
+      setDateY(Math.min(750, Math.max(-750, Math.round(initialY + dy))));
+      setDateX(Math.min(750, Math.max(-750, Math.round(initialX + dx))));
+    };
+
+    const onTouchEnd = () => {
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+  };
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
@@ -520,8 +576,19 @@ export default function App() {
     return (
       <div 
         className="hn-top-date"
-        title="তারিখ পরিবর্তন করতে ক্লিক করুন"
+        style={{
+          transform: `translate(${dateX}px, ${dateY}px)`
+        }}
+        title="তারিখ পরিবর্তন করতে ক্লিক করুন বা ড্র্যাগ করে সরান"
       >
+        <span 
+          className="date-drag-handle hide-on-export"
+          onMouseDown={handleDateMouseDown}
+          onTouchStart={handleDateTouchStart}
+          title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+        >
+          <Move size={11} />
+        </span>
         <Calendar 
           size={Math.max(12, Math.round(dateFontSize * 0.95))} 
           className="date-icon" 
@@ -556,8 +623,19 @@ export default function App() {
     return (
       <div 
         className={position === 'bottom-right' ? 'ps65-date-box' : 'ps-top-date-box'}
-        title="তারিখ পরিবর্তন করতে ক্লিক করুন"
+        style={{
+          transform: `translate(${dateX}px, ${dateY}px)`
+        }}
+        title="তারিখ পরিবর্তন করতে ক্লিক করুন বা ড্র্যাগ করে সরান"
       >
+        <span 
+          className="date-drag-handle hide-on-export"
+          onMouseDown={handleDateMouseDown}
+          onTouchStart={handleDateTouchStart}
+          title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+        >
+          <Move size={11} />
+        </span>
         <span 
           ref={dateRef}
           className="date-text oncard-editable"
@@ -588,6 +666,8 @@ export default function App() {
 
   const handleSelectTemplate = (tmpl: TemplateType) => {
     setSelectedTemplate(tmpl);
+    setDateX(0);
+    setDateY(0);
     if (tmpl === 'press-studio-ribbon') {
       setHeadlineY(470);
       setHeadline1FontFamily("'Hind Siliguri', sans-serif");
@@ -1222,7 +1302,37 @@ export default function App() {
               <div className="postcard-logo-container">
                 <NabiganjLogo customLogo={customLogo} size={32} />
               </div>
-              <div className="postcard-date">{date}</div>
+              {showDate && (
+                <div 
+                  className="postcard-date"
+                  style={{
+                    fontFamily: getFontFamilyAndWeight(dateFontFamily, 600).fontFamily,
+                    fontSize: `${dateFontSize}px`,
+                    color: dateColor,
+                    transform: `translate(${dateX}px, ${dateY}px)`,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                  title="তারিখ ড্র্যাগ করে সরান বা এডিট করুন"
+                >
+                  <span 
+                    className="date-drag-handle hide-on-export"
+                    onMouseDown={handleDateMouseDown}
+                    onTouchStart={handleDateTouchStart}
+                    title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+                  >
+                    <Move size={11} />
+                  </span>
+                  <span
+                    contentEditable={!isExporting}
+                    suppressContentEditableWarning={true}
+                    onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+                  >
+                    {date}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="postcard-image-container">
@@ -1272,7 +1382,37 @@ export default function App() {
             <div className="inner-card">
               <div className="top-bar">
                 <div className="category" style={{ backgroundColor: frameColor }}>{category}</div>
-                <div className="date">{date}</div>
+                {showDate && (
+                  <div 
+                    className="date"
+                    style={{
+                      fontFamily: getFontFamilyAndWeight(dateFontFamily, 600).fontFamily,
+                      fontSize: `${dateFontSize}px`,
+                      color: dateColor,
+                      transform: `translate(${dateX}px, ${dateY}px)`,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    title="তারিখ ড্র্যাগ করে সরান বা এডিট করুন"
+                  >
+                    <span 
+                      className="date-drag-handle hide-on-export"
+                      onMouseDown={handleDateMouseDown}
+                      onTouchStart={handleDateTouchStart}
+                      title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+                    >
+                      <Move size={11} />
+                    </span>
+                    <span 
+                      contentEditable={!isExporting}
+                      suppressContentEditableWarning={true}
+                      onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+                    >
+                      {date}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="image-wrapper" style={{ borderColor: frameColor }}>
@@ -1311,6 +1451,7 @@ export default function App() {
       case 'quote':
         return (
           <div className="postcard template-quote" ref={postcardRef}>
+            {renderTopDate()}
             <div className="quote-content">
               <Quote className="quote-icon" size={64} />
               <h1 className="quote-text">"{headline1} {headline2}"</h1>
@@ -1357,8 +1498,40 @@ export default function App() {
             <div className="content">
               <div className="category-date">
                 <span className="cat" style={{ color: frameColor }}>{category}</span>
-                <span className="dot"></span>
-                <span className="dat">{date}</span>
+                {showDate && (
+                  <>
+                    <span className="dot"></span>
+                    <span 
+                      className="dat"
+                      style={{
+                        fontFamily: getFontFamilyAndWeight(dateFontFamily, 600).fontFamily,
+                        fontSize: `${dateFontSize}px`,
+                        color: dateColor,
+                        transform: `translate(${dateX}px, ${dateY}px)`,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                      title="তারিখ ড্র্যাগ করে সরান বা এডিট করুন"
+                    >
+                      <span 
+                        className="date-drag-handle hide-on-export"
+                        onMouseDown={handleDateMouseDown}
+                        onTouchStart={handleDateTouchStart}
+                        title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+                      >
+                        <Move size={11} />
+                      </span>
+                      <span 
+                        contentEditable={!isExporting}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
+                      >
+                        {date}
+                      </span>
+                    </span>
+                  </>
+                )}
               </div>
               
               <h1 className="headline">{headline1} {headline2}</h1>
@@ -1377,6 +1550,7 @@ export default function App() {
       case 'breaking':
         return (
           <div className="postcard template-breaking" ref={postcardRef}>
+            {renderTopDate()}
             <div className="image-bg">
               {thumbnail && (
                 <img 
@@ -1797,9 +1971,19 @@ export default function App() {
                     fontFamily: dateFont.fontFamily,
                     fontWeight: dateFont.fontWeight,
                     fontSize: `${dateFontSize}px`,
-                    color: dateColor
+                    color: dateColor,
+                    transform: `translate(calc(-50% + ${dateX}px), ${dateY}px)`
                   }}
+                  title="তারিখ পরিবর্তন করতে ক্লিক করুন বা ড্র্যাগ করে সরান"
                 >
+                  <span 
+                    className="date-drag-handle hide-on-export"
+                    onMouseDown={handleDateMouseDown}
+                    onTouchStart={handleDateTouchStart}
+                    title="মাউস দিয়ে চেপে বা ড্র্যাগ করে তারিখের অবস্থান সরান"
+                  >
+                    <Move size={11} />
+                  </span>
                   <span 
                     ref={dateRef}
                     className="oncard-editable"
@@ -2108,6 +2292,136 @@ export default function App() {
                       <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                     ))}
                   </select>
+                </div>
+
+                {/* Date Position / Movement Controls */}
+                <div className="date-position-box" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#374151', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <Move size={13} color="#e50914" />
+                      তারিখ সরান / পজিশন (Move Date)
+                    </span>
+                    {(dateX !== 0 || dateY !== 0) && (
+                      <button
+                        type="button"
+                        onClick={() => { setDateX(0); setDateY(0); }}
+                        style={{
+                          fontSize: '11px',
+                          color: '#e50914',
+                          background: 'rgba(229, 9, 20, 0.08)',
+                          border: '1px solid rgba(229, 9, 20, 0.2)',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          padding: '2px 8px',
+                          fontWeight: 600,
+                          transition: 'all 0.15s ease'
+                        }}
+                        title="ডিফল্ট অবস্থানে রিসেট করুন"
+                      >
+                        রিসেট (0, 0)
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Horizontal (X) & Vertical (Y) Controls */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                    {/* Horizontal (X) */}
+                    <div style={{ background: '#f9fafb', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#4b5563', marginBottom: '4px' }}>
+                        <span>বামে ◀ ▶ ডানে (X)</span>
+                        <span style={{ fontWeight: 700, color: '#111827', fontSize: '11px' }}>{dateX > 0 ? `+${dateX}` : dateX}px</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <button
+                          type="button"
+                          className="inline-step-btn"
+                          onClick={() => setDateX(prev => Math.max(-400, prev - 4))}
+                          title="বামে ৪px সরান"
+                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="range"
+                          min={-350}
+                          max={350}
+                          value={dateX}
+                          onChange={e => setDateX(Number(e.target.value))}
+                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ew-resize' }}
+                        />
+                        <button
+                          type="button"
+                          className="inline-step-btn"
+                          onClick={() => setDateX(prev => Math.min(400, prev + 4))}
+                          title="ডানে ৪px সরান"
+                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Vertical (Y) */}
+                    <div style={{ background: '#f9fafb', padding: '6px 8px', borderRadius: '6px', border: '1px solid #e5e7eb' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '11px', color: '#4b5563', marginBottom: '4px' }}>
+                        <span>উপরে ▲ ▼ নিচে (Y)</span>
+                        <span style={{ fontWeight: 700, color: '#111827', fontSize: '11px' }}>{dateY > 0 ? `+${dateY}` : dateY}px</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <button
+                          type="button"
+                          className="inline-step-btn"
+                          onClick={() => setDateY(prev => Math.max(-400, prev - 4))}
+                          title="উপরে ৪px সরান"
+                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                        >
+                          -
+                        </button>
+                        <input
+                          type="range"
+                          min={-350}
+                          max={350}
+                          value={dateY}
+                          onChange={e => setDateY(Number(e.target.value))}
+                          style={{ flex: 1, accentColor: '#e50914', cursor: 'ns-resize' }}
+                        />
+                        <button
+                          type="button"
+                          className="inline-step-btn"
+                          onClick={() => setDateY(prev => Math.min(400, prev + 4))}
+                          title="নিচে ৪px সরান"
+                          style={{ width: '22px', height: '22px', fontSize: '12px', padding: 0 }}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Nudge presets / Tip */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', fontSize: '11px', color: '#6b7280' }}>
+                    <span>💡 কার্ডের উপর তারিখের ড্র্যাগ আইকন চেপেও সরানো যায়</span>
+                    <div style={{ display: 'flex', gap: '3px' }}>
+                      <button 
+                        type="button" 
+                        onClick={() => setDateY(prev => prev - 10)} 
+                        className="inline-step-btn" 
+                        title="১০px উপরে"
+                        style={{ padding: '1px 5px', fontSize: '10px' }}
+                      >
+                        ▲ ১০px
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setDateY(prev => prev + 10)} 
+                        className="inline-step-btn" 
+                        title="১০px নিচে"
+                        style={{ padding: '1px 5px', fontSize: '10px' }}
+                      >
+                        ▼ ১০px
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </>
             )}

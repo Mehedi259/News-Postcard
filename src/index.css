@@ -2071,6 +2071,49 @@ button {
   color: #059669;
 }
 
+/* Date Drag Handle and Interactive Styling across all templates */
+.date-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  color: #6b7280;
+  opacity: 0.75;
+  padding: 1px 3px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  user-select: none;
+  margin-right: 3px;
+}
+
+.date-drag-handle:hover {
+  opacity: 1;
+  background: rgba(229, 9, 20, 0.12);
+  color: #e50914;
+  transform: scale(1.15);
+}
+
+.date-drag-handle:active {
+  cursor: grabbing;
+}
+
+.ps65-date-box .date-drag-handle,
+.ps-top-date-box .date-drag-handle,
+.ps-ribbon-date-badge .date-drag-handle,
+.template-modern .date-drag-handle,
+.template-news-red .date-drag-handle {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ps65-date-box .date-drag-handle:hover,
+.ps-top-date-box .date-drag-handle:hover,
+.ps-ribbon-date-badge .date-drag-handle:hover,
+.template-modern .date-drag-handle:hover,
+.template-news-red .date-drag-handle:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .template-hello-nabiganj .hn-date-box .hn-calendar-icon {
   width: 25px;
   height: 25px;
