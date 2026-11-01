@@ -27,15 +27,32 @@ const NabiganjLogo = ({ customLogo, size = 28 }: { customLogo?: string | null; s
   <BrandLogo selectedTemplate="hello-nabiganj" customLogo={customLogo} size={size} />
 );
 
-export const BENGALI_FONTS = [
-  { id: "'Noto Serif Bengali', serif", name: 'নোটো সেরিফ (Classic News)' },
-  { id: "'Anek Bangla', sans-serif", name: 'অনেকা বাংলা (Modern Bold)' },
-  { id: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি (Clean Sans)' },
-  { id: "'Tiro Bangla', serif", name: 'তিরো বাংলা (Traditional)' },
-  { id: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স (Standard Sans)' },
-  { id: "'Mina', sans-serif", name: 'মিনা (Minimal Slim)' },
-  { id: "'Galada', cursive", name: 'গালদা (Stylized Cursive)' },
+export interface BengaliFontOption {
+  id: string;
+  family: string;
+  name: string;
+  weight?: number;
+}
+
+export const BENGALI_FONTS: BengaliFontOption[] = [
+  { id: "'Noto Serif Bengali', serif", family: "'Noto Serif Bengali', serif", name: 'নোটো সেরিফ (Classic News)', weight: 700 },
+  { id: "'Hind Siliguri', sans-serif", family: "'Hind Siliguri', sans-serif", name: 'হিন্দ শিলিগুড়ি বোল্ড (Hind Siliguri Bold / ExtraBold)', weight: 700 },
+  { id: "'Noto Sans Bengali', sans-serif:black", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স ব্ল্যাক (Noto Sans Bengali Black - 900)', weight: 900 },
+  { id: "'Noto Sans Bengali', sans-serif", family: "'Noto Sans Bengali', sans-serif", name: 'নোটো সান্স বোল্ড (Noto Sans Bengali Bold - 700)', weight: 700 },
+  { id: "'SolaimanLipi', sans-serif", family: "'SolaimanLipi', sans-serif", name: 'সোলায়মানলিপি বোল্ড (SolaimanLipi Bold)', weight: 700 },
+  { id: "'Anek Bangla', sans-serif", family: "'Anek Bangla', sans-serif", name: 'অনেকা বাংলা এক্সট্রা বোল্ড (Anek Bangla ExtraBold)', weight: 800 },
+  { id: "'Tiro Bangla', serif", family: "'Tiro Bangla', serif", name: 'তিরো বাংলা (Traditional Serif)', weight: 700 },
+  { id: "'Mina', sans-serif", family: "'Mina', sans-serif", name: 'মিনা (Minimal Slim)', weight: 700 },
+  { id: "'Galada', cursive", family: "'Galada', cursive", name: 'গালদা (Stylized Cursive)', weight: 400 },
 ];
+
+export const getFontFamilyAndWeight = (fontId: string, defaultWeight: number = 700) => {
+  const found = BENGALI_FONTS.find(f => f.id === fontId);
+  if (found) {
+    return { fontFamily: found.family, fontWeight: found.weight || defaultWeight };
+  }
+  return { fontFamily: fontId, fontWeight: defaultWeight };
+};
 
 function getBengaliToday(): string {
   const bengaliMonths = [
@@ -455,6 +472,7 @@ export default function App() {
 
   const renderTopDate = () => {
     if (!showDate) return null;
+    const dateFont = getFontFamilyAndWeight(dateFontFamily, 600);
     return (
       <div 
         className="hn-top-date"
@@ -470,7 +488,7 @@ export default function App() {
           className="date-text oncard-editable"
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
-          style={{ fontSize: `${dateFontSize}px`, color: dateColor, fontFamily: dateFontFamily }}
+          style={{ fontSize: `${dateFontSize}px`, color: dateColor, fontFamily: dateFont.fontFamily, fontWeight: dateFont.fontWeight }}
           onBlur={(e) => setDate(e.currentTarget.innerText.trim() || date)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
@@ -488,7 +506,11 @@ export default function App() {
     );
   };
 
-  const renderHeadlineArea = () => (
+  const renderHeadlineArea = () => {
+    const h1Font = getFontFamilyAndWeight(headline1FontFamily, 700);
+    const h2Font = getFontFamilyAndWeight(headline2FontFamily, 800);
+
+    return (
     <div 
       className="hn-headline-area"
       style={{
@@ -613,7 +635,7 @@ export default function App() {
                   onChange={e => setHeadline1FontFamily(e.target.value)}
                 >
                   {BENGALI_FONTS.map(f => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
+                    <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                   ))}
                 </select>
               </div>
@@ -694,7 +716,7 @@ export default function App() {
                   onChange={e => setHeadline2FontFamily(e.target.value)}
                 >
                   {BENGALI_FONTS.map(f => (
-                    <option key={f.id} value={f.id}>{f.name}</option>
+                    <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                   ))}
                 </select>
               </div>
@@ -806,7 +828,8 @@ export default function App() {
           style={{ 
             color: headline1Color, 
             fontSize: `${headline1FontSize}px`, 
-            fontFamily: headline1FontFamily,
+            fontFamily: h1Font.fontFamily,
+            fontWeight: h1Font.fontWeight,
             margin: 0 
           }}
           contentEditable={!isExporting}
@@ -834,7 +857,8 @@ export default function App() {
           style={{ 
             color: headline2Color, 
             fontSize: `${headline2FontSize}px`,
-            fontFamily: headline2FontFamily 
+            fontFamily: h2Font.fontFamily,
+            fontWeight: h2Font.fontWeight 
           }}
           contentEditable={!isExporting}
           suppressContentEditableWarning={true}
@@ -855,6 +879,7 @@ export default function App() {
       </div>
     </div>
   );
+  };
 
   const renderTemplate = () => {
     switch (selectedTemplate) {
@@ -1451,7 +1476,7 @@ export default function App() {
                     title="তারিখের ফন্ট বাছুন"
                   >
                     {BENGALI_FONTS.map(f => (
-                      <option key={f.id} value={f.id}>{f.name}</option>
+                      <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                     ))}
                   </select>
                 </div>
@@ -1477,7 +1502,7 @@ export default function App() {
                     title="১ম লাইনের ফন্ট নির্বাচন করুন"
                   >
                     {BENGALI_FONTS.map(f => (
-                      <option key={f.id} value={f.id}>{f.name}</option>
+                      <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                     ))}
                   </select>
                 </div>
@@ -1546,7 +1571,7 @@ export default function App() {
                     title="২য় লাইনের ফন্ট নির্বাচন করুন"
                   >
                     {BENGALI_FONTS.map(f => (
-                      <option key={f.id} value={f.id}>{f.name}</option>
+                      <option key={f.id} value={f.id} style={{ fontFamily: f.family, fontWeight: f.weight }}>{f.name}</option>
                     ))}
                   </select>
                 </div>
