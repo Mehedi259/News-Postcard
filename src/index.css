@@ -3369,27 +3369,6 @@ button {
   pointer-events: auto;
 }
 
-.template-ps102 .ps-card-logo-badge {
-  top: 40px;
-  left: 60px;
-}
-
-.template-ps183 .ps-card-logo-badge {
-  top: 24px;
-  left: 36px;
-}
-
-.template-ps122 .ps-card-logo-badge {
-  top: 22px;
-  left: 36px;
-}
-
-.template-ps65 .ps-card-logo-badge {
-  top: 418px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
 /* Dynamic Red Pill CTA Badge on Card */
 .ps-card-cta-badge {
   position: absolute;

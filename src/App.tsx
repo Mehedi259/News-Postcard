@@ -15,7 +15,7 @@ const BrandLogo = ({
   selectedTemplate, 
   customLogo, 
   logoPreset, 
-  size = 28 
+  size = 42 
 }: { 
   selectedTemplate: TemplateType; 
   customLogo?: string | null; 
@@ -23,22 +23,46 @@ const BrandLogo = ({
   size?: number 
 }) => {
   if (customLogo) {
-    return <img src={customLogo} alt="Brand Logo" style={{ maxHeight: size, maxWidth: size * 3.8, objectFit: 'contain' }} />;
+    return (
+      <img 
+        src={customLogo} 
+        alt="Custom Brand Logo" 
+        style={{ 
+          height: `${size}px`, 
+          width: 'auto', 
+          maxWidth: `${size * 4.5}px`, 
+          objectFit: 'contain',
+          display: 'block'
+        }} 
+      />
+    );
   }
-  const isDarkTmpl = selectedTemplate === 'press-studio-183' || selectedTemplate === 'press-studio-122';
+  const isDarkTmpl = selectedTemplate === 'press-studio-183' || selectedTemplate === 'press-studio-122' || selectedTemplate === 'press-studio-ribbon';
   const effective = logoPreset && logoPreset !== 'custom' ? logoPreset : 'hello-probash';
 
   if (effective === 'hello-desh') {
-    return <img src="/hello-desh-logo.png" alt="Hello Desh Logo" style={{ height: size, objectFit: 'contain' }} />;
+    return (
+      <img 
+        src={isDarkTmpl ? "/templates/hello-desh-white.png" : "/templates/hello-desh-transparent.png"} 
+        alt="Hello Desh Logo" 
+        style={{ height: `${size}px`, width: 'auto', maxWidth: `${size * 4.5}px`, objectFit: 'contain', display: 'block' }} 
+      />
+    );
   }
   if (effective === 'hello-nabiganj') {
-    return <img src="/hello-nabiganj-logo.png" alt="Hello Nabiganj Logo" style={{ height: size, objectFit: 'contain' }} />;
+    return (
+      <img 
+        src={isDarkTmpl ? "/templates/hello-nabiganj-white.png" : "/templates/hello-nabiganj-transparent.png"} 
+        alt="Hello Nabiganj Logo" 
+        style={{ height: `${size}px`, width: 'auto', maxWidth: `${size * 4.5}px`, objectFit: 'contain', display: 'block' }} 
+      />
+    );
   }
   return (
     <img 
       src={isDarkTmpl ? "/templates/hello-probash-press-logo-white.png" : "/templates/hello-probash-press-logo.png"} 
       alt="Hello Probash Logo" 
-      style={{ height: size, objectFit: 'contain' }} 
+      style={{ height: `${size}px`, width: 'auto', maxWidth: `${size * 4.5}px`, objectFit: 'contain', display: 'block' }} 
     />
   );
 };
@@ -151,11 +175,15 @@ export default function App() {
       };
       reader.readAsDataURL(file);
     }
+    e.target.value = '';
   };
 
   const handleRemoveCustomLogo = () => {
     setCustomLogo(null);
     setLogoPreset('hello-probash');
+    if (logoFileInputRef.current) {
+      logoFileInputRef.current.value = '';
+    }
     setToastMessage('ডিফল্ট লোগোতে ফিরে যাওয়া হয়েছে');
     setTimeout(() => setToastMessage(null), 2000);
   };
@@ -1080,13 +1108,14 @@ export default function App() {
   };
 
   const renderCardLogo = () => {
-    // Only render for Press Studio templates (press-studio-102, 65, 122, 183)
-    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon') return null;
+    // Render for all 5 Press Studio templates: PS Ribbon, PS 65, PS 102, PS 122, PS 183
+    if (!selectedTemplate.startsWith('press-studio')) return null;
     const isRight = logoPosition === 'right';
     const isPs102 = selectedTemplate === 'press-studio-102';
     const isPs65 = selectedTemplate === 'press-studio-65';
     const isPs183 = selectedTemplate === 'press-studio-183';
     const isPs122 = selectedTemplate === 'press-studio-122';
+    const isPsRibbon = selectedTemplate === 'press-studio-ribbon';
 
     let defaultTop = '40px';
     let defaultLeft = '60px';
@@ -1108,6 +1137,10 @@ export default function App() {
       defaultTop = '418px';
       defaultLeft = '50%';
       defaultSize = 34;
+    } else if (isPsRibbon) {
+      defaultTop = '24px';
+      defaultLeft = '36px';
+      defaultSize = 44;
     }
 
     return (
@@ -1125,6 +1158,7 @@ export default function App() {
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
+          height: `${defaultSize}px`,
           transform: isPs65 
             ? `translateX(-50%) scale(${logoSize / 100})` 
             : `scale(${logoSize / 100})`,
@@ -2154,19 +2188,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* Top-Right Floating Brand Logo */}
-              <div 
-                className="ps-ribbon-logo-badge"
-                style={{
-                  transform: `scale(${logoSize / 100})`,
-                  transformOrigin: logoPosition === 'left' ? 'top left' : 'top right',
-                  left: logoPosition === 'left' ? '28px' : 'auto',
-                  right: logoPosition === 'right' ? '28px' : 'auto'
-                }}
-              >
-                <BrandLogo selectedTemplate={selectedTemplate} customLogo={customLogo} logoPreset={logoPreset} size={48} />
-              </div>
-
               {/* Floating Camera Button */}
               <div 
                 className="hn-photo-edit-badge hide-on-export"
@@ -2179,6 +2200,9 @@ export default function App() {
                 <span>ছবি পরিবর্তন</span>
               </div>
             </div>
+
+            {/* Dynamic Card Logo */}
+            {renderCardLogo()}
 
             {/* 2. Curved Ribbon Separator with Centered Date */}
             <div className="ps-ribbon-curve-wrap">
