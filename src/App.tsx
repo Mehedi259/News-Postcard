@@ -8,7 +8,7 @@ import {
   Upload, Trash2, Palette
 } from 'lucide-react';
 
-type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking' | 'press-studio-65' | 'press-studio-102' | 'press-studio-122' | 'press-studio-183' | 'press-studio-ribbon';
+type TemplateType = 'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'news-red' | 'modern' | 'quote' | 'elegant' | 'breaking' | 'press-studio-102' | 'press-studio-122' | 'press-studio-183' | 'press-studio-ribbon';
 
 // Brand Logo Component supporting Hello Probash, Hello Desh, Hello Nabiganj, and Custom Uploaded Logo
 const BrandLogo = ({ 
@@ -655,11 +655,11 @@ export default function App() {
     );
   };
 
-  const renderPressStudioDate = (position: 'top-right' | 'bottom-right') => {
+  const renderPressStudioDate = (position: 'top-right' | 'bottom-right' = 'top-right') => {
     if (!showDate) return null;
     const dateFont = getFontFamilyAndWeight(dateFontFamily, 700);
     const isTopDate = position === 'top-right';
-    const isLogoRight = logoPosition === 'right' && selectedTemplate !== 'press-studio-65';
+    const isLogoRight = logoPosition === 'right';
     return (
       <div 
         className={position === 'bottom-right' ? 'ps65-date-box' : 'ps-top-date-box'}
@@ -719,8 +719,6 @@ export default function App() {
       setHeadline2FontSize(44);
       setHeadlineGap(14);
       setCtaText('বিস্তারিত কমেন্টে');
-    } else if (tmpl === 'press-studio-65') {
-      setHeadlineY(536);
     } else if (tmpl === 'press-studio-102') {
       setHeadlineY(520);
     } else if (tmpl === 'press-studio-122') {
@@ -1108,11 +1106,10 @@ export default function App() {
   };
 
   const renderCardLogo = () => {
-    // Render for all 5 Press Studio templates: PS Ribbon, PS 65, PS 102, PS 122, PS 183
+    // Render for Press Studio templates: PS Ribbon, PS 102, PS 122, PS 183
     if (!selectedTemplate.startsWith('press-studio')) return null;
     const isRight = logoPosition === 'right';
     const isPs102 = selectedTemplate === 'press-studio-102';
-    const isPs65 = selectedTemplate === 'press-studio-65';
     const isPs183 = selectedTemplate === 'press-studio-183';
     const isPs122 = selectedTemplate === 'press-studio-122';
     const isPsRibbon = selectedTemplate === 'press-studio-ribbon';
@@ -1133,10 +1130,6 @@ export default function App() {
       defaultTop = '22px';
       defaultLeft = '36px';
       defaultSize = 34;
-    } else if (isPs65) {
-      defaultTop = '418px';
-      defaultLeft = '50%';
-      defaultSize = 34;
     } else if (isPsRibbon) {
       defaultTop = '24px';
       defaultLeft = '36px';
@@ -1149,8 +1142,8 @@ export default function App() {
         style={{
           position: 'absolute',
           top: defaultTop,
-          left: isPs65 ? '50%' : (isRight ? 'auto' : defaultLeft),
-          right: isPs65 ? 'auto' : (isRight ? (isPs102 ? '60px' : '36px') : 'auto'),
+          left: isRight ? 'auto' : defaultLeft,
+          right: isRight ? (isPs102 ? '60px' : '36px') : 'auto',
           zIndex: 26,
           background: 'transparent',
           padding: 0,
@@ -1159,10 +1152,8 @@ export default function App() {
           alignItems: 'center',
           justifyContent: 'center',
           height: `${defaultSize}px`,
-          transform: isPs65 
-            ? `translateX(-50%) scale(${logoSize / 100})` 
-            : `scale(${logoSize / 100})`,
-          transformOrigin: isPs65 ? 'center' : (isRight ? 'top right' : 'top left'),
+          transform: `scale(${logoSize / 100})`,
+          transformOrigin: isRight ? 'top right' : 'top left',
           pointerEvents: 'auto'
         }}
       >
@@ -1177,8 +1168,8 @@ export default function App() {
   };
 
   const renderCardCtaBadge = () => {
-    // Only render for Press Studio templates (press-studio-102, 65, 122, 183)
-    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon') return null;
+    // Only render for Press Studio templates that use the CTA badge (PS 102, PS 183)
+    if (!selectedTemplate.startsWith('press-studio') || selectedTemplate === 'press-studio-ribbon' || selectedTemplate === 'press-studio-122') return null;
     if (!showCtaBadge) {
       if (selectedTemplate === 'press-studio-102') {
         return (
@@ -1818,86 +1809,6 @@ export default function App() {
           </div>
         );
 
-      case 'press-studio-65': {
-        return (
-          <div 
-            className="postcard template-ps65" 
-            ref={postcardRef}
-          >
-            {/* 1. Underlying Photo Container */}
-            <div 
-              ref={photoSlotRef}
-              className="ps65-photo-slot"
-              onMouseDown={handleMouseDown}
-              title="দুই আঙুল দিয়ে জুম এবং ড্র্যাগ করে ছবি পজিশন করুন"
-            >
-              {thumbnail ? (
-                <>
-                  {imageFitMode === 'contain' && (
-                    <img 
-                      src={thumbnail} 
-                      alt="Backdrop" 
-                      className="photo-blur-backdrop"
-                      aria-hidden="true"
-                    />
-                  )}
-                  <img 
-                    src={thumbnail} 
-                    alt="News Main" 
-                    className="ps65-photo"
-                    style={{
-                      objectFit: imageFitMode,
-                      transform: `translate(${imageOffsetX}px, ${imageOffsetY}px) scale(${imageZoom / 100})`,
-                      transformOrigin: 'center center'
-                    }}
-                    draggable={false}
-                  />
-                </>
-              ) : (
-                <div 
-                  className="ps65-photo-empty"
-                  onClick={() => fileInputRef.current?.click()}
-                  style={{ cursor: 'pointer' }}
-                >
-                  ছবি আপলোড করুন
-                </div>
-              )}
-
-              {/* Floating Camera Button */}
-              <div 
-                className="hn-photo-edit-badge hide-on-export"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-              >
-                <Camera size={14} />
-                <span>ছবি পরিবর্তন</span>
-              </div>
-            </div>
-
-            {/* 2. Master Template Overlay */}
-            <img 
-              src="/templates/probash-studio-65-overlay.png" 
-              className="ps65-master-overlay" 
-              alt="Press Studio 65 Frame" 
-            />
-
-            {/* Dynamic Card Logo */}
-            {renderCardLogo()}
-
-            {/* 3. Bottom Date Display */}
-            {renderPressStudioDate('bottom-right')}
-
-            {/* 4. Dynamic Headline Section */}
-            {renderHeadlineArea()}
-
-            {/* Dynamic CTA & Footer */}
-            {renderCardCtaBadge()}
-            {renderCardFooter()}
-          </div>
-        );
-      }
 
       case 'press-studio-102': {
         return (
@@ -2054,8 +1965,7 @@ export default function App() {
             {/* 4. Dynamic Headline Section */}
             {renderHeadlineArea()}
 
-            {/* Dynamic CTA & Footer */}
-            {renderCardCtaBadge()}
+            {/* Dynamic Social & Website Footer Bar */}
             {renderCardFooter()}
           </div>
         );
@@ -2411,14 +2321,6 @@ export default function App() {
                   title="PS রিবন (সৌদি ভিসা ও আধুনিক রিবন স্টাইল)"
                 >
                   ⭐ PS রিবন
-                </button>
-                <button 
-                  type="button" 
-                  className={`template-switch-btn ${selectedTemplate === 'press-studio-65' ? 'active ps-red' : ''}`}
-                  onClick={() => handleSelectTemplate('press-studio-65')}
-                  title="প্রেস স্টুডিও ৬৫"
-                >
-                  🎴 PS-65
                 </button>
                 <button 
                   type="button" 
@@ -3240,46 +3142,49 @@ export default function App() {
             </div>
 
             {/* Comment / Subtitle Badge */}
-            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e5e7eb' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span className="form-sublabel" style={{ margin: 0 }}>মন্তব্য / সাবটাইটেল (Comment Badge):</span>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
-                  <input 
-                    type="checkbox" 
-                    checked={showCtaBadge} 
-                    onChange={e => setShowCtaBadge(e.target.checked)}
-                    style={{ accentColor: '#e50914', cursor: 'pointer' }}
-                  />
-                  প্রদর্শন
-                </label>
-              </div>
+            {/* Comment / Subtitle Badge (Hidden for PS 122) */}
+            {selectedTemplate !== 'press-studio-122' && (
+              <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed #e5e7eb' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <span className="form-sublabel" style={{ margin: 0 }}>মন্তব্য / সাবটাইটেল (Comment Badge):</span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '11px', fontWeight: 600, color: '#4b5563', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={showCtaBadge} 
+                      onChange={e => setShowCtaBadge(e.target.checked)}
+                      style={{ accentColor: '#e50914', cursor: 'pointer' }}
+                    />
+                    প্রদর্শন
+                  </label>
+                </div>
 
-              {showCtaBadge && (
-                <>
-                  <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', flexWrap: 'wrap' }}>
-                    {['বিস্তারিত কমেন্টে', 'বিস্তারিত ক্যাপশনে', 'বিস্তারিত খবরে', 'আরও জানতে কমেন্ট দেখুন'].map(txt => (
-                      <button 
-                        key={txt}
-                        type="button" 
-                        className={`badge-preset-btn ${ctaText === txt ? 'active' : ''}`}
-                        onClick={() => setCtaText(txt)}
-                        style={{ fontSize: '10px', padding: '2px 7px' }}
-                      >
-                        {txt}
-                      </button>
-                    ))}
-                  </div>
-                  <input 
-                    type="text" 
-                    className="form-textarea" 
-                    value={ctaText} 
-                    onChange={e => setCtaText(e.target.value)} 
-                    placeholder="উদা: বিস্তারিত কমেন্টে"
-                    style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
-                  />
-                </>
-              )}
-            </div>
+                {showCtaBadge && (
+                  <>
+                    <div style={{ display: 'flex', gap: '4px', marginBottom: '6px', flexWrap: 'wrap' }}>
+                      {['বিস্তারিত কমেন্টে', 'বিস্তারিত ক্যাপশনে', 'বিস্তারিত খবরে', 'আরও জানতে কমেন্ট দেখুন'].map(txt => (
+                        <button 
+                          key={txt}
+                          type="button" 
+                          className={`badge-preset-btn ${ctaText === txt ? 'active' : ''}`}
+                          onClick={() => setCtaText(txt)}
+                          style={{ fontSize: '10px', padding: '2px 7px' }}
+                        >
+                          {txt}
+                        </button>
+                      ))}
+                    </div>
+                    <input 
+                      type="text" 
+                      className="form-textarea" 
+                      value={ctaText} 
+                      onChange={e => setCtaText(e.target.value)} 
+                      placeholder="উদা: বিস্তারিত কমেন্টে"
+                      style={{ padding: '6px 8px', height: '32px', minHeight: 'unset', width: '100%', fontSize: '12px' }}
+                    />
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Quick Resolution Export Buttons */}
