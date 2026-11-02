@@ -23,16 +23,24 @@ const BrandLogo = ({
   size?: number 
 }) => {
   if (customLogo) {
-    return <img src={customLogo} alt="Brand Logo" style={{ maxHeight: size, maxWidth: size * 3.5, objectFit: 'contain' }} />;
+    return <img src={customLogo} alt="Brand Logo" style={{ maxHeight: size, maxWidth: size * 3.8, objectFit: 'contain' }} />;
   }
-  const effective = logoPreset && logoPreset !== 'custom' ? logoPreset : selectedTemplate;
+  const isDarkTmpl = selectedTemplate === 'press-studio-183' || selectedTemplate === 'press-studio-122';
+  const effective = logoPreset && logoPreset !== 'custom' ? logoPreset : 'hello-probash';
+
   if (effective === 'hello-desh') {
     return <img src="/hello-desh-logo.png" alt="Hello Desh Logo" style={{ height: size, objectFit: 'contain' }} />;
   }
   if (effective === 'hello-nabiganj') {
     return <img src="/hello-nabiganj-logo.png" alt="Hello Nabiganj Logo" style={{ height: size, objectFit: 'contain' }} />;
   }
-  return <img src="/templates/hello-probash-press-logo.png" alt="Hello Probash Logo" style={{ height: size, objectFit: 'contain' }} />;
+  return (
+    <img 
+      src={isDarkTmpl ? "/templates/hello-probash-press-logo-white.png" : "/templates/hello-probash-press-logo.png"} 
+      alt="Hello Probash Logo" 
+      style={{ height: size, objectFit: 'contain' }} 
+    />
+  );
 };
 
 const NabiganjLogo = ({ customLogo, logoPreset, size = 28 }: { customLogo?: string | null; logoPreset?: any; size?: number }) => (
@@ -122,7 +130,7 @@ export default function App() {
   const [logoPreset, setLogoPreset] = useState<'hello-probash' | 'hello-desh' | 'hello-nabiganj' | 'custom'>('hello-probash');
   const [customLogo, setCustomLogo] = useState<string | null>(null);
   const [logoSize, setLogoSize] = useState<number>(100);
-  const [logoPosition, setLogoPosition] = useState<'right' | 'left'>('right');
+  const [logoPosition, setLogoPosition] = useState<'right' | 'left'>('left');
   const [websiteUrl, setWebsiteUrl] = useState<string>('WWW.HELLOPROBASH.COM');
   const [facebookHandle, setFacebookHandle] = useState<string>('helloprobash');
   const [youtubeHandle, setYoutubeHandle] = useState<string>('helloprobash');
@@ -622,11 +630,14 @@ export default function App() {
   const renderPressStudioDate = (position: 'top-right' | 'bottom-right') => {
     if (!showDate) return null;
     const dateFont = getFontFamilyAndWeight(dateFontFamily, 700);
+    const isTopDate = position === 'top-right';
+    const isLogoRight = logoPosition === 'right' && selectedTemplate !== 'press-studio-65';
     return (
       <div 
         className={position === 'bottom-right' ? 'ps65-date-box' : 'ps-top-date-box'}
         style={{
-          transform: `translate(${dateX}px, ${dateY}px)`
+          transform: `translate(${dateX}px, ${dateY}px)`,
+          ...(isTopDate && isLogoRight ? { right: 'auto', left: '42px' } : {})
         }}
         title="তারিখ পরিবর্তন করতে ক্লিক করুন বা ড্র্যাগ করে সরান"
       >
@@ -1074,80 +1085,60 @@ export default function App() {
     const isRight = logoPosition === 'right';
     const isPs102 = selectedTemplate === 'press-studio-102';
     const isPs65 = selectedTemplate === 'press-studio-65';
-    const isOtherPs = selectedTemplate === 'press-studio-122' || selectedTemplate === 'press-studio-183';
+    const isPs183 = selectedTemplate === 'press-studio-183';
+    const isPs122 = selectedTemplate === 'press-studio-122';
 
     let defaultTop = '40px';
     let defaultLeft = '60px';
-    let minW = '145px';
-    let minH = '52px';
+    let defaultSize = 42;
 
     if (isPs102) {
       defaultTop = '40px';
       defaultLeft = '60px';
-      minW = '145px';
-      minH = '52px';
-    } else if (isOtherPs) {
-      defaultTop = '26px';
-      defaultLeft = '38px';
-      minW = '140px';
-      minH = '50px';
+      defaultSize = 44;
+    } else if (isPs183) {
+      defaultTop = '24px';
+      defaultLeft = '36px';
+      defaultSize = 40;
+    } else if (isPs122) {
+      defaultTop = '22px';
+      defaultLeft = '36px';
+      defaultSize = 34;
     } else if (isPs65) {
-      defaultTop = '362px';
+      defaultTop = '418px';
       defaultLeft = '50%';
+      defaultSize = 34;
     }
 
-    const isCustomized = isRight || (logoPreset && logoPreset !== 'hello-probash') || !!customLogo || logoSize !== 100;
-    if (!isCustomized) return null;
-
     return (
-      <>
-        {/* If logo is moved or changed from default Hello Probash, mask original left baked spot */}
-        {!isPs65 && (
-          <div 
-            style={{
-              position: 'absolute',
-              top: defaultTop,
-              left: defaultLeft,
-              width: minW,
-              height: minH,
-              background: '#ffffff',
-              zIndex: 25,
-              borderRadius: '4px',
-              pointerEvents: 'none'
-            }}
-          />
-        )}
-
-        <div 
-          className="ps-card-logo-badge"
-          style={{
-            position: 'absolute',
-            top: defaultTop,
-            left: isPs65 ? '50%' : (isRight ? 'auto' : defaultLeft),
-            right: isPs65 ? 'auto' : (isRight ? defaultLeft : 'auto'),
-            zIndex: 26,
-            background: '#ffffff',
-            padding: '3px 8px',
-            borderRadius: isPs65 ? '14px 14px 0 0' : '6px',
-            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transform: isPs65 
-              ? `translateX(-50%) scale(${logoSize / 100})` 
-              : `scale(${logoSize / 100})`,
-            transformOrigin: isPs65 ? 'center' : (isRight ? 'top right' : 'top left'),
-            pointerEvents: 'auto'
-          }}
-        >
-          <BrandLogo 
-            selectedTemplate={selectedTemplate} 
-            customLogo={customLogo} 
-            logoPreset={logoPreset} 
-            size={42} 
-          />
-        </div>
-      </>
+      <div 
+        className="ps-card-logo-badge"
+        style={{
+          position: 'absolute',
+          top: defaultTop,
+          left: isPs65 ? '50%' : (isRight ? 'auto' : defaultLeft),
+          right: isPs65 ? 'auto' : (isRight ? (isPs102 ? '60px' : '36px') : 'auto'),
+          zIndex: 26,
+          background: 'transparent',
+          padding: 0,
+          boxShadow: 'none',
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transform: isPs65 
+            ? `translateX(-50%) scale(${logoSize / 100})` 
+            : `scale(${logoSize / 100})`,
+          transformOrigin: isPs65 ? 'center' : (isRight ? 'top right' : 'top left'),
+          pointerEvents: 'auto'
+        }}
+      >
+        <BrandLogo 
+          selectedTemplate={selectedTemplate} 
+          customLogo={customLogo} 
+          logoPreset={logoPreset} 
+          size={defaultSize} 
+        />
+      </div>
     );
   };
 
